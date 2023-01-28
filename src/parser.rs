@@ -1,0 +1,93 @@
+use std::collections::HashMap;
+
+use crate::tokenizer::Lexeme;
+
+use crate::meta_parse::*;
+
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
+pub enum Symbol {
+    Program, 
+    ExecChain, 
+    Exec, 
+    PipeExec, 
+    RedirectExec, 
+    RedirectTarget, 
+    Lexeme,
+    _Placeholder,
+}
+
+// --- Egg Grammar ---
+// program := exec_chain*$
+// exec_chain := exec (pipe_exec | redirect_exec)?
+// exec := COMMAND STRING_LITERAL?
+// pipe_exec := PIPE exec_chain
+// redirect_exec := (REDIRECT | REDIRECT_APPEND) redirect_target
+// redirect_target := STRING_LITERAL (pipe_exec | redirect_exec)?
+
+
+/// Grammar Rule for program.
+/// program := exec_chain*$
+fn program() -> Rule {
+    Rule::from_sym(Symbol::ExecChain).star()
+}
+
+/// Grammar Rule for exec_chain.
+/// exec_chain := exec (pipe_exec | redirect_exec)?
+fn exec_chain() -> Rule {
+    Rule::from_sym(Symbol::Exec).then(
+        Rule::from_sym(Symbol::PipeExec)
+            .or_sym(Symbol::RedirectExec)
+            .maybe(),
+    )
+}
+/// Grammar Rule for exec.
+/// exec := COMMAND STRING_LITERAL?
+fn exec() -> Rule {
+    Rule::from_tok(Lexeme::Command).then_maybe(Block::Token(Lexeme::StringLiteral))
+}
+
+/// Grammar Rule for pipe_exec.
+/// pipe_exec := PIPE exec_chain
+fn pipe_exec() -> Rule {
+    Rule::from_tok(Lexeme::Pipe).then_sym(Symbol::ExecChain)
+}
+
+/// Grammar Rule for redirect_exec.
+/// redirect_exec := (REDIRECT | REDIRECT_APPEND) redirect_target
+fn redirect_exec() -> Rule {
+    Rule::from_tok(Lexeme::Redirect)
+        .or_tok(Lexeme::RedirectAppend)
+        .then_sym(Symbol::RedirectTarget)
+}
+
+/// Grammar Rule for redirect_target.
+/// redirect_target := STRING_LITERAL (pipe_exec | redirect_exec)?
+fn redirect_target() -> Rule {
+    Rule::from_tok(Lexeme::StringLiteral).then(
+        Rule::from_sym(Symbol::PipeExec)
+            .or_sym(Symbol::RedirectExec)
+            .maybe(),
+    )
+}
+
+pub struct Parser {
+    pub rules: HashMap<Symbol, Rule>,
+    pub entry: Symbol
+}
+
+impl Parser {
+    /// Construct a new parser instance from a vector of tokens.
+    pub fn new() -> Self {
+        Self {
+            rules: HashMap::from([
+                (Symbol::Program, program()),
+                (Symbol::ExecChain, exec_chain()),
+                (Symbol::Exec, exec()),
+                (Symbol::PipeExec, pipe_exec()),
+                (Symbol::RedirectExec, redirect_exec()),
+                (Symbol::RedirectTarget, redirect_target()),
+            ]),
+            entry: Symbol::Program
+        }
+    }   
+}

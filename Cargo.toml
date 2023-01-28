@@ -1,0 +1,9 @@
+[package]
+name = "eggshell"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+"regex" = "1"
+yaml-rust = "0.4"
+indoc = "2"

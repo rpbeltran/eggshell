@@ -1,0 +1,255 @@
+---
+
+- input:
+  - ls
+  tokens:
+  - lexeme: Command
+    contents: ls
+  syntax tree:
+    - Program:
+      - ExecChain:
+        - Exec:
+          - Command:
+            - ls
+
+- input:
+  - "ls    "
+  tokens:
+  - lexeme: Command
+    contents: ls
+  syntax tree:
+    - Program:
+      - ExecChain:
+        - Exec:
+          - Command:
+            - ls
+
+- input:
+  - "    ls   "
+  tokens:
+  - lexeme: Command
+    contents: ls
+  syntax tree:
+     - Program:
+       - ExecChain:
+         - Exec:
+           - Command:
+             - ls
+
+- input:
+  - say "hello world"
+  tokens:
+  - lexeme: Command
+    contents: say
+  - lexeme: StringLiteral
+    contents: '"hello world"'
+  syntax tree:
+    - Program:
+      - ExecChain:
+        - Exec:
+          - Command:
+            - "say"
+          - StringLiteral:
+            - '"hello world"'
+
+- input:
+  - say --hello world
+  tokens:
+  - lexeme: Command
+    contents: say
+  - lexeme: StringLiteral
+    contents: --hello world
+  syntax tree:
+    - Program:
+      - ExecChain:
+        - Exec:
+          - Command:
+            - "say"
+          - StringLiteral:
+            - "--hello world"
+
+- input:
+  - say a "b c" d
+  tokens:
+  - lexeme: Command
+    contents: say
+  - lexeme: StringLiteral
+    contents: "a \"b c\" d"
+  syntax tree:
+    - Program:
+      - ExecChain:
+        - Exec:
+          - Command:
+            - "say"
+          - StringLiteral:
+            - "a \"b c\" d"
+
+- input:
+  - "say 'a b \"c' d'"
+  - say hi
+  - "'"
+  - ls
+  tokens:
+  - lexeme: Command
+    contents: say
+  - lexeme: StringLiteral
+    contents: "'a b \"c' d'\nsay hi\n'"
+  - lexeme: Command
+    contents: ls
+  syntax tree:
+    - Program:
+      - ExecChain:
+        - Exec:
+          - Command:
+            - say
+          - StringLiteral:
+            - "'a b \"c' d'\nsay hi\n'"
+      - ExecChain:
+        - Exec:
+          - Command:
+            - ls
+
+- input:
+  - 'say "a b c" d'
+  - say hi
+  - ls
+  - say ok
+  tokens:
+  - lexeme: Command
+    contents: say
+  - lexeme: StringLiteral
+    contents: '"a b c" d'
+  - lexeme: Command
+    contents: say
+  - lexeme: StringLiteral
+    contents: hi
+  - lexeme: Command
+    contents: ls
+  - lexeme: Command
+    contents: say
+  - lexeme: StringLiteral
+    contents: ok
+
+- input:
+  - a b c | d
+  tokens:
+  - lexeme: Command
+    contents: a
+  - lexeme: StringLiteral
+    contents: b c
+  - lexeme: Pipe
+    contents: "|"
+  - lexeme: Command
+    contents: d
+
+- input:
+  - a b | c >> d | e f g > h
+  tokens:
+  - lexeme: Command
+    contents: a
+  - lexeme: StringLiteral
+    contents: b
+  - lexeme: Pipe
+    contents: "|"
+  - lexeme: Command
+    contents: c
+  - lexeme: RedirectAppend
+    contents: ">>"
+  - lexeme: StringLiteral
+    contents: d
+  - lexeme: Pipe
+    contents: "|"
+  - lexeme: Command
+    contents: e
+  - lexeme: StringLiteral
+    contents: f g
+  - lexeme: Redirect
+    contents: ">"
+  - lexeme: StringLiteral
+    contents: h
+
+
+- input:
+  - '    say "a b c" d | e'
+  - "say hi"
+  - ""
+  - "    ls > file | cat2"
+  - "  say ok"
+  tokens:
+    - lexeme: Command
+      contents: say
+    - lexeme: StringLiteral
+      contents: '"a b c" d'
+    - lexeme: Pipe
+      contents: "|"
+    - lexeme: Command
+      contents: e
+    - lexeme: Command
+      contents: say
+    - lexeme: StringLiteral
+      contents: hi
+    - lexeme: Command
+      contents: ls
+    - lexeme: Redirect
+      contents: ">"
+    - lexeme: StringLiteral
+      contents: file
+    - lexeme: Pipe
+      contents: "|"
+    - lexeme: Command
+      contents: cat2
+    - lexeme: Command
+      contents: say
+    - lexeme: StringLiteral
+      contents: ok
+
+
+- input:
+  - ls
+  - ls a
+  - ls
+  - ls
+  - ls a b
+  - ls
+  - ls c
+  - ls
+  syntax tree:
+    - Program:
+      - ExecChain:
+        - Exec:
+          - Command:
+            - ls
+      - ExecChain:
+        - Exec:
+          - Command:
+            - ls
+          - StringLiteral:
+            - a
+      - ExecChain:
+        - Exec:
+          - Command:
+            - ls
+      - ExecChain:
+        - Exec:
+          - Command:
+            - ls
+      - ExecChain:
+        - Exec:
+          - Command:
+            - ls
+          - StringLiteral:
+            - a b
+      - ExecChain:
+        - Exec:
+          - Command:
+            - ls
+      - ExecChain:
+        - Exec:
+          - Command:
+            - ls
+          - StringLiteral:
+            - c
+      - ExecChain:
+        - Exec:
+          - Command:
+            - ls
