@@ -5,7 +5,9 @@ mod egg_error;
 mod meta_parse;
 mod parser;
 mod source;
+mod token;
 mod tokenizer;
+mod tokenizer_util;
 
 use egg_error::*;
 use std::path::PathBuf;
@@ -18,7 +20,7 @@ fn main() -> Result<()> {
     ))?;
 
     for source in source_manager.files.iter() {
-        let mut tokenizer = tokenizer::Tokenizer::new();
+        let mut tokenizer = tokenizer_util::Tokenizer::new();
         let tokens = tokenizer.tokenize(source)?;
 
         println!(

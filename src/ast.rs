@@ -7,7 +7,7 @@ extern crate yaml_rust;
 use crate::egg_error::*;
 use crate::parser::Symbol;
 use crate::source::SourceManager;
-use crate::tokenizer::Token;
+use crate::token::Token;
 
 #[derive(Debug)]
 pub struct Ast {

@@ -2,7 +2,7 @@ use std::{io, path::PathBuf};
 
 use crate::parser;
 use crate::source;
-use crate::tokenizer;
+use crate::token::Token;
 
 extern crate yaml_rust;
 
@@ -33,7 +33,7 @@ pub enum EggError {
 
     // Parser Errors
     ParserTokenOutOfBounds,
-    ParserUnexpectedToken(tokenizer::Token),
+    ParserUnexpectedToken(Token),
     ParserCouldNotParseProgram,
     ParserTreeHasNoRootNode,
     ParserTreeNodeOutOfBounds,
