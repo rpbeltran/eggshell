@@ -41,9 +41,9 @@ fn exec_chain() -> Rule {
     )
 }
 /// Grammar Rule for exec.
-/// exec := COMMAND STRING_LITERAL?
+/// exec := STRING_LITERAL+
 fn exec() -> Rule {
-    Rule::from_tok(Lexeme::Command).then_maybe(Block::Token(Lexeme::StringLiteral))
+    Rule::from_tok(Lexeme::StringLiteral).plus()
 }
 
 /// Grammar Rule for pipe_exec.

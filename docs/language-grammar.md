@@ -32,6 +32,4 @@ pipe_exec := PIPE exec_chain
 
 redirect_exec := (REDIRECT | REDIRECT_APPEND) redirect_target
 
-redirect_target := STRING_LITERAL pipe_exec 
-                |  STRING_LITERAL redirect_exec
-                |  STRING_LITERAL
+redirect_target := STRING_LITERAL (pipe_exec | redirect_exec)?
