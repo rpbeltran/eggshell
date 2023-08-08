@@ -10,26 +10,22 @@ pub type Result<T> = std::result::Result<T, EggError>;
 
 #[derive(Debug)]
 pub enum EggError {
-    // Internal Tokenizer Errors
+    // Internal Errors
     InternalError(String),
+    NotImplementedYet,
+
+    // Internal Source Managment Errors
     LineReadFailed(io::Error),
     SliceOutOfBounds(source::SourceSlice),
     LocationOutOfBounds(source::SourceLocation),
     OffsetOutOfBounds(usize),
-    LineOutOfBounds(usize),
-    StartOfTokenNotSet,
-    EndOfTokenNotSet,
-    TokenizerHeadNotSet,
-    NotImplementedYet,
 
     // Invocation Errors
     FileNotFound(io::Error),
     FileReadError(io::Error),
 
-    // Tokenizer Errors
-    LexerUnclosedQuotation,
-    LexerUnclosedEscapeSequence,
-    LexerUnexpectedSymbol,
+    // Lexer Errors
+    LexerCouldNotCreateToken(source::SourceLocation),
 
     // Parser Errors
     ParserTokenOutOfBounds,

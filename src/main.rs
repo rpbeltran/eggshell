@@ -20,7 +20,7 @@ fn main() -> Result<()> {
     ))?;
 
     for source in source_manager.files.iter() {
-        let mut tokenizer = tokenizer_util::Tokenizer::new();
+        let tokenizer = tokenizer_util::Tokenizer::new();
         let tokens = tokenizer.tokenize(source)?;
 
         println!(

@@ -72,7 +72,7 @@ fn check_meta_parser() -> Result<()> {
             .then_one_of(&mut vec![
                 Block::Symbol(Symbol::ExecChain),
                 Block::Token(Lexeme::Pipe),
-                Block::Token(Lexeme::StringLiteral),
+                Block::Token(Lexeme::Literal),
             ]),
         indoc! {"
         ---
@@ -82,7 +82,7 @@ fn check_meta_parser() -> Result<()> {
           - Any
             - Symbol<ExecChain>
             - Token<Pipe>
-            - Token<StringLiteral>
+            - Token<Literal>
         "}
         .into(),
     ));
@@ -176,7 +176,7 @@ fn check_meta_parser() -> Result<()> {
         .into(),
     ));
     test_cases.push((
-        Rule::from_tok(Lexeme::StringLiteral).then(
+        Rule::from_tok(Lexeme::Literal).then(
             Rule::from_sym(Symbol::PipeExec)
                 .or_sym(Symbol::RedirectExec)
                 .maybe(),
@@ -184,7 +184,7 @@ fn check_meta_parser() -> Result<()> {
         indoc! {"
         ---
         - Sequence
-          - Token<StringLiteral>
+          - Token<Literal>
           - Maybe
             - Any
               - Symbol<PipeExec>

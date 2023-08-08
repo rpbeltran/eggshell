@@ -1,6 +1,6 @@
 use eggshell::egg_error::*;
 use eggshell::parser;
-use eggshell::tokenizer;
+use eggshell::tokenizer_util::Tokenizer;
 
 mod common;
 use common::*;
@@ -14,7 +14,7 @@ fn check_parser() -> Result<()> {
         if let Some(expected_syntax_tree) = &test_case.expected_syntax_tree {
             let file = suite.source_manager.get_file(test_case.file_id)?;
 
-            let mut tokenizer = tokenizer::Tokenizer::new();
+            let mut tokenizer = Tokenizer::new();
             let tokens =
                 tokenizer
                     .tokenize(&file)
@@ -25,7 +25,7 @@ fn check_parser() -> Result<()> {
                     })?;
 
             let mut token_infos: Vec<TokenInfo> = Vec::new();
-            for token in tokens {
+            for token in tokens.iter() {
                 token_infos.push(TokenInfo {
                     lexeme_name: format!("{:?}", token.lexeme),
                     contents: file.get_slice(&token.location).map_err(|e| {

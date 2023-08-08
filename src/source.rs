@@ -17,7 +17,7 @@ pub struct SourceSlice {
     pub file_id: usize,
     /// Offset of first char in slice (inclusive).
     pub start: usize,
-    /// Offset of fast char in slice (inclusive).
+    /// Offset of last char in slice (inclusive).
     pub end: usize,
 }
 
