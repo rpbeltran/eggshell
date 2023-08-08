@@ -14,7 +14,7 @@ fn check_parser() -> Result<()> {
         if let Some(expected_syntax_tree) = &test_case.expected_syntax_tree {
             let file = suite.source_manager.get_file(test_case.file_id)?;
 
-            let mut tokenizer = Tokenizer::new();
+            let tokenizer = Tokenizer::new();
             let tokens =
                 tokenizer
                     .tokenize(&file)

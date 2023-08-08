@@ -1,3 +1,4 @@
+use std::cmp::Ordering;
 use std::collections::VecDeque;
 use std::fmt::Write;
 
@@ -50,12 +51,10 @@ impl Parser {
             .get(&self.entry)
             .ok_or(EggError::ParserTriedToBuildSymbolWithNoRule(self.entry))?;
         if let Some((head, ast)) = self.meta_parse(&self.entry, entry_rule, 0, tokens)? {
-            if head == tokens.len() {
-                Ok(ast)
-            } else if head < tokens.len() {
-                Err(EggError::ParserUnexpectedToken(tokens[head].clone()))
-            } else {
-                Err(EggError::ParserHeadPastLastToken)
+            match head.cmp(&tokens.len()) {
+                Ordering::Equal => Ok(ast),
+                Ordering::Less => Err(EggError::ParserUnexpectedToken(tokens[head].clone())),
+                Ordering::Greater => Err(EggError::ParserHeadPastLastToken),
             }
         } else {
             Err(EggError::ParserCouldNotParseProgram)
