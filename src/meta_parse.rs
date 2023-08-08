@@ -20,17 +20,20 @@ pub enum Block {
     /// Should not be directly instantiated outside of metaparse implementation.
     _Sequence(Vec<usize>),
     /// Denote Disjunction operator: (X1 | X2 | X3 | ...)
-    /// /// Should not directly be instantiated outside of metaparse implementation.
+    /// Should not directly be instantiated outside of metaparse implementation.
     _Any(Vec<usize>),
-    // Denote Optionals: X?.
+    /// Denote Optionals: X?.
     /// Should not be directly instantiated outside of metaparse implementation.
     _Maybe(usize),
-    // Denote Kleene Closures: X*
+    /// Denote Kleene Closures: X*
     /// Should not be directly instantiated outside of metaparse implementation.
     _Star(usize),
-    // Denote Nonempty Kleene Closures: X+
+    /// Denote Nonempty Kleene Closures: X+
     /// Should not be directly instantiated outside of metaparse implementation.
     _Plus(usize),
+    /// Denote discard subtree.
+    /// Should not be directly instantiated outside of metaparse implementation.
+    _Discard(usize),
 }
 
 #[derive(Debug)]
@@ -40,10 +43,12 @@ pub struct Rule {
 }
 
 impl Parser {
-
-     /// Attempt to parse an egg program to a syntax tree.
-     pub fn parse(&mut self, tokens: &[Token]) -> Result<Ast> {
-        let entry_rule = self.rules.get(&self.entry).ok_or(EggError::ParserTriedToBuildSymbolWithNoRule(self.entry))?;
+    /// Attempt to parse an egg program to a syntax tree.
+    pub fn parse(&mut self, tokens: &[Token]) -> Result<Ast> {
+        let entry_rule = self
+            .rules
+            .get(&self.entry)
+            .ok_or(EggError::ParserTriedToBuildSymbolWithNoRule(self.entry))?;
         if let Some((head, ast)) = self.meta_parse(&self.entry, entry_rule, 0, tokens)? {
             if head == tokens.len() {
                 Ok(ast)
@@ -94,6 +99,7 @@ impl Parser {
             Block::_Maybe(child) => self.meta_parse_maybe(rule, child, parser_head, tokens),
             Block::_Star(child) => self.meta_parse_star(rule, child, parser_head, tokens),
             Block::_Plus(child) => self.meta_parse_plus(rule, child, parser_head, tokens),
+            Block::_Discard(child) => self.meta_parse_discard(rule, child, parser_head, tokens),
         }
     }
 
@@ -241,6 +247,32 @@ impl Parser {
         )
     }
 
+    /// Ensures a match exists for rule, but returns an empty _placeholder tree.
+    fn meta_parse_discard(
+        &self,
+        rule: &Rule,
+        child: &usize,
+        head: usize,
+        tokens: &[Token],
+    ) -> Result<Option<(usize, Ast)>> {
+        Ok(
+            if let Some((new_head, _)) = self.meta_parse_helper(rule, child, head, tokens)? {
+                Some((
+                    new_head,
+                    Ast {
+                        nodes: vec![AstNode {
+                            symbol: Symbol::_Placeholder,
+                            children: vec![],
+                            token: None,
+                        }],
+                    },
+                ))
+            } else {
+                None
+            },
+        )
+    }
+
     /// Return an AST for a lexeme.
     fn meta_parse_token(
         &self,
@@ -280,6 +312,12 @@ impl Parser {
             Some(token) => &token.lexeme == lexeme,
             None => false,
         }
+    }
+}
+
+impl Default for Parser {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -340,10 +378,12 @@ impl Rule {
             match block {
                 Block::_Sequence(children) => inc_vec(children, offset),
                 Block::_Any(children) => inc_vec(children, offset),
-                Block::_Maybe(child) => *child += 1,
-                Block::_Star(child) => *child += 1,
-                Block::_Plus(child) => *child += 1,
-                _ => {}
+                Block::_Maybe(child) => *child += offset,
+                Block::_Star(child) => *child += offset,
+                Block::_Plus(child) => *child += offset,
+                Block::_Discard(child) => *child += offset,
+                Block::Symbol(_) => {}
+                Block::Token(_) => {}
             }
         }
     }
@@ -484,6 +524,13 @@ impl Rule {
         self
     }
 
+    /// Don't include this subtree in the AST.
+    pub fn discard(mut self) -> Self {
+        self.blocks.push(Block::_Discard(self.root));
+        self.root = self.blocks.len() - 1;
+        self
+    }
+
     pub fn to_string(&self) -> Result<String> {
         let mut buffer = String::from("---\n");
         let mut queue: VecDeque<(usize, usize)> = VecDeque::from([(self.root, 0)]);
@@ -505,6 +552,7 @@ impl Rule {
                 Block::_Maybe(child) => vec![*child],
                 Block::_Star(child) => vec![*child],
                 Block::_Plus(child) => vec![*child],
+                Block::_Discard(child) => vec![*child],
             };
 
             match node {
@@ -515,6 +563,7 @@ impl Rule {
                 Block::_Maybe(_) => writeln!(&mut buffer, "{indent}Maybe").unwrap(),
                 Block::_Star(_) => writeln!(&mut buffer, "{indent}Star").unwrap(),
                 Block::_Plus(_) => writeln!(&mut buffer, "{indent}Plus").unwrap(),
+                Block::_Discard(_) => writeln!(&mut buffer, "{indent}Discard").unwrap(),
             };
 
             for child_id in children.iter().rev() {

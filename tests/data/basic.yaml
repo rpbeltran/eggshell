@@ -3,110 +3,141 @@
 - input:
   - ls
   tokens:
-  - lexeme: Command
+  - lexeme: Literal
     contents: ls
+  - lexeme: LineEnd
+    contents: "\n"
   syntax tree:
     - Program:
       - ExecChain:
         - Exec:
-          - Command:
+          - Literal:
             - ls
 
 - input:
   - "ls    "
   tokens:
-  - lexeme: Command
+  - lexeme: Literal
     contents: ls
+  - lexeme: LineEnd
+    contents: "\n"
   syntax tree:
     - Program:
       - ExecChain:
         - Exec:
-          - Command:
+          - Literal:
             - ls
 
 - input:
   - "    ls   "
   tokens:
-  - lexeme: Command
+  - lexeme: Literal
     contents: ls
-  syntax tree:
-     - Program:
-       - ExecChain:
-         - Exec:
-           - Command:
-             - ls
-
-- input:
-  - say "hello world"
-  tokens:
-  - lexeme: Command
-    contents: say
-  - lexeme: StringLiteral
-    contents: '"hello world"'
+  - lexeme: LineEnd
+    contents: "\n"
   syntax tree:
     - Program:
       - ExecChain:
         - Exec:
-          - Command:
+          - Literal:
+            - ls
+
+- input:
+  - say "hello world"
+  tokens:
+  - lexeme: Literal
+    contents: say
+  - lexeme: Literal
+    contents: '"hello world"'
+  - lexeme: LineEnd
+    contents: "\n"
+  syntax tree:
+    - Program:
+      - ExecChain:
+        - Exec:
+          - Literal:
             - "say"
-          - StringLiteral:
+          - Literal:
             - '"hello world"'
 
 - input:
   - say --hello world
   tokens:
-  - lexeme: Command
+  - lexeme: Literal
     contents: say
-  - lexeme: StringLiteral
-    contents: --hello world
+  - lexeme: Literal
+    contents: --hello
+  - lexeme: Literal
+    contents: world
+  - lexeme: LineEnd
+    contents: "\n"
   syntax tree:
     - Program:
       - ExecChain:
         - Exec:
-          - Command:
+          - Literal:
             - "say"
-          - StringLiteral:
-            - "--hello world"
+          - Literal:
+            - "--hello"
+          - Literal:
+            - "world"
 
 - input:
   - say a "b c" d
   tokens:
-  - lexeme: Command
+  - lexeme: Literal
     contents: say
-  - lexeme: StringLiteral
-    contents: "a \"b c\" d"
+  - lexeme: Literal
+    contents: a
+  - lexeme: Literal
+    contents: "\"b c\""
+  - lexeme: Literal
+    contents: d
+  - lexeme: LineEnd
+    contents: "\n"
   syntax tree:
     - Program:
       - ExecChain:
         - Exec:
-          - Command:
+          - Literal:
             - "say"
-          - StringLiteral:
-            - "a \"b c\" d"
+          - Literal:
+            - a
+          - Literal:
+            - "\"b c\""
+          - Literal:
+            - d
 
 - input:
-  - "say 'a b \"c' d'"
+  - "say 'a b \"c'd'"
   - say hi
   - "'"
+  - ""
   - ls
   tokens:
-  - lexeme: Command
+  - lexeme: Literal
     contents: say
-  - lexeme: StringLiteral
-    contents: "'a b \"c' d'\nsay hi\n'"
-  - lexeme: Command
+  - lexeme: Literal
+    contents: "'a b \"c'd'\nsay hi\n'"
+  - lexeme: LineEnd
+    contents: "\n"
+  - lexeme: LineEnd
+    contents: "\n"
+  - lexeme: Literal
     contents: ls
+  - lexeme: LineEnd
+    contents: "\n"
   syntax tree:
     - Program:
       - ExecChain:
         - Exec:
-          - Command:
+          - Literal:
             - say
-          - StringLiteral:
-            - "'a b \"c' d'\nsay hi\n'"
+          - Literal:
+            - "'a b \"c'd'\nsay hi\n'"
       - ExecChain:
         - Exec:
-          - Command:
+          - Literal:
             - ls
 
 - input:
@@ -115,58 +146,76 @@
   - ls
   - say ok
   tokens:
-  - lexeme: Command
+  - lexeme: Literal
     contents: say
-  - lexeme: StringLiteral
-    contents: '"a b c" d'
-  - lexeme: Command
+  - lexeme: Literal
+    contents: '"a b c"'
+  - lexeme: Literal
+    contents: d
+  - lexeme: LineEnd
+    contents: "\n"
+  - lexeme: Literal
     contents: say
-  - lexeme: StringLiteral
+  - lexeme: Literal
     contents: hi
-  - lexeme: Command
+  - lexeme: LineEnd
+    contents: "\n"
+  - lexeme: Literal
     contents: ls
-  - lexeme: Command
+  - lexeme: LineEnd
+    contents: "\n"
+  - lexeme: Literal
     contents: say
-  - lexeme: StringLiteral
+  - lexeme: Literal
     contents: ok
+  - lexeme: LineEnd
+    contents: "\n"
 
 - input:
   - a b c | d
   tokens:
-  - lexeme: Command
+  - lexeme: Literal
     contents: a
-  - lexeme: StringLiteral
-    contents: b c
+  - lexeme: Literal
+    contents: b
+  - lexeme: Literal
+    contents: c
   - lexeme: Pipe
     contents: "|"
-  - lexeme: Command
+  - lexeme: Literal
     contents: d
+  - lexeme: LineEnd
+    contents: "\n"
 
 - input:
   - a b | c >> d | e f g > h
   tokens:
-  - lexeme: Command
+  - lexeme: Literal
     contents: a
-  - lexeme: StringLiteral
+  - lexeme: Literal
     contents: b
   - lexeme: Pipe
     contents: "|"
-  - lexeme: Command
+  - lexeme: Literal
     contents: c
   - lexeme: RedirectAppend
     contents: ">>"
-  - lexeme: StringLiteral
+  - lexeme: Literal
     contents: d
   - lexeme: Pipe
     contents: "|"
-  - lexeme: Command
+  - lexeme: Literal
     contents: e
-  - lexeme: StringLiteral
-    contents: f g
+  - lexeme: Literal
+    contents: f
+  - lexeme: Literal
+    contents: g
   - lexeme: Redirect
     contents: ">"
-  - lexeme: StringLiteral
+  - lexeme: Literal
     contents: h
+  - lexeme: LineEnd
+    contents: "\n"
 
 
 - input:
@@ -176,33 +225,44 @@
   - "    ls > file | cat2"
   - "  say ok"
   tokens:
-    - lexeme: Command
+    - lexeme: Literal
       contents: say
-    - lexeme: StringLiteral
-      contents: '"a b c" d'
+    - lexeme: Literal
+      contents: '"a b c"'
+    - lexeme: Literal
+      contents: d
     - lexeme: Pipe
       contents: "|"
-    - lexeme: Command
+    - lexeme: Literal
       contents: e
-    - lexeme: Command
+    - lexeme: LineEnd
+      contents: "\n"
+    - lexeme: Literal
       contents: say
-    - lexeme: StringLiteral
+    - lexeme: Literal
       contents: hi
-    - lexeme: Command
+    - lexeme: LineEnd
+      contents: "\n"
+    - lexeme: LineEnd
+      contents: "\n"
+    - lexeme: Literal
       contents: ls
     - lexeme: Redirect
       contents: ">"
-    - lexeme: StringLiteral
+    - lexeme: Literal
       contents: file
     - lexeme: Pipe
       contents: "|"
-    - lexeme: Command
+    - lexeme: Literal
       contents: cat2
-    - lexeme: Command
+    - lexeme: LineEnd
+      contents: "\n"
+    - lexeme: Literal
       contents: say
-    - lexeme: StringLiteral
+    - lexeme: Literal
       contents: ok
-
+    - lexeme: LineEnd
+      contents: "\n"
 
 - input:
   - ls
@@ -217,39 +277,41 @@
     - Program:
       - ExecChain:
         - Exec:
-          - Command:
+          - Literal:
             - ls
       - ExecChain:
         - Exec:
-          - Command:
+          - Literal:
             - ls
-          - StringLiteral:
+          - Literal:
             - a
       - ExecChain:
         - Exec:
-          - Command:
+          - Literal:
             - ls
       - ExecChain:
         - Exec:
-          - Command:
+          - Literal:
             - ls
       - ExecChain:
         - Exec:
-          - Command:
+          - Literal:
             - ls
-          - StringLiteral:
-            - a b
+          - Literal:
+            - a
+          - Literal:
+            - b
       - ExecChain:
         - Exec:
-          - Command:
+          - Literal:
             - ls
       - ExecChain:
         - Exec:
-          - Command:
+          - Literal:
             - ls
-          - StringLiteral:
+          - Literal:
             - c
       - ExecChain:
         - Exec:
-          - Command:
+          - Literal:
             - ls

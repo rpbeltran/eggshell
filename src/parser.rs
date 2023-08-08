@@ -6,24 +6,15 @@ use crate::meta_parse::*;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
 pub enum Symbol {
-    Program, 
-    ExecChain, 
-    Exec, 
-    PipeExec, 
-    RedirectExec, 
-    RedirectTarget, 
+    Program,
+    ExecChain,
+    Exec,
+    PipeExec,
+    RedirectExec,
+    RedirectTarget,
     Lexeme,
     _Placeholder,
 }
-
-// --- Egg Grammar ---
-// program := exec_chain*$
-// exec_chain := exec (pipe_exec | redirect_exec)?
-// exec := COMMAND STRING_LITERAL?
-// pipe_exec := PIPE exec_chain
-// redirect_exec := (REDIRECT | REDIRECT_APPEND) redirect_target
-// redirect_target := STRING_LITERAL (pipe_exec | redirect_exec)?
-
 
 /// Grammar Rule for program.
 /// program := exec_chain*$
@@ -32,18 +23,21 @@ fn program() -> Rule {
 }
 
 /// Grammar Rule for exec_chain.
-/// exec_chain := exec (pipe_exec | redirect_exec)?
+/// exec_chain := exec (pipe_exec | redirect_exec)? (?=LineEnd+)
 fn exec_chain() -> Rule {
-    Rule::from_sym(Symbol::Exec).then(
-        Rule::from_sym(Symbol::PipeExec)
-            .or_sym(Symbol::RedirectExec)
-            .maybe(),
-    )
+    Rule::from_sym(Symbol::Exec)
+        .then(
+            Rule::from_sym(Symbol::PipeExec)
+                .or_sym(Symbol::RedirectExec)
+                .maybe(),
+        )
+        .then(Rule::from_tok(Lexeme::LineEnd).plus().discard())
 }
+
 /// Grammar Rule for exec.
-/// exec := STRING_LITERAL+
+/// exec := LITERAL+
 fn exec() -> Rule {
-    Rule::from_tok(Lexeme::StringLiteral).plus()
+    Rule::from_tok(Lexeme::Literal).plus()
 }
 
 /// Grammar Rule for pipe_exec.
@@ -61,9 +55,9 @@ fn redirect_exec() -> Rule {
 }
 
 /// Grammar Rule for redirect_target.
-/// redirect_target := STRING_LITERAL (pipe_exec | redirect_exec)?
+/// redirect_target := LITERAL (pipe_exec | redirect_exec)?
 fn redirect_target() -> Rule {
-    Rule::from_tok(Lexeme::StringLiteral).then(
+    Rule::from_tok(Lexeme::Literal).then(
         Rule::from_sym(Symbol::PipeExec)
             .or_sym(Symbol::RedirectExec)
             .maybe(),
@@ -72,7 +66,7 @@ fn redirect_target() -> Rule {
 
 pub struct Parser {
     pub rules: HashMap<Symbol, Rule>,
-    pub entry: Symbol
+    pub entry: Symbol,
 }
 
 impl Parser {
@@ -87,7 +81,7 @@ impl Parser {
                 (Symbol::RedirectExec, redirect_exec()),
                 (Symbol::RedirectTarget, redirect_target()),
             ]),
-            entry: Symbol::Program
+            entry: Symbol::Program,
         }
-    }   
+    }
 }
