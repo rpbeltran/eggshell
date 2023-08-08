@@ -6,4 +6,6 @@ edition = "2021"
 [dependencies]
 "regex" = "1"
 yaml-rust = "0.4"
+
+[dev-dependencies]
 indoc = "2"
