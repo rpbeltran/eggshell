@@ -11,7 +11,7 @@ pub struct Token {
 impl Token {
     pub fn to_string(&self, source_manager: &source::SourceManager) -> Result<String> {
         Ok(format!(
-            "{:?}: \"{}\"",
+            "{:?}: {:?}",
             self.lexeme,
             self.get_contents(source_manager)?
         ))
