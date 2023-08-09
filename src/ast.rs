@@ -73,7 +73,7 @@ impl Ast {
 
     /// Add offset to all node_ids.
     fn offset_ids(&mut self, offset: usize) {
-        for mut node in self.nodes.iter_mut() {
+        for node in self.nodes.iter_mut() {
             node.children = node.children.iter().map(|i| i + offset).collect();
         }
     }
