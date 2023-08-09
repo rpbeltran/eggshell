@@ -3,9 +3,9 @@ mod common;
 use indoc::indoc;
 
 use eggshell::egg_error::*;
+use eggshell::lexer::Lexeme;
 use eggshell::meta_parse::*;
 use eggshell::parser::Symbol;
-use eggshell::tokenizer::Lexeme;
 
 #[test]
 fn check_meta_parser() -> Result<()> {

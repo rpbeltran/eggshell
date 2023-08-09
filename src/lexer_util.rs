@@ -3,9 +3,9 @@
 use regex::Regex;
 
 use crate::egg_error::*;
+use crate::lexer::*;
 use crate::source::*;
 use crate::token::Token;
-use crate::tokenizer::*;
 
 pub enum QuoteType {
     /// Quoted with double quotes.
@@ -16,15 +16,15 @@ pub enum QuoteType {
     Back,
 }
 
-pub struct Tokenizer {
+pub struct Lexer {
     pub patterns: Vec<(Lexeme, Regex)>,
 }
 
-struct TokenizerState<'s> {
+struct LexerState<'s> {
     input_suffix: std::str::Chars<'s>,
 }
 
-impl Tokenizer {
+impl Lexer {
     pub fn tokenize(&self, source_file: &SourceFile) -> Result<Vec<Token>> {
         let mut tokens: Vec<Token> = Vec::new();
         let mut next_token_start = 0;
@@ -92,7 +92,7 @@ impl Tokenizer {
     }
 }
 
-impl Default for Tokenizer {
+impl Default for Lexer {
     fn default() -> Self {
         Self::new()
     }

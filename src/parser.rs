@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::tokenizer::Lexeme;
+use crate::lexer::Lexeme;
 
 use crate::meta_parse::*;
 

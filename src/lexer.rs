@@ -1,5 +1,5 @@
 #![allow(dead_code)]
-use crate::tokenizer_util::*;
+use crate::lexer_util::*;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum Lexeme {
@@ -29,7 +29,7 @@ mod patterns {
 
 use patterns::*;
 
-impl Tokenizer {
+impl Lexer {
     pub fn new() -> Self {
         let literal_pattern: String = format!(
             "({}|{}|{}|{})+",

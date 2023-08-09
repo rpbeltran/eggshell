@@ -1,6 +1,6 @@
 use crate::egg_error::*;
+use crate::lexer::Lexeme;
 use crate::source;
-use crate::tokenizer::Lexeme;
 
 #[derive(Clone, Debug)]
 pub struct Token {

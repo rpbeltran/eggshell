@@ -4,9 +4,9 @@ use std::fmt::Write;
 
 use crate::ast::*;
 use crate::egg_error::*;
+use crate::lexer::Lexeme;
 use crate::parser::*;
 use crate::token::Token;
-use crate::tokenizer::Lexeme;
 
 /// Building block of a parse gen rule.
 /// usize typed blocks refer to arena style IDs of other blocks.

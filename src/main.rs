@@ -2,12 +2,12 @@
 
 mod ast;
 mod egg_error;
+mod lexer;
+mod lexer_util;
 mod meta_parse;
 mod parser;
 mod source;
 mod token;
-mod tokenizer;
-mod tokenizer_util;
 
 use egg_error::*;
 use std::path::PathBuf;
@@ -20,8 +20,8 @@ fn main() -> Result<()> {
     ))?;
 
     for source in source_manager.files.iter() {
-        let tokenizer = tokenizer_util::Tokenizer::new();
-        let tokens = tokenizer.tokenize(source)?;
+        let lexer = lexer_util::Lexer::new();
+        let tokens = lexer.tokenize(source)?;
 
         println!(
             "==========\n= Tokens =\n==========\n---\n - {}\n",

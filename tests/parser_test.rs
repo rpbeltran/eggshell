@@ -1,6 +1,6 @@
 use eggshell::egg_error::*;
+use eggshell::lexer_util::Lexer;
 use eggshell::parser;
-use eggshell::tokenizer_util::Tokenizer;
 
 mod common;
 use common::*;
@@ -14,15 +14,14 @@ fn check_parser() -> Result<()> {
         if let Some(expected_syntax_tree) = &test_case.expected_syntax_tree {
             let file = suite.source_manager.get_file(test_case.file_id)?;
 
-            let tokenizer = Tokenizer::new();
-            let tokens =
-                tokenizer
-                    .tokenize(&file)
-                    .map_err(|e| EggError::TestCaseFailedWithError {
-                        test_file: test_case.file.clone(),
-                        test_number: test_number,
-                        error: Box::new(e),
-                    })?;
+            let lexer = Lexer::new();
+            let tokens = lexer
+                .tokenize(&file)
+                .map_err(|e| EggError::TestCaseFailedWithError {
+                    test_file: test_case.file.clone(),
+                    test_number: test_number,
+                    error: Box::new(e),
+                })?;
 
             let mut token_infos: Vec<TokenInfo> = Vec::new();
             for token in tokens.iter() {
