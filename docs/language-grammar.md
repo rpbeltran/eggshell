@@ -17,7 +17,6 @@
 
 # Grammar
 
-// todo: refactor to accept empty programs
 program := exec_chain*
 
 ## Pipelines

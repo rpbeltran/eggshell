@@ -347,7 +347,6 @@ impl Rule {
 
     /// Match this concatenated with another rule.
     pub fn then(mut self, mut rule: Rule) -> Self {
-        //todo: unit test this function more
         // new_blocks : [ old_blocks | new_blocks | seq? ]
 
         let old_len = self.blocks.len();
