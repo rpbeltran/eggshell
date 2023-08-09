@@ -17,6 +17,15 @@ jobs:
     - name: Build
       run: cargo build --verbose
 
+  warn:
+    runs-on: ubuntu-latest
+    env:
+      RUSTFLAGS: -D warnings
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build
+      run: cargo build --verbose
+
   test:
     runs-on: ubuntu-latest
     steps:
