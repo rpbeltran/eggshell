@@ -1,4 +1,3 @@
-#![allow(dead_code)]
 use crate::lexer_util::*;
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]

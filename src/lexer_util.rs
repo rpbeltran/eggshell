@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 use regex::Regex;
 
 use crate::egg_error::*;
@@ -7,21 +5,8 @@ use crate::lexer::*;
 use crate::source::*;
 use crate::token::Token;
 
-pub enum QuoteType {
-    /// Quoted with double quotes.
-    Single,
-    /// Quoted with single quotes.
-    Double,
-    /// Quoted with backticks.
-    Back,
-}
-
 pub struct Lexer {
     pub patterns: Vec<(Lexeme, Regex)>,
-}
-
-struct LexerState<'s> {
-    input_suffix: std::str::Chars<'s>,
 }
 
 impl Lexer {
