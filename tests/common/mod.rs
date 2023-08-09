@@ -1,4 +1,5 @@
 #![allow(dead_code)]
+use eggshell::ast::Ast;
 use eggshell::source::SourceFile;
 
 use std::fmt;
@@ -9,6 +10,7 @@ use std::path::PathBuf;
 
 use eggshell::egg_error::*;
 use eggshell::source;
+use eggshell::token::Token;
 
 extern crate yaml_rust;
 
@@ -64,8 +66,12 @@ impl TestSuite {
             .read_to_string(&mut file_buf)
             .map_err(EggError::TestLineReadFailed)?;
 
-        let test_docs =
-            yaml_rust::YamlLoader::load_from_str(&file_buf).map_err(EggError::TestYamlError)?;
+        let test_docs = yaml_rust::YamlLoader::load_from_str(&file_buf).map_err(|e| {
+            EggError::TestYamlError {
+                file: test_file.clone(),
+                line: e.marker().line(),
+            }
+        })?;
 
         let tests = test_docs[0].as_vec().ok_or(EggError::TestYamlLineError)?;
 
@@ -172,4 +178,28 @@ pub fn raise_internal_test_error(
 /// Returns true iff the vectors are equal length and associated items are equal.
 pub fn vecs_equal<T: std::cmp::PartialEq>(a: &Vec<T>, b: &Vec<T>) -> bool {
     (a.len() == b.len()) && (0..a.len()).all(|i| a[i] == b[i])
+}
+
+/// Serialize abstract syntax tree to a vector of YAML node.
+pub fn ast_to_yaml(
+    ast: &Ast,
+    tokens: &[Token],
+    source_manager: &source::SourceManager,
+) -> Result<yaml_rust::Yaml> {
+    let as_string = ast.to_string(tokens, source_manager)?;
+    let as_yaml = yaml_rust::YamlLoader::load_from_str(as_string.as_str()).expect("");
+    Ok(as_yaml[0].clone()) // todo: get rid of the need for this clone
+}
+
+/// Serialize abstract syntax tree to a string then to a YAML node and then back to a string.
+pub fn ast_to_string_standardized(
+    ast: &Ast,
+    tokens: &[Token],
+    source_manager: &source::SourceManager,
+) -> Result<String> {
+    let mut as_yaml = String::new();
+    yaml_rust::YamlEmitter::new(&mut as_yaml)
+        .dump(&ast_to_yaml(&ast, tokens, source_manager)?)
+        .unwrap();
+    Ok(as_yaml)
 }

@@ -39,7 +39,8 @@ fn check_parser() -> Result<()> {
 
             let mut parser = parser::Parser::new();
             let ast = parser.parse(&tokens)?;
-            let syntax_tree_yaml = ast.to_string_standardized(&tokens, &suite.source_manager)?;
+            let syntax_tree_yaml =
+                ast_to_string_standardized(&ast, &tokens, &suite.source_manager)?;
 
             if &syntax_tree_yaml != expected_syntax_tree {
                 return raise_test_error(

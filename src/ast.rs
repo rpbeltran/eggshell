@@ -2,8 +2,6 @@ use std::collections::VecDeque;
 
 use std::fmt::Write;
 
-extern crate yaml_rust;
-
 use crate::egg_error::*;
 use crate::parser::Symbol;
 use crate::source::SourceManager;
@@ -122,30 +120,5 @@ impl Ast {
             }
         }
         Ok(buffer)
-    }
-
-    /// Serialize abstract syntax tree to a vector of YAML node.
-    pub fn to_yaml(
-        &self,
-        tokens: &[Token],
-        source_manager: &SourceManager,
-    ) -> Result<yaml_rust::Yaml> {
-        let as_string = self.to_string(tokens, source_manager)?;
-        let as_yaml = yaml_rust::YamlLoader::load_from_str(as_string.as_str()).expect("");
-        Ok(as_yaml[0].clone()) // todo: get rid of the need for this clone
-    }
-
-    /// Serialize abstract syntax tree to a string then to a YAML node and then back to a string.
-    /// This should normally not be used outside of tests comparing the output to generated yaml.
-    pub fn to_string_standardized(
-        &self,
-        tokens: &[Token],
-        source_manager: &SourceManager,
-    ) -> Result<String> {
-        let mut as_yaml = String::new();
-        yaml_rust::YamlEmitter::new(&mut as_yaml)
-            .dump(&self.to_yaml(tokens, source_manager)?)
-            .unwrap();
-        Ok(as_yaml)
     }
 }

@@ -6,8 +6,6 @@ use crate::parser;
 use crate::source;
 use crate::token::Token;
 
-extern crate yaml_rust;
-
 pub type Result<T> = std::result::Result<T, EggError>;
 
 #[derive(Debug)]
@@ -46,7 +44,10 @@ pub enum EggError {
     TestFileNotFound(io::Error),
     TestSourceManagerFileIndexNotFound(usize),
     TestLineReadFailed(io::Error),
-    TestYamlError(yaml_rust::ScanError),
+    TestYamlError {
+        file: PathBuf,
+        line: usize,
+    },
     TestYamlLineError,
     TestCaseFailedWithError {
         test_file: PathBuf,

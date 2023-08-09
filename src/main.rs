@@ -35,7 +35,7 @@ fn main() -> Result<()> {
 
         println!(
             "===============\n= Syntax Tree =\n===============\n{}",
-            ast.to_string_standardized(&tokens, &source_manager)?
+            ast.to_string(&tokens, &source_manager)?
         );
     }
 
