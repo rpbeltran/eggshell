@@ -15,7 +15,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build
-      run: cargo build --verbose
+      run: cargo build --workspace --verbose
 
   warn:
     runs-on: ubuntu-latest
@@ -24,25 +24,25 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build with -D warnings
-      run: cargo build --verbose
+      run: cargo build --workspace --verbose
 
   test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - name: Run tests
-      run: cargo test --verbose
+      run: cargo test --workspace --verbose
 
   lint:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - name: Run linters
-      run: cargo clippy
+      run: cargo clippy --workspace
   
   format:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - name: Run fmt
-      run: cargo fmt -- --check 
+      run: cargo fmt --check --all
