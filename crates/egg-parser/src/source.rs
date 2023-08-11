@@ -4,7 +4,7 @@ use std::fs::File;
 use std::io::prelude::Read;
 use std::path::PathBuf;
 
-use crate::egg_error::*;
+use crate::errors::*;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct SourceLocation {
@@ -57,9 +57,9 @@ impl SourceFile {
     fn read_file(file_path: &PathBuf) -> Result<String> {
         let mut buf: String = String::new();
         File::open(file_path)
-            .map_err(EggError::FileNotFound)?
+            .map_err(Error::FileNotFound)?
             .read_to_string(&mut buf)
-            .map_err(EggError::LineReadFailed)?;
+            .map_err(Error::LineReadFailed)?;
         if !buf.ends_with('\n') {
             buf += "\n";
         }
@@ -75,14 +75,14 @@ impl SourceFile {
             let col = offset - self.line_indexes[line];
             Ok((line, col))
         } else {
-            Err(EggError::OffsetOutOfBounds(offset))
+            Err(Error::OffsetOutOfBounds(offset))
         }
     }
 
     /// Attempts to fetch the text corresponding to a SourceSlice within this file.
     pub fn get_slice(&self, slice: &SourceSlice) -> Result<String> {
         if slice.end < slice.start {
-            Err(EggError::SliceOutOfBounds(slice.clone()))
+            Err(Error::SliceOutOfBounds(slice.clone()))
         } else {
             Ok(self
                 .contents
@@ -112,7 +112,7 @@ impl SourceManager {
     pub fn get_file(&self, id: usize) -> Result<&SourceFile> {
         self.files
             .get(id)
-            .ok_or(EggError::TestSourceManagerFileIndexNotFound(id))
+            .ok_or(Error::TestSourceManagerFileIndexNotFound(id))
     }
 
     /// Load a new file into the file manager.
@@ -126,7 +126,7 @@ impl SourceManager {
     pub fn get_slice(&self, slice: &SourceSlice) -> Result<String> {
         self.files
             .get(slice.file_id)
-            .ok_or_else(|| EggError::SliceOutOfBounds(slice.clone()))?
+            .ok_or_else(|| Error::SliceOutOfBounds(slice.clone()))?
             .get_slice(slice)
     }
 }

@@ -1,6 +1,6 @@
 use regex::Regex;
 
-use crate::egg_error::*;
+use crate::errors::*;
 use crate::lexer::*;
 use crate::source::*;
 use crate::token::Token;
@@ -69,7 +69,7 @@ impl Lexer {
                     end: end_pos - 1,
                 },
             }),
-            _ => Err(EggError::LexerCouldNotCreateToken(SourceLocation {
+            _ => Err(Error::LexerCouldNotCreateToken(SourceLocation {
                 file_id: source_file.file_id,
                 offset: search_from,
             })),

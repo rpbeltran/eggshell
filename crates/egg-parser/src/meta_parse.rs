@@ -5,7 +5,7 @@ use std::collections::VecDeque;
 use std::fmt::Write;
 
 use crate::ast::*;
-use crate::egg_error::*;
+use crate::errors::*;
 use crate::lexer::Lexeme;
 use crate::parser::*;
 use crate::token::Token;
@@ -51,15 +51,15 @@ impl Parser {
         let entry_rule = self
             .rules
             .get(&self.entry)
-            .ok_or(EggError::ParserTriedToBuildSymbolWithNoRule(self.entry))?;
+            .ok_or(Error::ParserTriedToBuildSymbolWithNoRule(self.entry))?;
         if let Some((head, ast)) = self.meta_parse(&self.entry, entry_rule, 0, tokens)? {
             match head.cmp(&tokens.len()) {
                 Ordering::Equal => Ok(ast),
-                Ordering::Less => Err(EggError::ParserUnexpectedToken(tokens[head].clone())),
-                Ordering::Greater => Err(EggError::ParserHeadPastLastToken),
+                Ordering::Less => Err(Error::ParserUnexpectedToken(tokens[head].clone())),
+                Ordering::Greater => Err(Error::ParserHeadPastLastToken),
             }
         } else {
-            Err(EggError::ParserCouldNotParseProgram)
+            Err(Error::ParserCouldNotParseProgram)
         }
     }
 
@@ -120,7 +120,7 @@ impl Parser {
         };
 
         if !self.rules.contains_key(symbol) {
-            Err(EggError::ParserTriedToBuildSymbolWithNoRule(*symbol))
+            Err(Error::ParserTriedToBuildSymbolWithNoRule(*symbol))
         } else if let Some((new_head, child_ast)) =
             self.meta_parse(symbol, self.rules.get(symbol).unwrap(), head, tokens)?
         {
@@ -541,7 +541,7 @@ impl Rule {
             let node = self
                 .blocks
                 .get(node_id)
-                .ok_or(EggError::ParserTreeNodeOutOfBounds)?;
+                .ok_or(Error::ParserTreeNodeOutOfBounds)?;
             let indent = " ".repeat(depth * 2) + "- ";
 
             let children = match node {

@@ -1,6 +1,6 @@
 #![allow(dead_code)]
-use eggshell::ast::Ast;
-use eggshell::source::SourceFile;
+use egg_parser::ast::Ast;
+use egg_parser::source::SourceFile;
 
 use std::fmt;
 use std::fs;
@@ -8,9 +8,9 @@ use std::fs;
 use std::io::prelude::*;
 use std::path::PathBuf;
 
-use eggshell::egg_error::*;
-use eggshell::source;
-use eggshell::token::Token;
+use egg_parser::errors::*;
+use egg_parser::source;
+use egg_parser::token::Token;
 
 extern crate yaml_rust;
 
@@ -49,8 +49,8 @@ impl TestSuite {
 
     /// Load all testcases into the suite.
     pub fn load_tests(&mut self) -> Result<()> {
-        for result in fs::read_dir("tests/data").map_err(|e| EggError::FileReadError(e))? {
-            let path = &result.map_err(|e| EggError::FileReadError(e))?.path();
+        for result in fs::read_dir("tests/data").map_err(|e| Error::FileReadError(e))? {
+            let path = &result.map_err(|e| Error::FileReadError(e))?.path();
             if path.to_string_lossy().ends_with(".yaml") {
                 self.parse_yaml_tests(path)?;
             }
@@ -62,25 +62,24 @@ impl TestSuite {
     fn parse_yaml_tests(&mut self, test_file: &PathBuf) -> Result<()> {
         let mut file_buf: String = String::new();
         fs::File::open(test_file.clone())
-            .map_err(EggError::TestFileNotFound)?
+            .map_err(Error::TestFileNotFound)?
             .read_to_string(&mut file_buf)
-            .map_err(EggError::TestLineReadFailed)?;
+            .map_err(Error::TestLineReadFailed)?;
 
-        let test_docs = yaml_rust::YamlLoader::load_from_str(&file_buf).map_err(|e| {
-            EggError::TestYamlError {
+        let test_docs =
+            yaml_rust::YamlLoader::load_from_str(&file_buf).map_err(|e| Error::TestYamlError {
                 file: test_file.clone(),
                 line: e.marker().line(),
-            }
-        })?;
+            })?;
 
-        let tests = test_docs[0].as_vec().ok_or(EggError::TestYamlLineError)?;
+        let tests = test_docs[0].as_vec().ok_or(Error::TestYamlLineError)?;
 
         for (test_num, test) in tests.iter().enumerate() {
             let input = test["input"]
                 .as_vec()
-                .ok_or(EggError::TestYamlLineError)?
+                .ok_or(Error::TestYamlLineError)?
                 .iter()
-                .map(|x| x.as_str().ok_or(EggError::TestYamlLineError))
+                .map(|x| x.as_str().ok_or(Error::TestYamlLineError))
                 .collect::<Result<Vec<&str>>>()?
                 .join("\n")
                 + "\n";
@@ -149,7 +148,7 @@ pub fn raise_test_error(
         error,
         test_suite.source_manager.get_file(test_case.file_id)?.contents
     );
-    Err(EggError::TestCaseFailedAssertion {
+    Err(Error::TestCaseFailedAssertion {
         test_file: test_case.file.clone(),
         test_number,
         error,
@@ -166,7 +165,7 @@ pub fn raise_internal_test_error(
         "\n------------------\n{}Test Case Failed!!!!\nTest {}\n{}\n------------------\n",
         category, test_number, error,
     );
-    Err(EggError::InternalTestCaseFailedAssertion {
+    Err(Error::InternalTestCaseFailedAssertion {
         category: "Meta Parse".into(),
         test_number,
         error,

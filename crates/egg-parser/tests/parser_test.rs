@@ -1,6 +1,6 @@
-use eggshell::egg_error::*;
-use eggshell::lexer_util::Lexer;
-use eggshell::parser;
+use egg_parser::errors::*;
+use egg_parser::lexer_util::Lexer;
+use egg_parser::parser;
 
 mod common;
 use common::*;
@@ -17,7 +17,7 @@ fn check_parser() -> Result<()> {
             let lexer = Lexer::new();
             let tokens = lexer
                 .tokenize(&file)
-                .map_err(|e| EggError::TestCaseFailedWithError {
+                .map_err(|e| Error::TestCaseFailedWithError {
                     test_file: test_case.file.clone(),
                     test_number: test_number,
                     error: Box::new(e),
@@ -28,7 +28,7 @@ fn check_parser() -> Result<()> {
                 token_infos.push(TokenInfo {
                     lexeme_name: format!("{:?}", token.lexeme),
                     contents: file.get_slice(&token.location).map_err(|e| {
-                        EggError::TestCaseFailedWithError {
+                        Error::TestCaseFailedWithError {
                             test_file: test_case.file.clone(),
                             test_number: test_number,
                             error: Box::new(e),

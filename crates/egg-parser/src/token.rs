@@ -1,4 +1,4 @@
-use crate::egg_error::*;
+use crate::errors::*;
 use crate::lexer::Lexeme;
 use crate::source;
 

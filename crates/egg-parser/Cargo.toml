@@ -1,0 +1,11 @@
+[package]
+name = "egg-parser"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+"regex" = "1"
+
+[dev-dependencies]
+yaml-rust = "0.4"
+indoc = "2"

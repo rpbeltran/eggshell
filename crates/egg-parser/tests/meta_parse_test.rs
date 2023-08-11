@@ -2,10 +2,10 @@ mod common;
 
 use indoc::indoc;
 
-use eggshell::egg_error::*;
-use eggshell::lexer::Lexeme;
-use eggshell::meta_parse::*;
-use eggshell::parser::Symbol;
+use egg_parser::errors::*;
+use egg_parser::lexer::Lexeme;
+use egg_parser::meta_parse::*;
+use egg_parser::parser::Symbol;
 
 #[test]
 fn check_meta_parser() -> Result<()> {

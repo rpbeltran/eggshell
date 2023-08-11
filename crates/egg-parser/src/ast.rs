@@ -2,7 +2,7 @@ use std::collections::VecDeque;
 
 use std::fmt::Write;
 
-use crate::egg_error::*;
+use crate::errors::*;
 use crate::parser::Symbol;
 use crate::source::SourceManager;
 use crate::token::Token;
@@ -22,21 +22,19 @@ pub struct AstNode {
 impl Ast {
     /// Returns a reference to the AST's root node, or an error if none exists.
     pub fn get_root(&self) -> Result<&AstNode> {
-        self.nodes.get(0).ok_or(EggError::ParserTreeHasNoRootNode)
+        self.nodes.get(0).ok_or(Error::ParserTreeHasNoRootNode)
     }
 
     /// Returns a reference to the AST's root node, or an error if none exists.
     pub fn get_root_mut(&mut self) -> Result<&mut AstNode> {
-        self.nodes
-            .get_mut(0)
-            .ok_or(EggError::ParserTreeHasNoRootNode)
+        self.nodes.get_mut(0).ok_or(Error::ParserTreeHasNoRootNode)
     }
 
     /// Add all the nodes in a syntax tree to this tree.
     /// Make the root of the tree being added a child of the current tree's root.
     pub fn hang_child(mut self, mut child_tree: Ast) -> Result<Self> {
         if matches!(child_tree.get_root()?.symbol, Symbol::_Placeholder) {
-            return Err(EggError::ParserReceivedPlaceholder);
+            return Err(Error::ParserReceivedPlaceholder);
         }
         let current_size = self.nodes.len();
         child_tree.offset_ids(current_size);
@@ -49,7 +47,7 @@ impl Ast {
     /// Make the root of the tree being added a child of the current tree's root.
     pub fn hang_from_placeholder(mut self, mut child_tree: Ast) -> Result<Self> {
         if !matches!(child_tree.get_root()?.symbol, Symbol::_Placeholder) {
-            return Err(EggError::ParserExpectedPlaceholder);
+            return Err(Error::ParserExpectedPlaceholder);
         }
         child_tree.offset_ids(self.nodes.len() - 1);
         let mut child_root = child_tree.nodes.remove(0);
@@ -87,18 +85,18 @@ impl Ast {
             let node = self
                 .nodes
                 .get(node_id)
-                .ok_or(EggError::ParserTreeNodeOutOfBounds)?;
+                .ok_or(Error::ParserTreeNodeOutOfBounds)?;
             let children = &self
                 .nodes
                 .get(node_id)
-                .ok_or(EggError::ParserTreeHasNoRootNode)?
+                .ok_or(Error::ParserTreeHasNoRootNode)?
                 .children;
             let indent = " ".repeat(depth * 2) + "- ";
             match node.symbol {
                 Symbol::Lexeme => {
                     let tok = tokens
-                        .get(node.token.ok_or(EggError::ParserLexemeNodeMissingToken)?)
-                        .ok_or(EggError::ParserTokenOutOfBounds)?;
+                        .get(node.token.ok_or(Error::ParserLexemeNodeMissingToken)?)
+                        .ok_or(Error::ParserTokenOutOfBounds)?;
                     writeln!(&mut buffer, "{indent}{:?}:", tok.lexeme).unwrap();
                     writeln!(
                         &mut buffer,

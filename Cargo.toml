@@ -4,9 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+egg-parser = { path = "./crates/egg-parser" }
 clap = { version = "4.3.21", features = ["derive", "wrap_help"] }
-"regex" = "1"
 
-[dev-dependencies]
-yaml-rust = "0.4"
-indoc = "2"
+[workspace]
+members = [
+    "crates/egg-parser",
+]

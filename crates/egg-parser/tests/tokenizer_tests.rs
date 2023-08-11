@@ -1,8 +1,8 @@
 mod common;
 
 use common::*;
-use eggshell::egg_error::*;
-use eggshell::lexer_util::Lexer;
+use egg_parser::errors::*;
+use egg_parser::lexer_util::Lexer;
 
 #[test]
 fn check_tokens() -> Result<()> {
@@ -15,7 +15,7 @@ fn check_tokens() -> Result<()> {
             let file = suite.source_manager.get_file(test_case.file_id)?;
             let tokens = lexer
                 .tokenize(&file)
-                .map_err(|e| EggError::TestCaseFailedWithError {
+                .map_err(|e| Error::TestCaseFailedWithError {
                     test_file: test_case.file.clone(),
                     test_number: test_number,
                     error: Box::new(e),
@@ -26,7 +26,7 @@ fn check_tokens() -> Result<()> {
                 token_infos.push(common::TokenInfo {
                     lexeme_name: format!("{:?}", token.lexeme),
                     contents: file.get_slice(&token.location).map_err(|e| {
-                        EggError::TestCaseFailedWithError {
+                        Error::TestCaseFailedWithError {
                             test_file: test_case.file.clone(),
                             test_number: test_number,
                             error: Box::new(e),
