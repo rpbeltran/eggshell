@@ -1,6 +1,7 @@
 [package]
 name = "eggshell"
 version = "0.1.0"
+authors = ["Ryan Beltran"]
 edition = "2021"
 
 [dependencies]
