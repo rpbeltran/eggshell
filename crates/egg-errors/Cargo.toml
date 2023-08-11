@@ -1,0 +1,7 @@
+[package]
+name = "egg-errors"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+egg-parser = { path = "../egg-parser" }
