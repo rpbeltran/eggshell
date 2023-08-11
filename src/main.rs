@@ -4,8 +4,8 @@ use std::path::PathBuf;
 
 use egg_parser::ast::Ast;
 use egg_parser::lexer_util::Lexer;
-use egg_source::source_manager::SourceManager;
 use egg_parser::token::Token;
+use egg_source::source_manager::SourceManager;
 
 use clap::Parser;
 
