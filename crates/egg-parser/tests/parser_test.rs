@@ -12,7 +12,10 @@ fn check_parser() -> Result<()> {
 
     for (test_number, test_case) in suite.test_cases.iter().enumerate() {
         if let Some(expected_syntax_tree) = &test_case.expected_syntax_tree {
-            let file = suite.source_manager.get_file(test_case.file_id)?;
+            let file = suite
+                .source_manager
+                .get_file(test_case.file_id)
+                .map_err(Error::SourceError)?;
 
             let lexer = Lexer::new();
             let tokens = lexer
@@ -31,7 +34,7 @@ fn check_parser() -> Result<()> {
                         Error::TestCaseFailedWithError {
                             test_file: test_case.file.clone(),
                             test_number: test_number,
-                            error: Box::new(e),
+                            error: Box::new(Error::SourceError(e)),
                         }
                     })?,
                 });

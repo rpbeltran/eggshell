@@ -2,9 +2,10 @@ use std::collections::VecDeque;
 
 use std::fmt::Write;
 
+use egg_source::source_manager::SourceManager;
+
 use crate::errors::*;
 use crate::parser::Symbol;
-use crate::source::SourceManager;
 use crate::token::Token;
 
 #[derive(Debug)]

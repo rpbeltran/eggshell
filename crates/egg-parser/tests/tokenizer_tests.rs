@@ -12,7 +12,10 @@ fn check_tokens() -> Result<()> {
     let lexer = Lexer::new();
     for (test_number, test_case) in suite.test_cases.iter().enumerate() {
         if let Some(expected) = &test_case.expected_tokens {
-            let file = suite.source_manager.get_file(test_case.file_id)?;
+            let file = suite
+                .source_manager
+                .get_file(test_case.file_id)
+                .map_err(Error::SourceError)?;
             let tokens = lexer
                 .tokenize(&file)
                 .map_err(|e| Error::TestCaseFailedWithError {
@@ -29,7 +32,7 @@ fn check_tokens() -> Result<()> {
                         Error::TestCaseFailedWithError {
                             test_file: test_case.file.clone(),
                             test_number: test_number,
-                            error: Box::new(e),
+                            error: Box::new(Error::SourceError(e)),
                         }
                     })?,
                 });

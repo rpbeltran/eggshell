@@ -4,7 +4,7 @@ use std::path::PathBuf;
 
 use egg_parser::ast::Ast;
 use egg_parser::lexer_util::Lexer;
-use egg_parser::source::SourceManager;
+use egg_source::source_manager::SourceManager;
 use egg_parser::token::Token;
 
 use clap::Parser;
@@ -18,18 +18,22 @@ fn main() -> egg_errors::Result<()> {
         .load_file(PathBuf::from(
             "/Users/ryanbeltran/Development/eggshell/examples/split.egg",
         ))
-        .map_err(egg_errors::Error::ParserError)?;
+        .map_err(egg_errors::Error::SourceError)?;
 
     for source in source_manager.files.iter() {
         let lexer = Lexer::new();
-        let tokens = lexer.tokenize(source).map_err(egg_errors::Error::ParserError)?;
+        let tokens = lexer
+            .tokenize(source)
+            .map_err(egg_errors::Error::ParserError)?;
 
         if args.show_lexer {
             show_tokens(&tokens, &source_manager)?;
         }
 
         let mut parser = egg_parser::parser::Parser::new();
-        let ast = parser.parse(&tokens).map_err(egg_errors::Error::ParserError)?;
+        let ast = parser
+            .parse(&tokens)
+            .map_err(egg_errors::Error::ParserError)?;
 
         if args.show_ast {
             show_ast(&ast, &tokens, &source_manager)?;

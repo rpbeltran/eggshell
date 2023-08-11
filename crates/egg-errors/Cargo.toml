@@ -5,3 +5,4 @@ edition = "2021"
 
 [dependencies]
 egg-parser = { path = "../egg-parser" }
+egg-source = { path = "../egg-source" }

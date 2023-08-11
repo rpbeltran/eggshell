@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+egg-source = { path = "../egg-source" }
 "regex" = "1"
 
 [dev-dependencies]

@@ -134,16 +134,22 @@ name = "egg-errors"
 version = "0.1.0"
 dependencies = [
  "egg-parser",
+ "egg-source",
 ]
 
 [[package]]
 name = "egg-parser"
 version = "0.1.0"
 dependencies = [
+ "egg-source",
  "indoc",
  "regex",
  "yaml-rust",
 ]
+
+[[package]]
+name = "egg-source"
+version = "0.1.0"
 
 [[package]]
 name = "eggshell"
@@ -152,6 +158,7 @@ dependencies = [
  "clap",
  "egg-errors",
  "egg-parser",
+ "egg-source",
 ]
 
 [[package]]

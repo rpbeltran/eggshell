@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 use egg_parser::ast::Ast;
-use egg_parser::source::SourceFile;
+use egg_source::source_file::SourceFile;
+use egg_source::source_manager::SourceManager;
 
 use std::fmt;
 use std::fs;
@@ -9,7 +10,6 @@ use std::io::prelude::*;
 use std::path::PathBuf;
 
 use egg_parser::errors::*;
-use egg_parser::source;
 use egg_parser::token::Token;
 
 extern crate yaml_rust;
@@ -27,7 +27,7 @@ impl fmt::Debug for TokenInfo {
 }
 
 pub struct TestSuite {
-    pub source_manager: source::SourceManager,
+    pub source_manager: SourceManager,
     pub test_cases: Vec<TestCase>,
 }
 
@@ -41,7 +41,7 @@ pub struct TestCase {
 impl TestSuite {
     pub fn new() -> Self {
         let suite = TestSuite {
-            source_manager: source::SourceManager::new(),
+            source_manager: SourceManager::new(),
             test_cases: Vec::new(),
         };
         suite
@@ -109,10 +109,6 @@ impl TestSuite {
                 char_count,
             });
 
-            self.source_manager
-                .file_paths
-                .push(PathBuf::from(test_num.to_string()));
-
             self.test_cases.push(TestCase {
                 file: test_file.clone(),
                 file_id: test_num,
@@ -146,7 +142,7 @@ pub fn raise_test_error(
         test_number,
         test_case.file.clone().to_string_lossy(),
         error,
-        test_suite.source_manager.get_file(test_case.file_id)?.contents
+        test_suite.source_manager.get_file(test_case.file_id).map_err(Error::SourceError)?.contents
     );
     Err(Error::TestCaseFailedAssertion {
         test_file: test_case.file.clone(),
@@ -183,7 +179,7 @@ pub fn vecs_equal<T: std::cmp::PartialEq>(a: &Vec<T>, b: &Vec<T>) -> bool {
 pub fn ast_to_yaml(
     ast: &Ast,
     tokens: &[Token],
-    source_manager: &source::SourceManager,
+    source_manager: &SourceManager,
 ) -> Result<yaml_rust::Yaml> {
     let as_string = ast.to_string(tokens, source_manager)?;
     let as_yaml = yaml_rust::YamlLoader::load_from_str(as_string.as_str()).expect("");
@@ -194,7 +190,7 @@ pub fn ast_to_yaml(
 pub fn ast_to_string_standardized(
     ast: &Ast,
     tokens: &[Token],
-    source_manager: &source::SourceManager,
+    source_manager: &SourceManager,
 ) -> Result<String> {
     let mut as_yaml = String::new();
     yaml_rust::YamlEmitter::new(&mut as_yaml)

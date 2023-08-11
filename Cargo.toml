@@ -6,10 +6,12 @@ edition = "2021"
 [dependencies]
 egg-parser = { path = "./crates/egg-parser" }
 egg-errors = { path = "./crates/egg-errors" }
+egg-source = { path = "./crates/egg-source" }
 clap = { version = "4.3.21", features = ["derive", "wrap_help"] }
 
 [workspace]
 members = [
     "crates/egg-parser",
     "crates/egg-errors",
+    "crates/egg-source",
 ]

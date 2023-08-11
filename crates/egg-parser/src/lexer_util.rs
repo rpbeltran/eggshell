@@ -2,8 +2,9 @@ use regex::Regex;
 
 use crate::errors::*;
 use crate::lexer::*;
-use crate::source::*;
 use crate::token::Token;
+use egg_source::location::*;
+use egg_source::source_file::SourceFile;
 
 pub struct Lexer {
     pub patterns: Vec<(Lexeme, Regex)>,

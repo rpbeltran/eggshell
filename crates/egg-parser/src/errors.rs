@@ -2,8 +2,9 @@
 
 use std::{io, path::PathBuf};
 
+use egg_source::location::SourceLocation;
+
 use crate::parser;
-use crate::source;
 use crate::token::Token;
 
 pub type Result<T> = std::result::Result<T, Error>;
@@ -15,17 +16,14 @@ pub enum Error {
     NotImplementedYet,
 
     // Internal Source Managment Errors
-    LineReadFailed(io::Error),
-    SpanOutOfBounds(source::Span),
-    LocationOutOfBounds(source::SourceLocation),
-    OffsetOutOfBounds(usize),
+    SourceError(egg_source::errors::Error),
 
     // Invocation Errors
     FileNotFound(io::Error),
     FileReadError(io::Error),
 
     // Lexer Errors
-    LexerCouldNotCreateToken(source::SourceLocation),
+    LexerCouldNotCreateToken(SourceLocation),
 
     // Parser Errors
     ParserTokenOutOfBounds,
@@ -42,7 +40,6 @@ pub enum Error {
 
     // Testing Errors
     TestFileNotFound(io::Error),
-    TestSourceManagerFileIndexNotFound(usize),
     TestLineReadFailed(io::Error),
     TestYamlError {
         file: PathBuf,
