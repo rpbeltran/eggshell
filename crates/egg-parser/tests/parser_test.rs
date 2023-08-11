@@ -27,7 +27,7 @@ fn check_parser() -> Result<()> {
             for token in tokens.iter() {
                 token_infos.push(TokenInfo {
                     lexeme_name: format!("{:?}", token.lexeme),
-                    contents: file.get_slice(&token.location).map_err(|e| {
+                    contents: file.get_text(&token.location).map_err(|e| {
                         Error::TestCaseFailedWithError {
                             test_file: test_case.file.clone(),
                             test_number: test_number,

@@ -5,7 +5,7 @@ use crate::source;
 #[derive(Clone, Debug)]
 pub struct Token {
     pub lexeme: Lexeme,
-    pub location: source::SourceSlice,
+    pub location: source::Span,
 }
 
 impl Token {
@@ -18,6 +18,6 @@ impl Token {
     }
 
     pub fn get_contents(&self, source_manager: &source::SourceManager) -> Result<String> {
-        source_manager.get_slice(&self.location)
+        source_manager.get_text(&self.location)
     }
 }

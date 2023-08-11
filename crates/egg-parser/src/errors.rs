@@ -16,7 +16,7 @@ pub enum Error {
 
     // Internal Source Managment Errors
     LineReadFailed(io::Error),
-    SliceOutOfBounds(source::SourceSlice),
+    SpanOutOfBounds(source::Span),
     LocationOutOfBounds(source::SourceLocation),
     OffsetOutOfBounds(usize),
 

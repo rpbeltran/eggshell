@@ -63,7 +63,7 @@ impl Lexer {
         match best_match {
             Some((lexeme, end_pos)) => Ok(Token {
                 lexeme: *lexeme,
-                location: SourceSlice {
+                location: Span {
                     file_id: source_file.file_id,
                     start: search_from,
                     end: end_pos - 1,

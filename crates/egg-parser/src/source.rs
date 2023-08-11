@@ -15,11 +15,11 @@ pub struct SourceLocation {
 /// Denotes a slice of charecters from a source file.
 /// Both start and end are inclusive.
 #[derive(Debug, Clone)]
-pub struct SourceSlice {
+pub struct Span {
     pub file_id: usize,
-    /// Offset of first char in slice (inclusive).
+    /// Offset of first char in span (inclusive).
     pub start: usize,
-    /// Offset of last char in slice (inclusive).
+    /// Offset of last char in span (inclusive).
     pub end: usize,
 }
 
@@ -79,16 +79,16 @@ impl SourceFile {
         }
     }
 
-    /// Attempts to fetch the text corresponding to a SourceSlice within this file.
-    pub fn get_slice(&self, slice: &SourceSlice) -> Result<String> {
-        if slice.end < slice.start {
-            Err(Error::SliceOutOfBounds(slice.clone()))
+    /// Attempts to fetch the text corresponding to a Span within this file.
+    pub fn get_text(&self, span: &Span) -> Result<String> {
+        if span.end < span.start {
+            Err(Error::SpanOutOfBounds(span.clone()))
         } else {
             Ok(self
                 .contents
                 .chars()
-                .skip(slice.start)
-                .take(slice.end - slice.start + 1)
+                .skip(span.start)
+                .take(span.end - span.start + 1)
                 .collect())
         }
     }
@@ -122,11 +122,11 @@ impl SourceManager {
         Ok(())
     }
 
-    /// Attempts to fetch the text corresponding to the SourceSlice.
-    pub fn get_slice(&self, slice: &SourceSlice) -> Result<String> {
+    /// Attempts to fetch the text corresponding to the Span.
+    pub fn get_text(&self, span: &Span) -> Result<String> {
         self.files
-            .get(slice.file_id)
-            .ok_or_else(|| Error::SliceOutOfBounds(slice.clone()))?
-            .get_slice(slice)
+            .get(span.file_id)
+            .ok_or_else(|| Error::SpanOutOfBounds(span.clone()))?
+            .get_text(span)
     }
 }
