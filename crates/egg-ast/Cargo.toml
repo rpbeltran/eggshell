@@ -1,0 +1,8 @@
+[package]
+name = "egg-ast"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+egg-grammar = { path = "../egg-grammar" }
+egg-source = { path = "../egg-source" }

@@ -130,17 +130,32 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "acbf1af155f9b9ef647e42cdc158db4b64a1b61f743629225fde6f3e0be2a7c7"
 
 [[package]]
+name = "egg-ast"
+version = "0.1.0"
+dependencies = [
+ "egg-grammar",
+ "egg-source",
+]
+
+[[package]]
 name = "egg-errors"
 version = "0.1.0"
 dependencies = [
+ "egg-ast",
  "egg-parser",
  "egg-source",
 ]
 
 [[package]]
+name = "egg-grammar"
+version = "0.1.0"
+
+[[package]]
 name = "egg-parser"
 version = "0.1.0"
 dependencies = [
+ "egg-ast",
+ "egg-grammar",
  "egg-source",
  "indoc",
  "regex",
@@ -151,19 +166,24 @@ dependencies = [
 name = "egg-sema"
 version = "0.1.0"
 dependencies = [
- "egg-parser",
+ "egg-ast",
 ]
 
 [[package]]
 name = "egg-source"
 version = "0.1.0"
+dependencies = [
+ "egg-grammar",
+]
 
 [[package]]
 name = "eggshell"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "egg-ast",
  "egg-errors",
+ "egg-grammar",
  "egg-parser",
  "egg-sema",
  "egg-source",

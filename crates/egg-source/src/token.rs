@@ -1,7 +1,7 @@
 use crate::errors::*;
-use crate::lexer::Lexeme;
-use egg_source::location;
-use egg_source::source_manager::SourceManager;
+use crate::location;
+use crate::source_manager::SourceManager;
+use egg_grammar::Lexeme;
 
 #[derive(Clone, Debug)]
 pub struct Token {
@@ -19,8 +19,6 @@ impl Token {
     }
 
     pub fn get_contents(&self, source_manager: &SourceManager) -> Result<String> {
-        source_manager
-            .get_text(&self.location)
-            .map_err(Error::SourceError)
+        source_manager.get_text(&self.location)
     }
 }

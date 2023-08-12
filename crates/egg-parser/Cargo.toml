@@ -5,6 +5,8 @@ authors = ["Ryan Beltran"]
 edition = "2021"
 
 [dependencies]
+egg-ast = { path = "../egg-ast" }
+egg-grammar = { path = "../egg-grammar" }
 egg-source = { path = "../egg-source" }
 "regex" = "1"
 

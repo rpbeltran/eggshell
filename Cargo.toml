@@ -5,7 +5,9 @@ authors = ["Ryan Beltran"]
 edition = "2021"
 
 [dependencies]
+egg-ast = { path = "./crates/egg-ast" }
 egg-errors = { path = "./crates/egg-errors" }
+egg-grammar = { path = "./crates/egg-grammar" }
 egg-parser = { path = "./crates/egg-parser" }
 egg-sema = { path = "./crates/egg-sema" }
 egg-source = { path = "./crates/egg-source" }
@@ -14,7 +16,9 @@ clap = { version = "4.3.21", features = ["derive", "wrap_help"] }
 
 [workspace]
 members = [
+    "crates/egg-ast",
     "crates/egg-errors",
+    "crates/egg-grammar",
     "crates/egg-parser",
     "crates/egg-sema",
     "crates/egg-source",

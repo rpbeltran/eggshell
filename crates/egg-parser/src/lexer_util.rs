@@ -1,10 +1,11 @@
 use regex::Regex;
 
 use crate::errors::*;
-use crate::lexer::*;
-use crate::token::Token;
+
+use egg_grammar::Lexeme;
 use egg_source::location::*;
 use egg_source::source_file::SourceFile;
+use egg_source::token::Token;
 
 pub struct Lexer {
     pub patterns: Vec<(Lexeme, Regex)>,

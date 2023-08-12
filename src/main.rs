@@ -2,10 +2,10 @@ mod cli;
 
 use std::path::PathBuf;
 
-use egg_parser::ast::Ast;
+use egg_ast::ast::Ast;
 use egg_parser::lexer_util::Lexer;
-use egg_parser::token::Token;
 use egg_source::source_manager::SourceManager;
+use egg_source::token::Token;
 
 use clap::Parser;
 
@@ -49,8 +49,8 @@ fn show_tokens(tokens: &[Token], source_manager: &SourceManager) -> egg_errors::
         tokens
             .iter()
             .map(|t| t.to_string(source_manager))
-            .collect::<egg_parser::errors::Result<Vec<String>>>()
-            .map_err(egg_errors::Error::ParserError)?
+            .collect::<egg_source::errors::Result<Vec<String>>>()
+            .map_err(egg_errors::Error::SourceError)?
             .join("\n - ")
     );
     Ok(())
@@ -60,7 +60,7 @@ fn show_ast(ast: &Ast, tokens: &[Token], source_manager: &SourceManager) -> egg_
     println!(
         "===============\n= Syntax Tree =\n===============\n{}",
         ast.to_string(tokens, source_manager)
-            .map_err(egg_errors::Error::ParserError)?
+            .map_err(egg_errors::Error::AstError)?
     );
     Ok(())
 }

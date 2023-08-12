@@ -1,20 +1,8 @@
 use std::collections::HashMap;
 
-use crate::lexer::Lexeme;
+use egg_grammar::*;
 
 use crate::meta_parse::*;
-
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Hash)]
-pub enum Symbol {
-    Program,
-    ExecChain,
-    Exec,
-    PipeExec,
-    RedirectExec,
-    RedirectTarget,
-    Lexeme,
-    _Placeholder,
-}
 
 /// Grammar Rule for program.
 /// program := exec_chain*$

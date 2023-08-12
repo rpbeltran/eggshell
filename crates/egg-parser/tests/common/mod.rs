@@ -1,16 +1,14 @@
 #![allow(dead_code)]
-use egg_parser::ast::Ast;
-use egg_source::source_file::SourceFile;
-use egg_source::source_manager::SourceManager;
-
 use std::fmt;
 use std::fs;
-
 use std::io::prelude::*;
 use std::path::PathBuf;
 
+use egg_ast::ast::Ast;
 use egg_parser::errors::*;
-use egg_parser::token::Token;
+use egg_source::source_file::SourceFile;
+use egg_source::source_manager::SourceManager;
+use egg_source::token::Token;
 
 extern crate yaml_rust;
 
@@ -181,7 +179,9 @@ pub fn ast_to_yaml(
     tokens: &[Token],
     source_manager: &SourceManager,
 ) -> Result<yaml_rust::Yaml> {
-    let as_string = ast.to_string(tokens, source_manager)?;
+    let as_string = ast
+        .to_string(tokens, source_manager)
+        .map_err(Error::AstError)?;
     let as_yaml = yaml_rust::YamlLoader::load_from_str(as_string.as_str()).expect("");
     Ok(as_yaml[0].clone()) // todo: get rid of the need for this clone
 }

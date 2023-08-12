@@ -2,10 +2,9 @@
 
 use std::{io, path::PathBuf};
 
+use egg_grammar::Symbol;
 use egg_source::location::SourceLocation;
-
-use crate::parser;
-use crate::token::Token;
+use egg_source::token::Token;
 
 pub type Result<T> = std::result::Result<T, Error>;
 
@@ -17,6 +16,9 @@ pub enum Error {
 
     // Internal Source Managment Errors
     SourceError(egg_source::errors::Error),
+
+    // AST Errors
+    AstError(egg_ast::errors::Error),
 
     // Invocation Errors
     FileNotFound(io::Error),
@@ -35,7 +37,7 @@ pub enum Error {
     ParserSerializedBeforeBuilding,
     ParserExpectedPlaceholder,
     ParserReceivedPlaceholder,
-    ParserTriedToBuildSymbolWithNoRule(parser::Symbol),
+    ParserTriedToBuildSymbolWithNoRule(Symbol),
     ParserHeadPastLastToken,
 
     // Testing Errors

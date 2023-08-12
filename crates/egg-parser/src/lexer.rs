@@ -1,13 +1,6 @@
-use crate::lexer_util::*;
+use egg_grammar::Lexeme;
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
-pub enum Lexeme {
-    Literal,
-    Pipe,
-    Redirect,
-    RedirectAppend,
-    LineEnd,
-}
+use crate::lexer_util::*;
 
 mod patterns {
     // Control Flow

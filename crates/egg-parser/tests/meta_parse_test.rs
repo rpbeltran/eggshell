@@ -2,10 +2,9 @@ mod common;
 
 use indoc::indoc;
 
+use egg_grammar::*;
 use egg_parser::errors::*;
-use egg_parser::lexer::Lexeme;
 use egg_parser::meta_parse::*;
-use egg_parser::parser::Symbol;
 
 #[test]
 fn check_meta_parser() -> Result<()> {

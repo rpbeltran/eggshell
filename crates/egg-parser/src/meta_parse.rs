@@ -4,11 +4,13 @@ use std::cmp::Ordering;
 use std::collections::VecDeque;
 use std::fmt::Write;
 
-use crate::ast::*;
+use egg_ast::annotations::Annotations;
+use egg_ast::ast::*;
+use egg_grammar::*;
+use egg_source::token::Token;
+
 use crate::errors::*;
-use crate::lexer::Lexeme;
 use crate::parser::*;
-use crate::token::Token;
 
 /// Building block of a parse gen rule.
 /// usize typed blocks refer to arena style IDs of other blocks.
@@ -74,7 +76,7 @@ impl Parser {
             if let Some((new_head, mut ast)) =
                 self.meta_parse_helper(rule, &rule.root, parser_head, tokens)?
             {
-                ast.get_root_mut()?.symbol = *target;
+                ast.get_root_mut().map_err(Error::AstError)?.symbol = *target;
                 Some((new_head, ast))
             } else {
                 None
@@ -116,6 +118,7 @@ impl Parser {
                 symbol: Symbol::_Placeholder,
                 children: vec![],
                 token: None,
+                annotations: Annotations::new(),
             }],
         };
 
@@ -124,7 +127,7 @@ impl Parser {
         } else if let Some((new_head, child_ast)) =
             self.meta_parse(symbol, self.rules.get(symbol).unwrap(), head, tokens)?
         {
-            ast = ast.hang_child(child_ast)?;
+            ast = ast.hang_child(child_ast).map_err(Error::AstError)?;
             Ok(Some((new_head, ast)))
         } else {
             Ok(None)
@@ -145,6 +148,7 @@ impl Parser {
                 symbol: Symbol::_Placeholder,
                 children: vec![],
                 token: None,
+                annotations: Annotations::new(),
             }],
         };
         for child in children {
@@ -152,7 +156,9 @@ impl Parser {
                 self.meta_parse_helper(rule, child, new_head, tokens)?
             {
                 new_head = _new_head;
-                ast = ast.hang_from_placeholder(new_ast)?;
+                ast = ast
+                    .hang_from_placeholder(new_ast)
+                    .map_err(Error::AstError)?;
             } else {
                 return Ok(None);
             }
@@ -194,6 +200,7 @@ impl Parser {
                             symbol: Symbol::_Placeholder,
                             children: vec![],
                             token: None,
+                            annotations: Annotations::new(),
                         }],
                     },
                 ))
@@ -214,6 +221,7 @@ impl Parser {
                 symbol: Symbol::_Placeholder,
                 children: vec![],
                 token: None,
+                annotations: Annotations::new(),
             }],
         };
 
@@ -221,7 +229,9 @@ impl Parser {
             self.meta_parse_helper(rule, child, new_head, tokens)?
         {
             new_head = _new_head;
-            ast = ast.hang_from_placeholder(new_ast)?;
+            ast = ast
+                .hang_from_placeholder(new_ast)
+                .map_err(Error::AstError)?;
         }
 
         Ok(Some((new_head, ast)))
@@ -265,6 +275,7 @@ impl Parser {
                             symbol: Symbol::_Placeholder,
                             children: vec![],
                             token: None,
+                            annotations: Annotations::new(),
                         }],
                     },
                 ))
@@ -289,9 +300,11 @@ impl Parser {
                         symbol: Symbol::_Placeholder,
                         children: vec![],
                         token: None,
+                        annotations: Annotations::new(),
                     }],
                 }
-                .add_child(self.token_to_node(head))?,
+                .add_child(self.token_to_node(head))
+                .map_err(Error::AstError)?,
             ))
         } else {
             None
@@ -304,6 +317,7 @@ impl Parser {
             symbol: Symbol::Lexeme,
             children: vec![],
             token: Some(head),
+            annotations: Annotations::new(),
         }
     }
 

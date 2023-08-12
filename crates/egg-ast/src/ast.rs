@@ -2,11 +2,12 @@ use std::collections::VecDeque;
 
 use std::fmt::Write;
 
+use egg_grammar::Symbol;
 use egg_source::source_manager::SourceManager;
+use egg_source::token::Token;
 
+use crate::annotations::Annotations;
 use crate::errors::*;
-use crate::parser::Symbol;
-use crate::token::Token;
 
 #[derive(Debug)]
 pub struct Ast {
@@ -18,6 +19,7 @@ pub struct AstNode {
     pub symbol: Symbol,
     pub children: Vec<usize>,
     pub token: Option<usize>,
+    pub annotations: Annotations,
 }
 
 impl Ast {
@@ -102,7 +104,8 @@ impl Ast {
                     writeln!(
                         &mut buffer,
                         "  {indent}{:?}",
-                        tok.get_contents(source_manager)?
+                        tok.get_contents(source_manager)
+                            .map_err(Error::SourceError)?
                     )
                     .unwrap()
                 }
