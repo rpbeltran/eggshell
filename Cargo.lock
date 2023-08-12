@@ -148,6 +148,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "egg-sema"
+version = "0.1.0"
+dependencies = [
+ "egg-parser",
+]
+
+[[package]]
 name = "egg-source"
 version = "0.1.0"
 
@@ -158,6 +165,7 @@ dependencies = [
  "clap",
  "egg-errors",
  "egg-parser",
+ "egg-sema",
  "egg-source",
 ]
 
