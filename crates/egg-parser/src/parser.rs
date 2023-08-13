@@ -13,13 +13,11 @@ fn program() -> Rule {
 /// Grammar Rule for exec_chain.
 /// exec_chain := exec (pipe_exec | redirect_exec)? (?=LineEnd+)
 fn exec_chain() -> Rule {
-    Rule::from_sym(Symbol::Exec)
-        .then(
-            Rule::from_sym(Symbol::PipeExec)
-                .or_sym(Symbol::RedirectExec)
-                .or(Rule::from_tok(Lexeme::LineEnd).plus().discard())
-        )
-        
+    Rule::from_sym(Symbol::Exec).then(
+        Rule::from_sym(Symbol::PipeExec)
+            .or_sym(Symbol::RedirectExec)
+            .or(Rule::from_tok(Lexeme::LineEnd).plus().discard()),
+    )
 }
 
 /// Grammar Rule for exec.

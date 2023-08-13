@@ -4,7 +4,7 @@ use indoc::indoc;
 
 use egg_grammar::*;
 use egg_parser::errors::*;
-use egg_parser::meta_parse::*;
+use egg_parser::meta_parse_rule::*;
 
 #[test]
 fn check_meta_parser() -> Result<()> {

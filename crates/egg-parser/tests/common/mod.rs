@@ -166,7 +166,6 @@ pub fn raise_internal_test_error(
     })
 }
 
-#[allow(dead_code)]
 /// Compare vectors item by item.
 /// Returns true iff the vectors are equal length and associated items are equal.
 pub fn vecs_equal<T: std::cmp::PartialEq>(a: &Vec<T>, b: &Vec<T>) -> bool {
