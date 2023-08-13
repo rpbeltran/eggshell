@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use egg_grammar::*;
 
-use crate::meta_parse::*;
+use crate::meta_parse_rule::*;
 
 /// Grammar Rule for program.
 /// program := exec_chain*$
@@ -17,9 +17,9 @@ fn exec_chain() -> Rule {
         .then(
             Rule::from_sym(Symbol::PipeExec)
                 .or_sym(Symbol::RedirectExec)
-                .maybe(),
+                .or(Rule::from_tok(Lexeme::LineEnd).plus().discard())
         )
-        .then(Rule::from_tok(Lexeme::LineEnd).plus().discard())
+        
 }
 
 /// Grammar Rule for exec.
