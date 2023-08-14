@@ -41,12 +41,12 @@ fn redirect_exec() -> Rule {
 }
 
 /// Grammar Rule for redirect_target.
-/// redirect_target := LITERAL (pipe_exec | redirect_exec)?
+/// redirect_target := LITERAL (pipe_exec | redirect_exec | EOL)
 fn redirect_target() -> Rule {
     Rule::from_tok(Lexeme::Literal).then(
         Rule::from_sym(Symbol::PipeExec)
             .or_sym(Symbol::RedirectExec)
-            .maybe(),
+            .or(Rule::from_tok(Lexeme::LineEnd).plus().discard()),
     )
 }
 
