@@ -22,4 +22,5 @@ members = [
     "crates/egg-parser",
     "crates/egg-sema",
     "crates/egg-source",
+    "crates/egg-testutils",
 ]

@@ -135,6 +135,7 @@ version = "0.1.0"
 dependencies = [
  "egg-grammar",
  "egg-source",
+ "egg-testutils",
 ]
 
 [[package]]
@@ -175,6 +176,10 @@ version = "0.1.0"
 dependencies = [
  "egg-grammar",
 ]
+
+[[package]]
+name = "egg-testutils"
+version = "0.1.0"
 
 [[package]]
 name = "eggshell"
