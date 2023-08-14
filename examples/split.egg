@@ -1,2 +1,2 @@
-      ls      
-      
+a a | b | c > d
+say "hi" >> file_name

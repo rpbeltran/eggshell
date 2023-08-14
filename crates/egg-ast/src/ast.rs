@@ -8,13 +8,14 @@ use egg_source::token::Token;
 
 use crate::annotations::Annotations;
 use crate::errors::*;
+use crate::iterators::*;
 
 #[derive(Debug)]
 pub struct Ast {
     pub nodes: Vec<AstNode>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub struct AstNode {
     pub symbol: Symbol,
     pub children: Vec<usize>,
@@ -22,7 +23,7 @@ pub struct AstNode {
     pub annotations: Annotations,
 }
 
-impl Ast {
+impl<'a> Ast {
     /// Returns a reference to the AST's root node, or an error if none exists.
     pub fn get_root(&self) -> Result<&AstNode> {
         self.nodes.get(0).ok_or(Error::ParserTreeHasNoRootNode)
@@ -31,6 +32,18 @@ impl Ast {
     /// Returns a reference to the AST's root node, or an error if none exists.
     pub fn get_root_mut(&mut self) -> Result<&mut AstNode> {
         self.nodes.get_mut(0).ok_or(Error::ParserTreeHasNoRootNode)
+    }
+
+    /// Returns a reference to one of the ASTs nodes, or an error if the index does not exist.
+    pub fn get_node(&self, i: usize) -> Result<&AstNode> {
+        self.nodes.get(i).ok_or(Error::ParserTreeNodeOutOfBounds)
+    }
+
+    /// Returns a reference to one of the ASTs nodes, or an error if the index does not exist.
+    pub fn get_node_mut(&mut self, i: usize) -> Result<&mut AstNode> {
+        self.nodes
+            .get_mut(i)
+            .ok_or(Error::ParserTreeNodeOutOfBounds)
     }
 
     /// Add all the nodes in a syntax tree to this tree.
@@ -122,5 +135,9 @@ impl Ast {
             }
         }
         Ok(buffer)
+    }
+
+    pub fn postorder(&'a self) -> PostOrderAstIterator<'a> {
+        PostOrderAstIterator::new(self)
     }
 }

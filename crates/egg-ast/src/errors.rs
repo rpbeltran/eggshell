@@ -27,4 +27,8 @@ pub enum Error {
     ParserExpectedPlaceholder,
     ParserReceivedPlaceholder,
     ParserHeadPastLastToken,
+
+    // Test Errors
+    #[cfg(test)]
+    TestCaseFailedAssertion(egg_testutils::errors::Error),
 }
