@@ -15,7 +15,7 @@ pub struct Ast {
     pub nodes: Vec<AstNode>,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug)]
 pub struct AstNode {
     pub symbol: Symbol,
     pub children: Vec<usize>,

@@ -14,16 +14,9 @@ pub struct PostOrderAstIterator<'a> {
 }
 
 impl<'a> Iterator for PostOrderAstIterator<'a> {
-    type Item = (usize, &'a AstNode);
+    type Item = usize;
     fn next(&mut self) -> Option<Self::Item> {
-        self.postorder.pop_front().map(|next_i| {
-            (
-                next_i,
-                self.ast
-                    .get_node(next_i)
-                    .expect("Iterator pointed to node out of bounds"),
-            )
-        })
+        self.postorder.pop_front()
     }
 }
 
@@ -40,6 +33,7 @@ impl<'a> PostOrderAstIterator<'a> {
         iter
     }
 
+    /// Computes the post order traversal of the AST and stores it in the postorder field
     fn compute_post_order(&mut self) {
         loop {
             if let Some(root) = self.root {
@@ -106,7 +100,7 @@ fn test_postorder() -> Result<()> {
         3, 4, 2, 6, 9, 8, 11, 14, 13, 16, 18, 17, 15, 12, 10, 7, 5, 1, 21, 22, 20, 24, 26, 25, 23,
         19, 0,
     ]);
-    let postorder: Vec<usize> = PostOrderAstIterator::new(&ast).map(|(i, _)| i).collect();
+    let postorder: Vec<usize> = PostOrderAstIterator::new(&ast).collect();
     egg_testutils::utils::assert_vecs_equal(&expected_postorder, &postorder)
         .map_err(Error::TestCaseFailedAssertion)
 }

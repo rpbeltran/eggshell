@@ -8,3 +8,4 @@ edition = "2021"
 egg-ast = { path = "../egg-ast" }
 egg-parser = { path = "../egg-parser" }
 egg-source = { path = "../egg-source" }
+egg-sema = { path = "../egg-sema" }
