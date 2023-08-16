@@ -59,6 +59,7 @@ impl Rule {
         }
     }
 
+    /// Get root block of this rule.
     pub fn get_root(&mut self) -> &mut Block {
         self.blocks.get_mut(self.root).unwrap()
     }
@@ -87,6 +88,7 @@ impl Rule {
         self
     }
 
+    /// Add an offset to the ids of all blocks in this rule.
     fn increment_blocks(&mut self, offset: usize) {
         fn inc_vec(v: &mut [usize], offset: usize) {
             v.iter_mut().for_each(|x| *x += offset);
@@ -272,6 +274,7 @@ impl Rule {
         self
     }
 
+    /// Convert this rule into a string with YAML formatting.
     pub fn to_string(&self) -> Result<String> {
         let mut buffer = String::from("---\n");
         let mut queue: VecDeque<(usize, usize)> = VecDeque::from([(self.root, 0)]);

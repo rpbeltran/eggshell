@@ -41,7 +41,7 @@ fn redirect_exec() -> Rule {
 }
 
 /// Grammar Rule for redirect_target.
-/// redirect_target := LITERAL (pipe_exec | redirect_exec | EOL)
+/// redirect_target := LITERAL ((pipe_exec | redirect_exec) | (?=LineEnd+))
 fn redirect_target() -> Rule {
     Rule::from_tok(Lexeme::Literal).then(
         Rule::from_sym(Symbol::PipeExec)
