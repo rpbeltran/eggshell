@@ -184,6 +184,13 @@ name = "egg-testutils"
 version = "0.1.0"
 
 [[package]]
+name = "egg-types"
+version = "0.1.0"
+dependencies = [
+ "egg-grammar",
+]
+
+[[package]]
 name = "eggshell"
 version = "0.1.0"
 dependencies = [
