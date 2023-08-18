@@ -1,0 +1,6 @@
+#!/bin/bash -euo pipefail
+
+EGGSHELL=$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)
+HOOKS="${EGGSHELL}/.git/hooks"
+
+ln -s "${EGGSHELL}/scripts/pre-push" "${HOOKS}/pre-push"

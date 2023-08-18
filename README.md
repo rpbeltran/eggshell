@@ -36,3 +36,15 @@ the most basic Egg Syntax.
 ## Examples
 
 More documentation coming soon...
+
+## Contrinuting
+
+```
+git clone git@github.com:rpbeltran/eggshell.git
+cd eggshell
+
+# Setup presubmits
+./install-githooks
+```
+
+More documentation coming soon...
