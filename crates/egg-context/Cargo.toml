@@ -1,0 +1,8 @@
+[package]
+name = "egg-context"
+version = "0.1.0"
+authors = ["Ryan Beltran"]
+edition = "2021"
+
+[dependencies]
+egg-types = { path = "../egg-types" }

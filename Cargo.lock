@@ -139,6 +139,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "egg-context"
+version = "0.1.0"
+dependencies = [
+ "egg-types",
+]
+
+[[package]]
 name = "egg-errors"
 version = "0.1.0"
 dependencies = [

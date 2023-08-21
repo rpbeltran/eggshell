@@ -17,6 +17,7 @@ clap = { version = "4.3.21", features = ["derive", "wrap_help"] }
 [workspace]
 members = [
     "crates/egg-ast",
+    "crates/egg-context",
     "crates/egg-errors",
     "crates/egg-grammar",
     "crates/egg-parser",
