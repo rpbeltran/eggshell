@@ -5,4 +5,3 @@ authors = ["Ryan Beltran"]
 edition = "2021"
 
 [dependencies]
-egg-types = { path = "../egg-types" }
