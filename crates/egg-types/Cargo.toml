@@ -5,4 +5,4 @@ authors = ["Ryan Beltran"]
 edition = "2021"
 
 [dependencies]
-egg-grammar = { path = "../egg-grammar" }
+egg-context = { path = "../egg-context" }
