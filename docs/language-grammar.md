@@ -21,11 +21,11 @@ program := exec_chain*
 
 ## Pipelines
 
-exec_chain := exec_single pipe_exec
-           |  exec_single redirect_exec
-           |  exec_single
+exec_chain := exec pipe_exec
+           |  exec redirect_exec
+           |  exec
 
-exec := COMMAND STRING_LITERAL*
+exec := STRING_LITERAL+
 
 pipe_exec := PIPE exec_chain
 
