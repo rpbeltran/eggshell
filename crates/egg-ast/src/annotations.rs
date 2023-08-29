@@ -4,6 +4,8 @@ pub struct Annotations {
     pub mem_id: Option<usize>,
     /// Signifies that this AST Node is never read
     pub discard: bool,
+    /// Signifies that this AST Node is never read
+    pub type_id: Option<usize>,
 }
 
 impl Annotations {
@@ -11,6 +13,7 @@ impl Annotations {
         Self {
             mem_id: None,
             discard: true,
+            type_id: None,
         }
     }
 }

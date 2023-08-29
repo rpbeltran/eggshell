@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::HashSet;
 
 use egg_context::context_manager::ContextManager;
 use egg_context::data_types::*;

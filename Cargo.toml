@@ -6,11 +6,13 @@ edition = "2021"
 
 [dependencies]
 egg-ast = { path = "./crates/egg-ast" }
+egg-context = { path = "./crates/egg-context" }
 egg-errors = { path = "./crates/egg-errors" }
 egg-grammar = { path = "./crates/egg-grammar" }
 egg-parser = { path = "./crates/egg-parser" }
 egg-sema = { path = "./crates/egg-sema" }
 egg-source = { path = "./crates/egg-source" }
+egg-types = { path = "./crates/egg-types" }
 
 clap = { version = "4.3.21", features = ["derive", "wrap_help"] }
 

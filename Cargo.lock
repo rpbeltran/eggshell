@@ -141,9 +141,6 @@ dependencies = [
 [[package]]
 name = "egg-context"
 version = "0.1.0"
-dependencies = [
- "egg-types",
-]
 
 [[package]]
 name = "egg-errors"
@@ -153,6 +150,7 @@ dependencies = [
  "egg-parser",
  "egg-sema",
  "egg-source",
+ "egg-types",
 ]
 
 [[package]]
@@ -176,7 +174,9 @@ name = "egg-sema"
 version = "0.1.0"
 dependencies = [
  "egg-ast",
+ "egg-context",
  "egg-grammar",
+ "egg-types",
 ]
 
 [[package]]
@@ -194,7 +194,7 @@ version = "0.1.0"
 name = "egg-types"
 version = "0.1.0"
 dependencies = [
- "egg-grammar",
+ "egg-context",
 ]
 
 [[package]]
@@ -203,11 +203,13 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "egg-ast",
+ "egg-context",
  "egg-errors",
  "egg-grammar",
  "egg-parser",
  "egg-sema",
  "egg-source",
+ "egg-types",
 ]
 
 [[package]]

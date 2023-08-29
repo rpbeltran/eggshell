@@ -6,4 +6,5 @@ pub enum Error {
     ParserError(egg_parser::errors::Error),
     SourceError(egg_source::errors::Error),
     SemaError(egg_sema::errors::Error),
+    TypesError(egg_types::errors::Error),
 }

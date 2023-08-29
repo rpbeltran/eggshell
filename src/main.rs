@@ -3,6 +3,7 @@ mod cli;
 use std::path::PathBuf;
 
 use egg_ast::ast::Ast;
+use egg_context::context_manager::ContextManager;
 use egg_errors::*;
 use egg_parser::lexer_util::Lexer;
 use egg_source::source_manager::SourceManager;
@@ -32,7 +33,10 @@ fn main() -> Result<()> {
         let mut parser = egg_parser::parser::Parser::new();
         let mut ast = parser.parse(&tokens).map_err(Error::ParserError)?;
 
-        egg_sema::annotate_ast(&mut ast).map_err(Error::SemaError)?;
+        let mut ctx_man = ContextManager::new();
+        egg_types::add_standard_composite_types(&mut ctx_man).map_err(Error::TypesError)?;
+
+        egg_sema::annotate_ast(&mut ast, &ctx_man).map_err(Error::SemaError)?;
 
         if args.show_ast {
             show_ast(&ast, &tokens, &source_manager)?;

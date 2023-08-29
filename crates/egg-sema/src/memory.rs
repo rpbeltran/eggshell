@@ -4,7 +4,7 @@ use egg_grammar::*;
 use crate::errors::*;
 
 /// Mark the memory id of all node values.
-pub fn label_mem_ids(root: usize, ast: &mut Ast) -> Result<()> {
+pub fn label_mem_id(root: usize, ast: &mut Ast) -> Result<()> {
     ast.get_node_mut(root)
         .map_err(Error::AstError)?
         .annotations

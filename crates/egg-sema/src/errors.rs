@@ -14,4 +14,5 @@ pub enum Error {
 
     // Pass Through Errors
     AstError(egg_ast::errors::Error),
+    ContextError(egg_context::errors::Error),
 }
