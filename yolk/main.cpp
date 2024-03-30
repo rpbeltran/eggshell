@@ -1,6 +1,5 @@
-#include <iostream>
+#include "instruction/instructions.h"
 
-int main() {
-    std::cout << "Hello, World!" << std::endl;
+auto main() -> int {
     return 0;
 }
