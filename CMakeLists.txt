@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.27)
 project(egg)
 
 set(CMAKE_CXX_STANDARD 23)
+include_directories(extern/pybind11/include)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -18,7 +19,6 @@ find_program(CLANG_TIDY_EXE NAMES "clang-tidy" REQUIRED)
 
 # setup clang-tidy command from executable + options
 set(CLANG_TIDY_COMMAND "${CLANG_TIDY_EXE}")
-
 
 add_executable(yolk yolk/main.cpp
         yolk/instruction/instructions.h
@@ -38,6 +38,10 @@ target_link_libraries(
         yolk-test
         GTest::gtest_main
 )
+
+target_include_directories(yolk PRIVATE extern/pybind11/include)
+target_include_directories(yolk-test PRIVATE extern/pybind11/include)
+
 
 set_target_properties(yolk PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY_COMMAND}")
 set_target_properties(yolk-test PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY_COMMAND}")
