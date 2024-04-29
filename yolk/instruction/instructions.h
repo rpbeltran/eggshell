@@ -1,77 +1,139 @@
 #pragma once
 
+#include <cassert>
 #include <concepts>
 #include <cstddef>
 #include <cstdint>
 #include <format>
+#include <memory>
+#include <utility>
 #include <vector>
 
 #include "instructionArgs.h"
 
 namespace Instructions {
 
-    enum InstructionLabel {
-        START=0,
-        PUSH_NAME, PUSH_NUM, PUSH_STR, PUSH_BOOL,
-        EVAL,
-    };
+enum InstructionType : std::uint8_t {
+  START = 0,
+  PUSH_NAME,
+  PUSH_NUM,
+  PUSH_STR,
+  PUSH_BOOL,
+  EVAL,
+};
 
-    struct Instruction {
-        virtual void serialize_to(std::vector<uint8_t> & buffer) = 0;
-        virtual void deserialize(const std::vector<uint8_t> & buffer) = 0;
-        virtual auto to_psuedoyolk() -> std::string = 0;
-        virtual auto width() -> uint8_t = 0;
+class Instruction {
+  InstructionType instruction_type;
 
-        std::vector<uint8_t> serialize();
-    };
+ public:
+  virtual void serialize_to(std::vector<uint8_t> & buffer) const;
 
-    // Concept IsAnInstruction: type 'T' derives `Instruction`.
-    template<typename T>
-    concept IsAnInstruction = std::derived_from<T, Instruction>;
+  virtual void deserialize(const std::vector<uint8_t> & _buffer,
+                           size_t _from) = 0;
 
-    struct StartInstruction : Instruction {
-        void serialize_to(std::vector<uint8_t> & buffer) override;
-        void deserialize(const std::vector<uint8_t> & buffer) override;
-        auto to_psuedoyolk() -> std::string override;
-        auto width() -> uint8_t override;
-    };
+  [[nodiscard]] virtual auto to_psuedoyolk() const -> std::string;
+  [[nodiscard]] auto width() const -> uint8_t;
 
-    struct EvalInstruction : Instruction {
-        BooleanArgument discard; // todo: make private and add getter
-        void serialize_to(std::vector<uint8_t> & buffer) override;
-        void deserialize(const std::vector<uint8_t> & buffer) override;
-        auto to_psuedoyolk() -> std::string override;
-        auto width() -> uint8_t override;
-    };
+  [[nodiscard]] auto serialize() const -> std::vector<uint8_t>;
 
-    template<InstructionLabel label, IsAnArgument arg_t>
-    struct PushInstruction : Instruction {
-        arg_t val;
-        void serialize_to(std::vector<uint8_t> & buffer) override {
-            buffer.at(0) = label;
-            val.write_to(buffer, 1);
-        }
+  [[nodiscard]] auto get_instruction_type() const -> InstructionType {
+    return instruction_type;
+  };
 
-        void deserialize(const std::vector<uint8_t> & buffer) override {
-            val.read_from(buffer, 1);
-        }
+  explicit Instruction(InstructionType _type) : instruction_type(_type) {}
 
-        auto to_psuedoyolk() -> std::string override {
-            switch (label) {
-                case InstructionLabel::PUSH_NAME:
-                    return std::format("push --name {0}", val.display());
-                case InstructionLabel::PUSH_STR:
-                    return std::format("push --string {0}", val.display());
-                case InstructionLabel::PUSH_NUM:
-                    return std::format("push --num {0}", val.display());
-                case InstructionLabel::PUSH_BOOL:
-                    return std::format("push --bool {0}", val.display());
-            }
-            std::unreachable();
-        }
+  //Instruction(const Instruction & other) = delete;
+  //Instruction(Instruction&& other) noexcept = delete;
+  //auto operator=(const Instruction& other) -> Instruction& = delete;
+  //auto operator=(Instruction&& other) noexcept -> Instruction& = delete;
+  virtual ~Instruction() = default;
+};
 
-        auto width() -> uint8_t override {
-            return 1 + val.width;
-        }
-    };
-} // namespace Instructions
+// Concept IsAnInstruction: type `T` derives `Instruction`.
+template <typename T>
+concept IsAnInstruction = std::derived_from<T, Instruction>;
+
+struct StartInstruction : public Instruction {
+  void serialize_to(std::vector<uint8_t> & buffer) const override;
+  void deserialize(const std::vector<uint8_t> & buffer, size_t from) override;
+  [[nodiscard]] auto to_psuedoyolk() const -> std::string override;
+  [[nodiscard]] static auto width() -> uint8_t;
+
+  StartInstruction() : Instruction(START) {}
+};
+
+class EvalInstruction : public Instruction {
+  BooleanArgument discard;
+
+ public:
+  void serialize_to(std::vector<uint8_t> & buffer) const override;
+  void deserialize(const std::vector<uint8_t> & buffer, size_t from) override;
+  [[nodiscard]] auto to_psuedoyolk() const -> std::string override;
+  [[nodiscard]] static auto width() -> uint8_t;
+
+  EvalInstruction() : Instruction(EVAL) {}
+
+  [[nodiscard]] auto get_discard() -> BooleanArgument & { return discard; }
+};
+
+class PushName : public Instruction {
+  NameArgument val;
+
+ public:
+  void serialize_to(std::vector<uint8_t> & buffer) const override;
+  void deserialize(const std::vector<uint8_t> & buffer, size_t from) override;
+  [[nodiscard]] auto to_psuedoyolk() const -> std::string override;
+  [[nodiscard]] static auto width() -> uint8_t;
+
+  PushName() : Instruction(PUSH_NAME) {}
+
+  [[nodiscard]] auto get_val() -> NameArgument & { return val; }
+};
+
+class PushNum : public Instruction {
+  NumberArgument val;
+
+ public:
+  // todo: refactor instructions to have a vector of arguments to serialize in order
+  void serialize_to(std::vector<uint8_t> & buffer) const override;
+  void deserialize(const std::vector<uint8_t> & buffer, size_t from) override;
+  [[nodiscard]] auto to_psuedoyolk() const -> std::string override;
+  [[nodiscard]] static auto width() -> uint8_t;
+
+  PushNum() : Instruction(PUSH_NUM) {}
+
+  [[nodiscard]] auto get_val() -> NumberArgument & { return val; }
+};
+
+class PushString : public Instruction {
+  StringArgument val;
+
+ public:
+  void serialize_to(std::vector<uint8_t> & buffer) const override;
+  void deserialize(const std::vector<uint8_t> & buffer, size_t from) override;
+  [[nodiscard]] auto to_psuedoyolk() const -> std::string override;
+  [[nodiscard]] static auto width() -> uint8_t;
+
+  PushString() : Instruction(PUSH_STR) {}
+
+  [[nodiscard]] auto get_val() -> StringArgument & { return val; }
+};
+
+class PushBool : public Instruction {
+  BooleanArgument val;
+
+ public:
+  void serialize_to(std::vector<uint8_t> & buffer) const override;
+  void deserialize(const std::vector<uint8_t> & buffer, size_t from) override;
+  [[nodiscard]] auto to_psuedoyolk() const -> std::string override;
+  [[nodiscard]] static auto width() -> uint8_t;
+
+  PushBool() : Instruction(PUSH_BOOL) {}
+
+  [[nodiscard]] auto get_val() -> BooleanArgument & { return val; }
+};
+
+auto deserialize(const std::vector<uint8_t> & buffer,
+                 size_t from) -> std::unique_ptr<Instruction>;
+
+}  // namespace Instructions

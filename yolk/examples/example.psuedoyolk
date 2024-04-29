@@ -1,0 +1,7 @@
+start-expression
+push-num --val 7
+push-name --ref <70>
+push-str --ref <17>
+push-bool --val false
+eval --discard
+eval
