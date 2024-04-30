@@ -1,2 +1,14 @@
 ---
-Checks: 'bugprone-*,-bugprone-easily-swappable-parameters,clang-diagnostic-*,clang-analyzer-*,concurrency-*,cppcoreguidelines-*,google-*,misc-*,modernize-*,performance-*,portability-*,readability-*'
+Checks: >
+  bugprone-*,
+    -bugprone-easily-swappable-parameters,
+  clang-diagnostic-*,
+  clang-analyzer-*,
+  concurrency-*,
+  cppcoreguidelines-*,
+  google-*,
+  misc-*,
+  modernize-*,
+  performance-*,
+  portability-*,
+  readability-*
