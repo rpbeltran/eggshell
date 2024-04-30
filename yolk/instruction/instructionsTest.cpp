@@ -1,5 +1,6 @@
 // NOLINTBEGIN(*-magic-numbers)
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -13,22 +14,22 @@ using namespace Instructions;
 
 template <IsAnInstruction instruction_t>
 [[nodiscard]] auto testInstructionHelper(
-    instruction_t & instruction, std::string & expected_psuedoyolk,
+    std::shared_ptr<instruction_t> & instruction, std::string & expected_psuedoyolk,
     std::vector<uint8_t> & expected_buffer,
     std::string error_prefix) -> testing::AssertionResult {
-  if (instruction.width() != expected_buffer.size()) {
+  if (instruction->width() != expected_buffer.size()) {
     return (testing::AssertionFailure()
             << error_prefix << "instruction.width() is: "
-            << static_cast<int>(instruction.width())
+            << static_cast<int>(instruction->width())
             << ". Expected: " << expected_buffer.size());
   }
-  if (instruction.to_psuedoyolk() != expected_psuedoyolk) {
+  if (instruction->to_psuedoyolk() != expected_psuedoyolk) {
     return (testing::AssertionFailure()
             << error_prefix << "instruction.to_psuedoyolk() is: '"
-            << instruction.to_psuedoyolk() << "'. Expected: '"
+            << instruction->to_psuedoyolk() << "'. Expected: '"
             << expected_psuedoyolk << "'");
   }
-  auto buffer = instruction.serialize();
+  auto buffer = instruction->serialize();
   auto vector_check =
       testUtils::VectorsEqual(buffer, expected_buffer, error_prefix);
   if (!vector_check) {
@@ -40,16 +41,16 @@ template <IsAnInstruction instruction_t>
 
 template <IsAnInstruction instruction_t>
 [[nodiscard]] auto testInstruction(
-    instruction_t instruction, std::string expected_psuedoyolk,
+    std::shared_ptr<instruction_t> & instruction, std::string expected_psuedoyolk,
     std::vector<uint8_t> expected_buffer) -> testing::AssertionResult {
   auto test1 = testInstructionHelper(instruction, expected_psuedoyolk,
                                      expected_buffer, "");
   if (!test1) {
     return test1;
   }
-  auto buffer = instruction.serialize();
-  IsAnInstruction auto instruction2 = instruction_t();
-  instruction2.deserialize(buffer, 0);
+  auto buffer = instruction->serialize();
+  auto instruction2 = std::make_shared<instruction_t>();
+  instruction2->deserialize(buffer, 0);
 
   auto test2 =
       testInstructionHelper(instruction2, expected_psuedoyolk, expected_buffer,
@@ -58,14 +59,16 @@ template <IsAnInstruction instruction_t>
     return test2;
   }
 
-  auto * instruction3 = dynamic_cast<Instruction *>(&instruction);
+
+  std::shared_ptr<Instruction> instruction3 = instruction;
 
   auto test3 =
-      testInstructionHelper(*instruction3, expected_psuedoyolk, expected_buffer,
+      testInstructionHelper(instruction3, expected_psuedoyolk, expected_buffer,
                             "After casting to generic Instruction type, ");
   if (!test3) {
     return test3;
   }
+
 
   return testing::AssertionSuccess();
 }
@@ -73,7 +76,7 @@ template <IsAnInstruction instruction_t>
 // StartInstruction
 
 TEST(Instructions, Start) {
-  auto start = StartInstruction();
+  auto start = std::make_shared<StartInstruction>();
 
   const std::string expected_psuedo = "start-expression";
   auto expected_buffer = std::vector<uint8_t>{InstructionType::START};
@@ -85,8 +88,8 @@ TEST(Instructions, Start) {
 // EvalInstruction
 
 TEST(Instructions, Eval) {
-  auto eval = EvalInstruction();
-  eval.get_discard().set_val(static_cast<number_t>(false));
+  auto eval = std::make_shared<EvalInstruction>();
+  eval->get_discard().set_val(static_cast<number_t>(false));
 
   const std::string expected_psuedo = "eval";
   auto expected_buffer =
@@ -97,8 +100,8 @@ TEST(Instructions, Eval) {
 }
 
 TEST(Instructions, EvalDiscard) {
-  auto eval = EvalInstruction();
-  eval.get_discard().set_val(static_cast<number_t>(true));
+  auto eval = std::make_shared<EvalInstruction>();
+  eval->get_discard().set_val(static_cast<number_t>(true));
 
   const std::string expected_psuedo = "eval --discard";
   auto expected_buffer =
@@ -109,8 +112,8 @@ TEST(Instructions, EvalDiscard) {
 }
 
 TEST(Instructions, PushName) {
-  auto push = PushName();
-  push.get_val().set_refid(37 + (27 << 8) + (17 << 16) +
+  auto push = std::make_shared<PushName>();
+  push->get_val().set_refid(37 + (27 << 8) + (17 << 16) +
                            (9 << 24));  // 152116005
 
   const std::string expected_psuedo = "push-name --ref <152116005>";
@@ -124,8 +127,8 @@ TEST(Instructions, PushName) {
 }
 
 TEST(Instructions, PushString) {
-  auto push = PushString();
-  push.get_val().set_refid(37 + (27 << 8) + (17 << 16) +
+  auto push = std::make_shared<PushString>();
+  push->get_val().set_refid(37 + (27 << 8) + (17 << 16) +
                            (9 << 24));  // 152116005
 
   const std::string expected_psuedo = "push-str --ref <152116005>";
@@ -139,8 +142,8 @@ TEST(Instructions, PushString) {
 }
 
 TEST(Instructions, PushNum) {
-  auto push = PushNum();
-  push.get_val().set_val(
+  auto push = std::make_shared<PushNum>();
+  push->get_val().set_val(
       37 + (27 << 8) + (17 << 16) + (9 << 24) +
       (static_cast<uint64_t>(211) << 40));  // 231997105576741
 
@@ -155,8 +158,8 @@ TEST(Instructions, PushNum) {
 }
 
 TEST(Instructions, PushNumInstruct) {
-  auto push = PushNum();
-  push.get_val().set_val(
+  auto push = std::make_shared<PushNum>();
+  push->get_val().set_val(
       -37 - (27 << 8) - (17 << 16) - (9 << 24) -
       (static_cast<int64_t>(211) << 40));  // -231997105576741
 
@@ -173,8 +176,8 @@ TEST(Instructions, PushNumInstruct) {
 }
 
 TEST(Instructions, PushBool) {
-  auto push = PushBool();
-  push.get_val().set_val(1);
+  auto push = std::make_shared<PushBool>();
+  push->get_val().set_val(1);
 
   const std::string expected_psuedo = "push-bool --val true";
   auto expected_buffer =
@@ -187,8 +190,8 @@ TEST(Instructions, PushBool) {
 }
 
 TEST(Instructions, PushBoolFalse) {
-  auto push = PushBool();
-  push.get_val().set_val(0);
+  auto push = std::make_shared<PushBool>();
+  push->get_val().set_val(0);
 
   const std::string expected_psuedo = "push-bool --val false";
   auto expected_buffer =

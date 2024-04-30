@@ -22,7 +22,7 @@ namespace YolkParser {
 
 class Parser {
   std::vector<YolkError> errors;
-  std::vector<std::unique_ptr<Instructions::Instruction>> instructions;
+  std::vector<std::shared_ptr<Instructions::Instruction>> instructions;
 
   int current_line;
 
@@ -45,9 +45,7 @@ class Parser {
       StartExpressionParser parser;
       auto maybe = parser.parse(args);
       if (maybe.has_value()) {
-        auto instruction = maybe.value();
-        instructions.push_back(
-            std::make_unique<Instructions::StartInstruction>(instruction));
+        instructions.push_back(maybe.value());
       } else {
         errors.push_back(FailedToParseInstruction(current_line, op_type));
       }
@@ -55,9 +53,7 @@ class Parser {
       EvalParser parser;
       auto maybe = parser.parse(args);
       if (maybe.has_value()) {
-        auto instruction = maybe.value();
-        instructions.push_back(
-            std::make_unique<Instructions::EvalInstruction>(instruction));
+        instructions.push_back(maybe.value());
       } else {
         errors.push_back(FailedToParseInstruction(current_line, op_type));
       }
@@ -65,9 +61,7 @@ class Parser {
       PushNameParser parser;
       auto maybe = parser.parse(args);
       if (maybe.has_value()) {
-        auto instruction = maybe.value();
-        instructions.push_back(
-            std::make_unique<Instructions::PushName>(instruction));
+        instructions.push_back(maybe.value());
       } else {
         errors.push_back(FailedToParseInstruction(current_line, op_type));
       }
@@ -75,9 +69,7 @@ class Parser {
       PushNumParser parser;
       auto maybe = parser.parse(args);
       if (maybe.has_value()) {
-        auto instruction = maybe.value();
-        instructions.push_back(
-            std::make_unique<Instructions::PushNum>(instruction));
+        instructions.push_back(maybe.value());
       } else {
         errors.push_back(FailedToParseInstruction(current_line, op_type));
       }
@@ -85,9 +77,7 @@ class Parser {
       PushStringParser parser;
       auto maybe = parser.parse(args);
       if (maybe.has_value()) {
-        auto instruction = maybe.value();
-        instructions.push_back(
-            std::make_unique<Instructions::PushString>(instruction));
+        instructions.push_back(maybe.value());
       } else {
         errors.push_back(FailedToParseInstruction(current_line, op_type));
       }
@@ -95,9 +85,7 @@ class Parser {
       PushBoolParser parser;
       auto maybe = parser.parse(args);
       if (maybe.has_value()) {
-        auto instruction = maybe.value();
-        instructions.push_back(
-            std::make_unique<Instructions::PushBool>(instruction));
+        instructions.push_back(maybe.value());
       } else {
         errors.push_back(FailedToParseInstruction(current_line, op_type));
       }
@@ -122,7 +110,7 @@ class Parser {
   auto instruction_count() -> std::size_t { return instructions.size(); }
 
   [[nodiscard]] auto get_instructions() const
-      -> const std::vector<std::unique_ptr<Instructions::Instruction>> & {
+      -> const std::vector<std::shared_ptr<Instructions::Instruction>> & {
     return instructions;
   }
 };

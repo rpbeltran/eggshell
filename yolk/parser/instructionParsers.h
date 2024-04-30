@@ -1,12 +1,15 @@
 #pragma once
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <unordered_map>
+#include <vector>
 
-#include "../instruction/instructionArgs.h"
 #include "../instruction/instructions.h"
 
 #include "./instructionParser.h"
+#include "./flags.h"
 
 namespace YolkParser {
 
@@ -16,7 +19,7 @@ class StartExpressionParser
   static const constexpr std::vector<Flag> _optional_flags = {};
 
   auto parse_flags(std::unordered_map<std::string, std::optional<FlagValue>> &
-                       flags) -> Instructions::StartInstruction override;
+                       flags) -> std::shared_ptr<Instructions::StartInstruction> override;
 
  public:
   explicit StartExpressionParser()
@@ -30,7 +33,7 @@ class EvalParser : public InstructionParser<Instructions::EvalInstruction> {
   static std::vector<Flag> _optional_flags;
 
   auto parse_flags(std::unordered_map<std::string, std::optional<FlagValue>> &
-                       flags) -> Instructions::EvalInstruction override;
+                       flags) -> std::shared_ptr<Instructions::EvalInstruction> override;
 
  public:
   explicit EvalParser()
@@ -44,7 +47,7 @@ class PushNameParser : public InstructionParser<Instructions::PushName> {
   static const constexpr std::vector<Flag> _optional_flags = {};
 
   auto parse_flags(std::unordered_map<std::string, std::optional<FlagValue>> &
-                       flags) -> Instructions::PushName override;
+                       flags) -> std::shared_ptr<Instructions::PushName> override;
 
  public:
   explicit PushNameParser()
@@ -58,7 +61,7 @@ class PushNumParser : public InstructionParser<Instructions::PushNum> {
   static const constexpr std::vector<Flag> _optional_flags = {};
 
   auto parse_flags(std::unordered_map<std::string, std::optional<FlagValue>> &
-                       flags) -> Instructions::PushNum override;
+                       flags) -> std::shared_ptr<Instructions::PushNum> override;
 
  public:
   explicit PushNumParser()
@@ -72,7 +75,7 @@ class PushStringParser : public InstructionParser<Instructions::PushString> {
   static const constexpr std::vector<Flag> _optional_flags = {};
 
   auto parse_flags(std::unordered_map<std::string, std::optional<FlagValue>> &
-                       flags) -> Instructions::PushString override;
+                       flags) -> std::shared_ptr<Instructions::PushString> override;
 
  public:
   explicit PushStringParser()
@@ -86,7 +89,7 @@ class PushBoolParser : public InstructionParser<Instructions::PushBool> {
   static const constexpr std::vector<Flag> _optional_flags = {};
 
   auto parse_flags(std::unordered_map<std::string, std::optional<FlagValue>> &
-                       flags) -> Instructions::PushBool override;
+                       flags) -> std::shared_ptr<Instructions::PushBool> override;
 
  public:
   explicit PushBoolParser()

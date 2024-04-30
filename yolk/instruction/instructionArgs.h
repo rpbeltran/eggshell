@@ -25,6 +25,11 @@ class Argument {
   [[nodiscard]] auto get_width() const -> size_t { return width; }
 
   virtual ~Argument() = default;
+
+  Argument(const Argument & copyFrom) = delete;
+  auto operator=(const Argument & copyFrom) -> Argument & = delete;
+  Argument(Argument &&) = delete;
+  auto operator=(Argument &&) -> Argument & = delete;
 };
 
 // Concept IsAnArgument: type 'T' derives `Argument`.

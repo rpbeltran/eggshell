@@ -27,8 +27,7 @@ TEST(InstructionParsers, parseEval) {
   auto maybe_inst = parser.parse(args);
   ASSERT_TRUE(maybe_inst.has_value());
 
-  auto inst = maybe_inst.value();
-  EXPECT_FALSE(inst.get_discard().get_val());
+  EXPECT_FALSE(maybe_inst.value()->get_discard().get_val());
 
   // Test `eval --discard`
 
@@ -38,8 +37,7 @@ TEST(InstructionParsers, parseEval) {
   auto maybe_inst_discard = p_discard.parse(args_discard);
   ASSERT_TRUE(maybe_inst_discard.has_value());
 
-  auto inst_discard = maybe_inst_discard.value();
-  EXPECT_TRUE(inst_discard.get_discard().get_val());
+  EXPECT_TRUE(maybe_inst_discard.value()->get_discard().get_val());
 }
 
 TEST(InstructionParsers, parsePushName) {
@@ -51,8 +49,7 @@ TEST(InstructionParsers, parsePushName) {
   auto maybe_inst = parser.parse(args);
   ASSERT_TRUE(maybe_inst.has_value());
 
-  auto inst = maybe_inst.value();
-  EXPECT_EQ(inst.get_val().get_refid(), 1234567);
+  EXPECT_EQ(maybe_inst.value()->get_val().get_refid(), 1234567);
 }
 
 TEST(InstructionParsers, parsePushNumber) {
@@ -64,8 +61,7 @@ TEST(InstructionParsers, parsePushNumber) {
   auto maybe_inst = parser.parse(args);
   ASSERT_TRUE(maybe_inst.has_value());
 
-  auto inst = maybe_inst.value();
-  EXPECT_EQ(inst.get_val().get_val(), 1234567);
+  EXPECT_EQ(maybe_inst.value()->get_val().get_val(), 1234567);
 }
 
 TEST(InstructionParsers, parsePushString) {
@@ -77,8 +73,7 @@ TEST(InstructionParsers, parsePushString) {
   auto maybe_inst = parser.parse(args);
   ASSERT_TRUE(maybe_inst.has_value());
 
-  auto inst = maybe_inst.value();
-  EXPECT_EQ(inst.get_val().get_refid(), 1234567);
+  EXPECT_EQ(maybe_inst.value()->get_val().get_refid(), 1234567);
 }
 
 TEST(InstructionParsers, parsePushBool) {
@@ -90,8 +85,7 @@ TEST(InstructionParsers, parsePushBool) {
   auto maybe_inst_false = p_false.parse(args_false);
   ASSERT_TRUE(maybe_inst_false.has_value());
 
-  auto inst_false = maybe_inst_false.value();
-  EXPECT_FALSE(inst_false.get_val().get_val());
+  EXPECT_FALSE(maybe_inst_false.value()->get_val().get_val());
 
   // Test `push-bool --val true`
 
@@ -101,8 +95,7 @@ TEST(InstructionParsers, parsePushBool) {
   auto maybe_inst_true = p_true.parse(args_true);
   ASSERT_TRUE(maybe_inst_true.has_value());
 
-  auto inst_true = maybe_inst_true.value();
-  EXPECT_TRUE(inst_true.get_val().get_val());
+  EXPECT_TRUE(maybe_inst_true.value()->get_val().get_val());
 }
 
 // NOLINTEND(bugprone-unchecked-optional-access)

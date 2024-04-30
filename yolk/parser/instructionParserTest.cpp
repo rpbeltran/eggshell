@@ -37,39 +37,39 @@ class TestParser : public InstructionParser<TestInstruction> {
   static std::vector<Flag> _optional_flags;
 
   auto parse_flags(std::unordered_map<std::string, std::optional<FlagValue>> &
-                       flags) -> TestInstruction override {
-    TestInstruction inst;
+                       flags) -> std::shared_ptr<TestInstruction> override {
+    auto inst = std::make_shared<TestInstruction>();
 
     assert(!flags["reqNone"].has_value());
 
-    inst.hasReqNone = true;
-    inst.reqName.set_refid(flags["reqName"].value().value);
-    inst.reqNum.set_val(flags["reqNum"].value().value);
-    inst.reqBool.set_val(flags["reqBool"].value().value);
+    inst->hasReqNone = true;
+    inst->reqName.set_refid(flags["reqName"].value().value);
+    inst->reqNum.set_val(flags["reqNum"].value().value);
+    inst->reqBool.set_val(flags["reqBool"].value().value);
 
     if (flags.contains("optNone")) {
       assert(!flags["optNone"].has_value());
-      inst.hasOptNone = true;
+      inst->hasOptNone = true;
     } else {
-      inst.hasOptNone = false;
+      inst->hasOptNone = false;
     }
     if (flags.contains("optName")) {
-      inst.optName.set_refid(flags["optName"].value().value);
-      inst.hasOptName = true;
+      inst->optName.set_refid(flags["optName"].value().value);
+      inst->hasOptName = true;
     } else {
-      inst.hasOptName = false;
+      inst->hasOptName = false;
     }
     if (flags.contains("optNum")) {
-      inst.optNum.set_val(flags["optNum"].value().value);
-      inst.hasOptNum = true;
+      inst->optNum.set_val(flags["optNum"].value().value);
+      inst->hasOptNum = true;
     } else {
-      inst.hasOptNum = false;
+      inst->hasOptNum = false;
     }
     if (flags.contains("optBool")) {
-      inst.optBool.set_val(flags["optBool"].value().value);
-      inst.hasOptBool = true;
+      inst->optBool.set_val(flags["optBool"].value().value);
+      inst->hasOptBool = true;
     } else {
-      inst.hasOptBool = false;
+      inst->hasOptBool = false;
     }
     return inst;
   }
@@ -98,24 +98,24 @@ std::vector<Flag> TestParser::_optional_flags = {
 TEST(InstructionParser, parseReqOnly) {
   TestParser test_parser;
 
-  const std::vector<std::string> args = {"--reqNone", "--reqName", "<13>", "--reqNum",
-                                   "7",         "--reqBool", "true"};
+  const std::vector<std::string> args = {
+      "--reqNone", "--reqName", "<13>", "--reqNum", "7", "--reqBool", "true"};
 
   auto maybe_inst = test_parser.parse(args);
 
   ASSERT_TRUE(maybe_inst.has_value());
 
-  auto inst = maybe_inst.value();
 
-  EXPECT_TRUE(inst.hasReqNone);
-  EXPECT_EQ(inst.reqName.get_refid(), 13);
-  EXPECT_EQ(inst.reqNum.get_val(), 7);
-  EXPECT_EQ(inst.reqBool.get_val(), 1);
 
-  EXPECT_FALSE(inst.hasOptNone);
-  EXPECT_FALSE(inst.hasOptName);
-  EXPECT_FALSE(inst.hasOptNum);
-  EXPECT_FALSE(inst.hasOptBool);
+  EXPECT_TRUE(maybe_inst.value()->hasReqNone);
+  EXPECT_EQ(maybe_inst.value()->reqName.get_refid(), 13);
+  EXPECT_EQ(maybe_inst.value()->reqNum.get_val(), 7);
+  EXPECT_EQ(maybe_inst.value()->reqBool.get_val(), 1);
+
+  EXPECT_FALSE(maybe_inst.value()->hasOptNone);
+  EXPECT_FALSE(maybe_inst.value()->hasOptName);
+  EXPECT_FALSE(maybe_inst.value()->hasOptNum);
+  EXPECT_FALSE(maybe_inst.value()->hasOptBool);
 }
 
 TEST(InstructionParser, parseOpt) {
@@ -130,24 +130,22 @@ TEST(InstructionParser, parseOpt) {
 
   ASSERT_TRUE(maybe_inst.has_value());
 
-  auto inst = maybe_inst.value();
+  EXPECT_TRUE(maybe_inst.value()->hasReqNone);
+  EXPECT_EQ(maybe_inst.value()->reqName.get_refid(), 13);
+  EXPECT_EQ(maybe_inst.value()->reqNum.get_val(), 7);
+  EXPECT_EQ(maybe_inst.value()->reqBool.get_val(), 1);
 
-  EXPECT_TRUE(inst.hasReqNone);
-  EXPECT_EQ(inst.reqName.get_refid(), 13);
-  EXPECT_EQ(inst.reqNum.get_val(), 7);
-  EXPECT_EQ(inst.reqBool.get_val(), 1);
-
-  EXPECT_TRUE(inst.hasOptNone);
-  EXPECT_EQ(inst.optName.get_refid(), 99999);
-  EXPECT_EQ(inst.optNum.get_val(), 78);
-  EXPECT_EQ(inst.optBool.get_val(), 1);
+  EXPECT_TRUE(maybe_inst.value()->hasOptNone);
+  EXPECT_EQ(maybe_inst.value()->optName.get_refid(), 99999);
+  EXPECT_EQ(maybe_inst.value()->optNum.get_val(), 78);
+  EXPECT_EQ(maybe_inst.value()->optBool.get_val(), 1);
 }
 
 TEST(InstructionParser, parseOptMissingRequired) {
   TestParser test_parser;
 
-  const std::vector<std::string> args = {"--reqNone", "--reqName", "<13>", "--reqNum",
-                                   "7"};
+  const std::vector<std::string> args = {"--reqNone", "--reqName", "<13>",
+                                         "--reqNum", "7"};
   auto maybe_inst = test_parser.parse(args);
   EXPECT_FALSE(maybe_inst.has_value());
 }
@@ -156,7 +154,7 @@ TEST(InstructionParser, parseOptMissingBoolLit) {
   TestParser test_parser;
 
   const std::vector<std::string> args = {"--reqNone", "--reqName", "<13>",
-                                   "--reqNum",  "7",         "--reqBool"};
+                                         "--reqNum",  "7",         "--reqBool"};
   auto maybe_inst = test_parser.parse(args);
   EXPECT_FALSE(maybe_inst.has_value());
 }
@@ -165,7 +163,7 @@ TEST(InstructionParser, parseOptMissingNumLit) {
   TestParser test_parser;
 
   const std::vector<std::string> args = {"--reqNone", "--reqName", "<13>",
-                                   "--reqNum",  "--reqBool", "true"};
+                                         "--reqNum",  "--reqBool", "true"};
   auto maybe_inst = test_parser.parse(args);
   EXPECT_FALSE(maybe_inst.has_value());
 }
@@ -174,7 +172,7 @@ TEST(InstructionParser, parseOptMissingNameLit) {
   TestParser test_parser;
 
   const std::vector<std::string> args = {"--reqNone", "--reqName", "--reqNum",
-                                   "7",         "--reqBool", "true"};
+                                         "7",         "--reqBool", "true"};
   auto maybe_inst = test_parser.parse(args);
   EXPECT_FALSE(maybe_inst.has_value());
 }
@@ -183,7 +181,7 @@ TEST(InstructionParser, parseOptNoneHasArg) {
   TestParser test_parser;
 
   const std::vector<std::string> args = {"--reqNone", "7", "--reqName", "<13>",
-                                   "--reqNum",  "7", "--reqBool", "true"};
+                                         "--reqNum",  "7", "--reqBool", "true"};
   auto maybe_inst = test_parser.parse(args);
   EXPECT_FALSE(maybe_inst.has_value());
 }
@@ -191,8 +189,8 @@ TEST(InstructionParser, parseOptNoneHasArg) {
 TEST(InstructionParser, parseOptLitHasRef) {
   TestParser test_parser;
 
-  const std::vector<std::string> args = {"--reqNone", "--reqName", "<13>", "--reqNum",
-                                   "<7>",       "--reqBool", "true"};
+  const std::vector<std::string> args = {
+      "--reqNone", "--reqName", "<13>", "--reqNum", "<7>", "--reqBool", "true"};
   auto maybe_inst = test_parser.parse(args);
   EXPECT_FALSE(maybe_inst.has_value());
 }
@@ -200,8 +198,8 @@ TEST(InstructionParser, parseOptLitHasRef) {
 TEST(InstructionParser, parseOptRefHasLit) {
   TestParser test_parser;
 
-  const std::vector<std::string> args = {"--reqNone", "--reqName", "13",  "--reqNum",
-                                   "7",         "--reqBool", "true"};
+  const std::vector<std::string> args = {
+      "--reqNone", "--reqName", "13", "--reqNum", "7", "--reqBool", "true"};
   auto maybe_inst = test_parser.parse(args);
   EXPECT_FALSE(maybe_inst.has_value());
 }

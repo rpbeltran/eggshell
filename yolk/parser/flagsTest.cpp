@@ -6,8 +6,10 @@
 
 using namespace YolkParser;
 
-const auto reference_value = std::optional<FlagValue>{FlagValue{.value=0, .is_reference=true}};
-const auto literal_value = std::optional<FlagValue>{FlagValue{.value=0, .is_reference=false}};
+const auto reference_value =
+    std::optional<FlagValue>{FlagValue{.value = 0, .is_reference = true}};
+const auto literal_value =
+    std::optional<FlagValue>{FlagValue{.value = 0, .is_reference = false}};
 const auto none_value = std::optional<FlagValue>{};
 
 TEST(ParserFlags, ValidateRefID) {

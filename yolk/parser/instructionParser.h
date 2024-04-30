@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 #include <unordered_map>
 #include <vector>
 
@@ -24,7 +25,7 @@ class InstructionParser {
       : required_flags(_required_flags), optional_flags(_optional_flags) {}
 
   auto parse(const std::vector<std::string> & args)
-      -> std::optional<instruction_t> {
+      -> std::optional<std::shared_ptr<instruction_t>> {
     auto flags = collect_flags(args);
     if (flags.has_value()) {
       return parse_flags(flags.value());
@@ -34,9 +35,14 @@ class InstructionParser {
 
   virtual auto parse_flags(
       std::unordered_map<std::string, std::optional<FlagValue>> & flags)
-      -> instruction_t = 0;
+      -> std::shared_ptr<instruction_t> = 0;
 
   virtual ~InstructionParser() = default;
+
+  InstructionParser(const InstructionParser & copyFrom) = delete;
+  auto operator=(const InstructionParser & copyFrom) -> InstructionParser & = delete;
+  InstructionParser(InstructionParser &&) = delete;
+  auto operator=(InstructionParser &&) -> InstructionParser & = delete;
 
  private:
   auto collect_flags(const std::vector<std::string> & args)

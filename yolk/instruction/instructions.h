@@ -42,11 +42,12 @@ class Instruction {
 
   explicit Instruction(InstructionType _type) : instruction_type(_type) {}
 
-  //Instruction(const Instruction & other) = delete;
-  //Instruction(Instruction&& other) noexcept = delete;
-  //auto operator=(const Instruction& other) -> Instruction& = delete;
-  //auto operator=(Instruction&& other) noexcept -> Instruction& = delete;
   virtual ~Instruction() = default;
+
+  Instruction(const Instruction & copyFrom) = delete;
+  auto operator=(const Instruction & copyFrom) -> Instruction & = delete;
+  Instruction(Instruction &&) = delete;
+  auto operator=(Instruction &&) -> Instruction & = delete;
 };
 
 // Concept IsAnInstruction: type `T` derives `Instruction`.
