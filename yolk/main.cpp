@@ -6,6 +6,7 @@
 
 #include "./cli/cli.h"
 
+// NOLINTNEXTLINE(bugprone-exception-escape)
 auto main(int argc, char * argv[]) -> int {
   argparse::ArgumentParser program("yolk");
 
