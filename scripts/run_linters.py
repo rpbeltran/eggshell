@@ -6,8 +6,11 @@ from typing import Text
 import subprocess
 
 
+HEADER_FILTER = '.*/yolk/.*'
+
 def get_tidy_command(clang_tidy: Text, build_dir: Text, cpp_file: Path):
-    additional_args = ['--extra-arg=-std=gnu++2b', '-header-filter=.*']
+    additional_args = [
+        '--extra-arg=-std=gnu++2b', f'-header-filter={HEADER_FILTER}']
     return [clang_tidy] + additional_args + ['-p', build_dir, str(cpp_file)]
 
 
