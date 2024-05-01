@@ -8,11 +8,12 @@ import subprocess
 
 def get_tidy_command(clang_tidy: Text, build_dir: Text, cpp_file: Path):
     additional_args = ['--extra-arg=-std=gnu++2b', '-header-filter=.*']
-    return [clang_tidy] + additional_args + ['-p', build_dir, cpp_file]
+    return [clang_tidy] + additional_args + ['-p', build_dir, str(cpp_file)]
 
 
 def invoke_tidy(clang_tidy: Text, build_dir: Text, cpp_file: Path):
     command = get_tidy_command(clang_tidy, build_dir, cpp_file)
+    print('Invoking: ' + ' '.join(command))
     subprocess.Popen(
         command,
         cwd=build_dir,
