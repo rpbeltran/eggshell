@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=69.0.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "egg-py"
+version = "0.0.0"
+dependencies = [
+    "lark>=1.1.9"
+]
+requires-python = ">=3.12"
+authors = [
+    {name = "Ryan Beltran", email = "rp.beltran@yahoo.com"}
+]
+maintainers = [
+    {name = "Ryan Beltran", email = "rp.beltran@yahoo.com"}
+]
+description = "Experimental frontend for the Egg scripting language"
+readme = "README.md"
+license = {text = "MIT License"}
+keywords = ["compiler", "egg", "languages", "shell"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python",
+    "Operating System :: OS Independent"
+]
+
+[project.urls]
+Homepage = "https://github.com/rpbeltran/eggshel"
+Documentation = "https://github.com/rpbeltran/eggshel"
+Repository = "https://github.com/rpbeltran/eggshel"
+"Bug Tracker" = "https://github.com/rpbeltran/eggshell/issues"
+Changelog = "https://github.com/rpbeltran/eggshell/commits/main/"
+
+[project.scripts]
+egg-py = "egg:main"
