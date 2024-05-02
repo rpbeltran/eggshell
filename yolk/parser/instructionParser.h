@@ -2,11 +2,11 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
-#include "../instruction/instructionArgs.h"
 #include "../instruction/instructions.h"
 
 #include "./flags.h"
