@@ -1,0 +1,22 @@
+?start: expression
+
+expression: write_to_file | append_to_file | pipeline
+
+exec: LITERAL+
+
+?pipeline: exec ("|" pipeline)?
+write_to_file: pipeline ">" LITERAL
+append_to_file: pipeline ">>" LITERAL
+
+
+LITERAL: UNQUOTED_LIT | SINGLE_QUOTED_LIT | DOUBLE_QUOTED_LIT | BACK_QUOTED_LIT
+UNQUOTED_LIT: /([^\s\\'"`]|(\\((\\){2})*[\s"'`]))+/
+SINGLE_QUOTED_LIT: /"((\\{2})*|((.|\n)*?[^\\](\\{2})*))"/
+DOUBLE_QUOTED_LIT: /'((\\{2})*|((.|\n)*?[^\\](\\{2})*))'/
+BACK_QUOTED_LIT: /`((\\{2})*|((.|\n)*?[^\\](\\{2})*))`/
+
+
+// todo: add a custom lexer to require whitespace between args
+%import common.SIGNED_NUMBER
+%import common.WS
+%ignore WS
