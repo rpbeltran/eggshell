@@ -1,5 +1,5 @@
+import lark.lexer
 from typing import Iterator
-
 
 OPERATORS = {
     ':': 'COLON',
@@ -8,13 +8,23 @@ OPERATORS = {
     '(': 'PAREN_OPEN',
     ')': 'PAREN_CLOSE',
     ';': 'SEMICOLON',
+    '>': 'GRE',
 }
+
+""" todo:
+    * Support file redirect primitives
+    * Support multi-chareter operators
+    * Add tests
+"""
 
 
 class Token:
     def __init__(self, token_type: str, source: str):
         self.token_type = token_type
         self.source = source
+
+    def to_lark(self):
+        return lark.lexer.Token(self.token_type, self.source)
 
     def __str__(self):
         return f"<{self.token_type}: '{self.source}'>"
@@ -243,3 +253,12 @@ class EggLexer:
         for token in self.lexer_state.state_node.step(atom, self.lexer_state):
             yield token
         self.lexer_state.head += 1
+
+
+class EggLexerLark(lark.lexer.Lexer):
+    def __init__(self, _):
+        self.lexer = EggLexer()
+
+    def lex(self, egg_code):
+        for token in self.lexer.lex(egg_code):
+            yield token.to_lark()

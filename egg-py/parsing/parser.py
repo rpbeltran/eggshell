@@ -2,6 +2,8 @@ import pathlib
 
 import lark
 
+from .lexer import EggLexerLark
+
 
 def get_grammar() -> str:
     """Read the Grammar of Egg from egg.lark."""
@@ -11,4 +13,4 @@ def get_grammar() -> str:
 
 
 def get_parser() -> lark.Lark:
-    return lark.Lark(get_grammar(), parser='lalr')
+    return lark.Lark(get_grammar(), parser='lalr', lexer=EggLexerLark)
