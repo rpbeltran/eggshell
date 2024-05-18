@@ -1,14 +1,55 @@
 import lark.lexer
 from typing import Iterator
 
+
+# Keep operators sorted by length plz.
 OPERATORS = {
+    # 2-Char Operators
+    ':=': 'DECLARE',
+    '>>': 'APPEND_FILE',
+    '//': 'INT_DIV',
+    # 1-Char Operators
     ':': 'COLON',
     '=': 'ASSIGN',
     '|': 'PIPE',
     '(': 'PAREN_OPEN',
     ')': 'PAREN_CLOSE',
+    '{': 'CURLY_OPEN',
+    '}': 'CURLY_CLOSE',
+    '<': 'ANGLE_OPEN',
+    '>': 'ANGLE_CLOSE',
+    '[': 'SQUARE_OPEN',
+    ']': 'SQUARE_CLOSE',
     ';': 'SEMICOLON',
+    '$': 'CURRY',
+    '+': 'PLUS',
+    '-': 'MINUS',
+    '/': 'DIVIDE',
+    '%': 'MOD',
 }
+
+OPERATOR_STARTS = {op[0] for op in OPERATORS}
+
+KEYWORDS = {
+    'fn': 'FN',
+    'for': 'FOR',
+    'while': 'WHILE',
+    'continue': 'CONTINUE',
+    'break': 'BREAK',
+    'true': 'TRUE',
+    'false': 'FALSE',
+    'and': 'AND',
+    'or': 'OR',
+    'xor': 'XOR',
+    'not': 'NOT',
+    'ret': 'RETURN',
+    'if': 'IF',
+    'else': 'ELSE',
+    'use': 'USE',
+    'try': 'TRY',
+    'catch': 'CATCH',
+}
+
 
 class Token:
     def __init__(self, token_type: str, source: str):
@@ -50,12 +91,15 @@ class LexerState:
     def read(self):
         return self.data[self.head]
 
-    def get_token(self, token_type, end=None, inclusive=True):
+    def get_token_source(self, end=None, inclusive=True):
         if end is None:
             end = self.head
         if inclusive:
             end += 1
-        source = self.data[self.token_start : end]
+        return self.data[self.token_start : end]
+
+    def get_token(self, token_type, end=None, inclusive=True):
+        source = self.get_token_source(end, inclusive)
         self.prev_token = Token(token_type, source)
         return self.prev_token
 
@@ -64,8 +108,11 @@ class LexerState:
         if step_back:
             self.step_back()
 
-    def step_back(self):
-        self.head -= 1
+    def step_back(self, steps=1):
+        self.head -= steps
+
+    def step_forward(self, steps=1):
+        self.head += steps
 
     def peek(self, strip=False) -> str:
         tail = self.data[self.head + 1 :]
@@ -108,10 +155,27 @@ class StartNode(DFANode):
         elif c == '`':
             state.token_start = state.head + 1
             state.goto_node(QuotedArgListNode(), step_back=False)
-        elif c in OPERATORS:   # todo: support multi-char operators
+        elif c in OPERATOR_STARTS:
             state.token_start = state.head
-            yield state.get_token(OPERATORS[c], inclusive=True)
+            state.goto_node(OperatorsNode(), step_back=True)
         else:
+            raise LexerError('Read unimplemented char', state)
+        yield from ()
+
+
+class OperatorsNode(DFANode):
+    def step(self, c: str, state: LexerState) -> Iterator[Token]:
+        print(c, state.head)
+        found = False
+        data = c + state.peek()
+        for pattern, token_type in OPERATORS.items():
+            if data.startswith(pattern):
+                found = True
+                state.step_forward(len(pattern) - 1)
+                yield state.get_token(token_type, inclusive=True)
+                state.goto_node(StartNode(), step_back=False)
+                break
+        if not found:
             raise LexerError('Read unimplemented char', state)
 
 
@@ -124,15 +188,13 @@ class CommentNode(DFANode):
 
 class IdentifierNode(DFANode):
     def step(self, c: str, state: LexerState) -> Iterator[Token]:
-        if c.isspace():
-            yield state.get_token('IDENTIFIER', inclusive=False)
-            state.goto_node(StartNode())
-        elif c in r':=+-/[]{}()':
+        if c.isspace() or c in r':=+-/[]{}()':
+            if state.token_start == state.head:
+                raise LexerError('Empty identifier not permitted', state)
             yield state.get_token('IDENTIFIER', inclusive=False)
             state.goto_node(StartNode(), step_back=True)
         elif c in '@':
             raise LexerError('Read unexpected char', state)
-        yield from ()
 
 
 class QuotedLiteralNode(DFANode):
@@ -166,12 +228,16 @@ class QuotedArgListNode(DFANode):
 
 
 class UnquotedArgNode(DFANode):
+
+    # todo: there are cases where this is actually an identifier
+    #  such as before an assignment or after "for"
     def step(self, c: str, state: LexerState) -> Iterator[Token]:
-        if c.isspace():
-            yield state.get_token('EXEC_ARG', inclusive=False)
-            state.goto_node(StartNode())
-        elif c in ')|':
-            yield state.get_token('EXEC_ARG', inclusive=False)
+        if c.isspace() or c in ')|':
+            source = state.get_token_source(inclusive=False)
+            if source in KEYWORDS:
+                yield Token(KEYWORDS[source], source)
+            else:
+                yield Token('EXEC_ARG', source)
             state.goto_node(StartNode(), step_back=True)
         elif c in '@(=:':
             raise LexerError('Read unexpected char', state)
