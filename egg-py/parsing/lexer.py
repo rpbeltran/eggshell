@@ -8,15 +8,7 @@ OPERATORS = {
     '(': 'PAREN_OPEN',
     ')': 'PAREN_CLOSE',
     ';': 'SEMICOLON',
-    '>': 'GRE',
 }
-
-""" todo:
-    * Support file redirect primitives
-    * Support multi-chareter operators
-    * Add tests
-"""
-
 
 class Token:
     def __init__(self, token_type: str, source: str):
@@ -98,18 +90,15 @@ class StartNode(DFANode):
             state.prev_token = None
         elif c.isspace():
             pass
-        elif c.isalpha() or c in '_':
+        elif c.isalpha() or c in '_./':
             state.token_start = state.head
-            state.goto_node(IdentifierOrArg0Node(), step_back=True)
+            state.goto_node(UnquotedArgNode(), step_back=True)
         elif c.isdigit() or (c == '-' and state.peek_one().isdigit()):
             state.token_start = state.head
             state.goto_node(NumberNode(), step_back=True)
         elif c == '#':
             state.token_start = state.head
             state.goto_node(CommentNode(), step_back=False)
-        elif c in './':
-            state.token_start = state.head
-            state.goto_node(UnquotedArgNode(), step_back=True)
         elif c == '@':
             state.token_start = state.head + 1
             state.goto_node(IdentifierNode(), step_back=False)
@@ -131,34 +120,6 @@ class CommentNode(DFANode):
         if c == '\n':
             state.goto_node(StartNode())
         yield from ()
-
-
-class IdentifierOrArg0Node(DFANode):
-    def step(self, c: str, state: LexerState) -> Iterator[Token]:
-        if c.isspace() or c in r')]};|':
-            token_type = self.name_ambiguous_type(state)
-            yield state.get_token(token_type, inclusive=False)
-            state.goto_node(StartNode())
-        elif c in r':=([{':
-            yield state.get_token('IDENTIFIER', inclusive=False)
-            state.goto_node(StartNode(), step_back=True)
-        elif c == '/':
-            state.goto_node(UnquotedArgNode(), step_back=True)
-        elif c in '@':
-            raise LexerError('Read unexpected char', state)
-
-    @staticmethod
-    def name_ambiguous_type(state: LexerState):
-        if state.prev_token and state.prev_token.token_type == 'EXEC_ARG':
-            return 'EXEC_ARG'
-        if (next_c := state.peek_one(strip=True)) == '':
-            return 'IDENTIFIER_OR_ARG0'
-        elif next_c in r':=([{':
-            return 'IDENTIFIER'
-        elif next_c.isalnum() or next_c in f'_/\'"':
-            return 'EXEC_ARG'
-        else:
-            return 'IDENTIFIER_OR_ARG0'
 
 
 class IdentifierNode(DFANode):

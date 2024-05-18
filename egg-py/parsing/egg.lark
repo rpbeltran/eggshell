@@ -12,7 +12,7 @@ untyped_assignment: IDENTIFIER COLON ASSIGN value
 
 number: INTEGER | FLOAT
 
-exec: (EXEC_ARG | IDENTIFIER_OR_ARG0) EXEC_ARG*
+exec: EXEC_ARG+
 
 ?pipeline: exec (PIPE pipeline)*
 
@@ -30,7 +30,6 @@ append_to_file: "append_to_file is UNDEFINED"
 %declare EXEC_ARG
 %declare FLOAT
 %declare IDENTIFIER
-%declare IDENTIFIER_OR_ARG0
 %declare INTEGER
 %declare PAREN_CLOSE
 %declare PAREN_OPEN

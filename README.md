@@ -17,26 +17,26 @@ class Item {
     quantity: Int
 
     fn total -> Float {
-        ret price * quantity
+        ret @price * @quantity
     }
 }
 
 fn get_items_from(file: Path) -> Status<[Item]> {
-    if !(file.exists) {
+    if !(@file.exists) {
         ret Status::Error("Provided file does not exist")
     }
 
     lines : [str] = `read @file` | _.split
 
     items : [Item] = []
-    for (i, line) in lines.with_indices {
-        cols := line.split(',')
+    for (i, line) in @lines.with_indices {
+        cols := @line.split(',')
         if cols.len != 3 {
             ret Status::Err("Line {i} is invalid")
         }
-        items.add(Item{cols[0], cols[1].float, cols[2].int})
+        @items.add(Item{@cols[0], @cols[1].float, @cols[2].int})
     }
-    ret Status::Ok(items)
+    ret Status::Ok(@items)
 }
 
 fn main (args) {
@@ -109,8 +109,8 @@ This function has a lambda in its body:
 ```
 fn factorial(n: int) -> int {
     answer := 1
-    (1..n).ea $ \i -> answer *= i
-    ret answer
+    (1..n).ea $ \i -> @answer *= i
+    ret @answer
 }
 
 factorial_of_10 := factorial(10)
@@ -120,17 +120,17 @@ Functions that take a single argument can also have that argument piped to it
 like so:
 
 ```
-factorial_of_10 := 10 | factorial
+factorial_of_10 := 10 | @factorial
 ```
 
 Functions can also receive arguments via "currying" syntax:
 
 ```
-f = \(a, b, c) -> a + b + c
+add3 : Fn = \(a, b, c) -> @a + @b + @c
 
-add_15 : Fn -> 
+plus_15 := add3 $ 10 $ 5
 
-sum_1_2_3 : int = f $ 1 $ 2 $ 3 
+sum_1_2_3 : int = f $ 1 $ 2 $ 3
 ```
 
 Implicit lambdas can also be created with the `_` token for lambdas that only
@@ -143,16 +143,16 @@ lines := cat my_file.csv | _.split()
 Lambda functions can also have multiple lines using curly braces as below:
 
 ```
-add3 := \(a,b,c) { 
-    d:= a + b;
-    return d + c 
-} 
+add3 := \(a,b,c) {
+    d:= @a + @b
+    return @d + @c 
+}
 ```
 
 Default arguments can be asserted, and type hints on arguments are optional.
 When we are calling a function with zero args, or using only default values for
-args, we can omit the parenthesis. See how implicit lambdas and function calls 
-make get_rows_for_user faster to type. 
+args, we can omit the parenthesis. See how implicit lambdas and function calls
+make get_rows_for_user faster to type.
 
 ```
 lines := cat my_file.csv | _.split.rev.rev # why reverse twice? Because we can!
@@ -171,7 +171,7 @@ fn do_with_1_2_3 ( f: Fn ) {
 
 do_with_1_2_3(say...)
 ```
- 
+
 
 **Error Handling**
 
@@ -194,7 +194,7 @@ try {
 ```
 
 These are exactly equivalent. In general, the first syntax is nice for
-one-liners in shell while try-catch will often be better in scripts.  
+one-liners in shell while try-catch will often be better in scripts.
 
 **While Loops**
 
@@ -212,7 +212,7 @@ The code blocks below have identical meaning:
 ```
 for i in (0..10) {
     say i
-} 
+}
 ```
 
 ```
@@ -225,7 +225,7 @@ A similar method for lists is `map`.
 
 ```
 first_odds := [1,3,5,7,9,11]
-first_evens := first_odds.map $ 2*(_-1)
+first_evens := @first_odds.map $ 2*(_-1)
 ```
 
 **Asynchronous Programming**
@@ -311,11 +311,11 @@ class Item {
   quantity: Int = 1
 
   fn total -> Float {
-    ret price * quantity
+    ret @price * @quantity
   }
 }
 
-item : Item = Item{"thingy", 1.99} 
+@item : Item = Item{"thingy", 1.99} 
 ```
 
 
@@ -327,29 +327,29 @@ to help avoid collisions with user defined variables and functions as well as
 executables in path.
 
 To access an environment variable with a default value, use `env.get` as in:
-`env.get("FOO", "default_value")`
+`@env.get("FOO", "default_value")`
 
 To temporarily set an environment variable, then return it to prior state,
 employ the `push` and `pop` methods:
 
 ```
-env.push("FOO", "hello")
+@env.push("FOO", "hello")
 ./do_something_that_uses_foo
-env.pop("FOO")
+@env.pop("FOO")
 ```
 
 You can also call `env.push` and `env.pop` without any arguments and it will
 reset all environment variables to their previous state.
 
 ```
-env["foo"] = "Hello"
-env["bar"] = "World"
+@env["foo"] = "Hello"
+@env["bar"] = "World"
 
-env.push
-env["foo"] = "Alice"
-env["bar"] = "Bob"
+@env.push
+@env["foo"] = "Alice"
+@env["bar"] = "Bob"
 say "hello {env['foo']} and {env['bar']}" 
-env.pop
+@env.pop
 
 say "{env['foo']} {env['bar']}"
 ```
@@ -358,14 +358,14 @@ Will display "hello Alice and Bob" on the first `say` and "hello world" on the
 second.
 
 To set an environment variable for the duration of the script, use:
-`env.set("FOO", "hello")` or `env["FOO"] = "Hello"`
+`@env.set("FOO", "hello")` or `@env["FOO"] = "Hello"`
 
 To check if an environment variable is set, use:
-`env.has("FOO")`
+`@env.has("FOO")`
 
 If you know that an environment variable is set, you can access it like a
 dictionary which will throw an error if it is not defined:
-`env["FOO"]`
+`@env["FOO"]`
 
 You can also call a function or executable with temporary environment variables
 with the syntax `use <assignments> : <expression>`
