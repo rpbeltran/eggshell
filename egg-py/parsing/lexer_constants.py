@@ -8,6 +8,7 @@ OPERATORS = {
     '->': 'ARROW',
     '&&': 'SEQ_AND',
     '||': 'SEQ_OR',
+    '::': 'NAMESPACE',
     # 1-Char Operators
     ':': 'COLON',
     '=': 'ASSIGN',
