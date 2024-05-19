@@ -3,25 +3,25 @@
 
 # -- Expressions --
 
-?top_level_expression: write_to_file | append_to_file | assignment | expression
+?top_level_expression: write_to_file | append_to_file | declaration | expression | pipeline
 
-?expression:  arithmetic
-?atomic: pipeline | paren_expr | IDENTIFIER | QUOTED_STRING | number
-?paren_expr: PAREN_OPEN expression PAREN_CLOSE
+?expression: arithmetic
+?atomic: exec | paren_expr | IDENTIFIER | QUOTED_STRING | lambda_func | number
+?paren_expr: "PAREN_OPEN" (expression | pipeline) "PAREN_CLOSE"
 
 
-# -- Assignment --
+# -- Variable Declaration --
 
-?assignment: typed_assignment | untyped_assignment
+?declaration: typed_declaration | untyped_declaration
 
-typed_assignment: IDENTIFIER COLON IDENTIFIER ASSIGN expression
-untyped_assignment: IDENTIFIER DECLARE expression
+typed_declaration: IDENTIFIER "COLON" IDENTIFIER "ASSIGN" expression
+untyped_declaration: IDENTIFIER "DECLARE" expression
 
 
 # -- File Redirection --
 
-write_to_file: pipeline ANGLE_CLOSE (EXEC_ARG | IDENTIFIER | QUOTED_STRING)
-append_to_file: pipeline APPEND_FILE (EXEC_ARG | IDENTIFIER | QUOTED_STRING)
+write_to_file: pipeline "ANGLE_CLOSE" (EXEC_ARG | IDENTIFIER | QUOTED_STRING)
+append_to_file: pipeline "APPEND_FILE" (EXEC_ARG | IDENTIFIER | QUOTED_STRING)
 
 
 # -- Arithmetic --
@@ -30,15 +30,15 @@ append_to_file: pipeline APPEND_FILE (EXEC_ARG | IDENTIFIER | QUOTED_STRING)
 ?arithmetic_2: multiply | divide | int_divide | modulus | arithmetic_3
 ?arithmetic_3: raise_power | atomic
 
-addition: arithmetic_2 PLUS arithmetic_2
-subtraction: arithmetic_2 MINUS arithmetic_2
+addition: arithmetic_2 "PLUS" arithmetic_2
+subtraction: arithmetic_2 "MINUS" arithmetic_2
 
-multiply: arithmetic_3 TIMES arithmetic_3
-divide: arithmetic_3 DIVIDE arithmetic_3
-int_divide: arithmetic_3 INT_DIV arithmetic_3
-modulus: arithmetic_3 MOD arithmetic_3
+multiply: arithmetic_3 "TIMES" arithmetic_3
+divide: arithmetic_3 "DIVIDE" arithmetic_3
+int_divide: arithmetic_3 "INT_DIV" arithmetic_3
+modulus: arithmetic_3 "MOD" arithmetic_3
 
-raise_power: atomic POWER atomic
+raise_power: atomic "POWER" atomic
 
 number: INTEGER | FLOAT
 
@@ -46,8 +46,16 @@ number: INTEGER | FLOAT
 # -- Pipelines --
 
 exec: EXEC_ARG+
-?pipeline: exec (PIPE pipeline)*
+?pipeline: exec ("PIPE" pipeline_target)+
+?pipeline_target: exec | lambda_func | IDENTIFIER
 
+
+# -- Lambdas --
+
+lambda_func: "LAMBDA" signature_args "ARROW" lambda_body
+?lambda_body: expression | "CURLY_OPEN" expression* "CURLY_CLOSE"
+?signature_args : PAREN_OPEN signature_arg (COMMA signature_arg)* PAREN_CLOSE | signature_arg
+?signature_arg: IDENTIFIER (COLON IDENTIFIER)? (ASSIGN expression)?
 
 # -- Lexer Declarations --
 
@@ -67,6 +75,9 @@ exec: EXEC_ARG+
 %declare COLON
 %declare ASSIGN
 %declare PIPE
+%declare ARROW
+%declare LAMBDA
+%declare COMMA
 %declare PAREN_OPEN
 %declare PAREN_CLOSE
 %declare CURLY_OPEN

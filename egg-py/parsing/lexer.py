@@ -39,7 +39,6 @@ class StartNode(DFANode):
 
 class OperatorsNode(DFANode):
     def step(self, c: str, state: LexerState) -> Iterator[Token]:
-        print(c, state.head)
         found = False
         data = c + state.peek()
         for pattern, token_type in OPERATORS.items():
@@ -113,7 +112,7 @@ class UnquotedLiteral(DFANode):
         if c in '(:=':
             yield state.get_token('IDENTIFIER', inclusive=False)
             state.goto_node(StartNode(), step_back=True)
-        elif space or c in ')|':
+        elif space or c in '{})|':
             source = state.get_token_source(inclusive=False)
             token_type = self.get_token_type(source, state)
             yield state.get_token(token_type, source=source)
@@ -124,7 +123,7 @@ class UnquotedLiteral(DFANode):
             return 'EXEC_ARG'
         if source in KEYWORDS:
             return KEYWORDS[source]
-        if state.prev_token_type in ['CATCH', 'COLON', 'FOR', 'FN', 'USE']:
+        if state.prev_token_type in ['CATCH', 'COLON', 'FOR', 'FN', 'USE', 'LAMBDA']:
             return 'IDENTIFIER'
         return 'EXEC_ARG'
 

@@ -4,10 +4,13 @@ OPERATORS = {
     ':=': 'DECLARE',
     '>>': 'APPEND_FILE',
     '//': 'INT_DIV',
+    '\\': 'LAMBDA',
+    '->': 'ARROW',
     # 1-Char Operators
     ':': 'COLON',
     '=': 'ASSIGN',
     '|': 'PIPE',
+    ',': 'COMMA',
     '(': 'PAREN_OPEN',
     ')': 'PAREN_CLOSE',
     '{': 'CURLY_OPEN',
