@@ -83,7 +83,7 @@ class LexerState:
         self.token_start = 0
         self.head = 0
         self.state_node = StartNode()
-        self.prev_token = None
+        self.prev_token_type = None
 
     def has_data(self):
         return self.head < len(self.data)
@@ -98,10 +98,11 @@ class LexerState:
             end += 1
         return self.data[self.token_start : end]
 
-    def get_token(self, token_type, end=None, inclusive=True):
-        source = self.get_token_source(end, inclusive)
-        self.prev_token = Token(token_type, source)
-        return self.prev_token
+    def get_token(self, token_type, end=None, inclusive=True, source=None):
+        if source is None:
+            source = self.get_token_source(end, inclusive)
+        self.prev_token_type = token_type
+        return Token(token_type, source)
 
     def goto_node(self, state, step_back=False):
         self.state_node = state
@@ -134,12 +135,12 @@ class DFANode:
 class StartNode(DFANode):
     def step(self, c: str, state: LexerState) -> Iterator[Token]:
         if c == '\n':
-            state.prev_token = None
+            state.prev_token_type = None
         elif c.isspace():
             pass
         elif c.isalpha() or c in '_./':
             state.token_start = state.head
-            state.goto_node(UnquotedArgNode(), step_back=True)
+            state.goto_node(UnquotedLiteral(), step_back=True)
         elif c.isdigit() or (c == '-' and state.peek_one().isdigit()):
             state.token_start = state.head
             state.goto_node(NumberNode(), step_back=True)
@@ -227,20 +228,30 @@ class QuotedArgListNode(DFANode):
             state.goto_node(StartNode(), step_back=False)
 
 
-class UnquotedArgNode(DFANode):
-
-    # todo: there are cases where this is actually an identifier
-    #  such as before an assignment or after "for"
+class UnquotedLiteral(DFANode):
     def step(self, c: str, state: LexerState) -> Iterator[Token]:
-        if c.isspace() or c in ')|':
-            source = state.get_token_source(inclusive=False)
-            if source in KEYWORDS:
-                yield Token(KEYWORDS[source], source)
-            else:
-                yield Token('EXEC_ARG', source)
-            state.goto_node(StartNode(), step_back=True)
-        elif c in '@(=:':
+        space = False
+        if c.isspace():
+            c = state.peek_one(strip=True)
+            space=True
+        elif c in '@':
             raise LexerError('Read unexpected char', state)
+
+        if c in '(:=':
+            yield state.get_token('IDENTIFIER', inclusive=False)
+            state.goto_node(StartNode(), step_back=True)
+        elif space or c in ')|':
+            source = state.get_token_source(inclusive=False)
+            token_type = self.get_token_type(source, state)
+            yield state.get_token(token_type, source=source)
+            state.goto_node(StartNode(), step_back=True)
+
+    def get_token_type(self, source: str, state: LexerState):
+        if source in KEYWORDS:
+            return KEYWORDS[source]
+        if state.prev_token_type in ['CATCH', 'COLON', 'FOR', 'FN', 'USE']:
+            return 'IDENTIFIER'
+        return 'EXEC_ARG'
 
 
 class NumberNode(DFANode):
@@ -258,7 +269,7 @@ class NumberNode(DFANode):
             state.goto_node(StartNode(), step_back=True)
 
     def get_token_type(self, state: LexerState) -> str:
-        if state.prev_token and state.prev_token.token_type == 'EXEC_ARG':
+        if state.prev_token_type == 'EXEC_ARG':
             return 'EXEC_ARG'
         return 'FLOAT' if self.has_decimal else 'INTEGER'
 
@@ -270,6 +281,7 @@ class EggLexer:
     def lex(self, data) -> Iterator[Token]:
         self.lexer_state = LexerState(data + ' #')
         while self.lexer_state.has_data():
+
             for token in self.step():
                 yield token
         if self.lexer_state.state_node.__class__ != CommentNode:
@@ -277,6 +289,7 @@ class EggLexer:
 
     def step(self) -> Iterator[Token]:
         atom = self.lexer_state.read()
+        #print( "-", atom, self.lexer_state.state_node.__class__)
         for token in self.lexer_state.state_node.step(atom, self.lexer_state):
             yield token
         self.lexer_state.head += 1
