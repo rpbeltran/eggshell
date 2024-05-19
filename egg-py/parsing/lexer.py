@@ -1,6 +1,7 @@
 import lark.lexer
 from typing import Iterator
 
+from .lexer_util import (Token, LexerError, LexerState, DFANode)
 
 # Keep operators sorted by length plz.
 OPERATORS = {
@@ -49,87 +50,6 @@ KEYWORDS = {
     'try': 'TRY',
     'catch': 'CATCH',
 }
-
-
-class Token:
-    def __init__(self, token_type: str, source: str):
-        self.token_type = token_type
-        self.source = source
-
-    def to_lark(self):
-        return lark.lexer.Token(self.token_type, self.source)
-
-    def __str__(self):
-        return f"<{self.token_type}: '{self.source}'>"
-
-
-class LexerError(Exception):
-    def __init__(self, problem, lexer_state: 'LexerState'):
-        self.problem = problem
-        self.position = lexer_state.head
-        self.head = lexer_state.read() if lexer_state.has_data() else 'EOF'
-        self.dfa_state = lexer_state.state_node
-
-    def __str__(self):
-        return (
-            f"{self.problem} '{self.head}' in position {self.position}.\n"
-            f'\tDFA State: {self.dfa_state}.\n'
-        )
-
-
-class LexerState:
-    def __init__(self, data):
-        self.data = data
-        self.token_start = 0
-        self.head = 0
-        self.state_node = StartNode()
-        self.prev_token_type = None
-
-    def has_data(self):
-        return self.head < len(self.data)
-
-    def read(self):
-        return self.data[self.head]
-
-    def get_token_source(self, end=None, inclusive=True):
-        if end is None:
-            end = self.head
-        if inclusive:
-            end += 1
-        return self.data[self.token_start : end]
-
-    def get_token(self, token_type, end=None, inclusive=True, source=None):
-        if source is None:
-            source = self.get_token_source(end, inclusive)
-        self.prev_token_type = token_type
-        return Token(token_type, source)
-
-    def goto_node(self, state, step_back=False):
-        self.state_node = state
-        if step_back:
-            self.step_back()
-
-    def step_back(self, steps=1):
-        self.head -= steps
-
-    def step_forward(self, steps=1):
-        self.head += steps
-
-    def peek(self, strip=False) -> str:
-        tail = self.data[self.head + 1 :]
-        if strip:
-            return tail.lstrip()
-        return tail
-
-    def peek_one(self, strip=False) -> str:
-        if peek := self.peek(strip):
-            return peek[0]
-        return ''
-
-
-class DFANode:
-    def __str__(self):
-        return f'<{self.__class__.__name__}:  {self.__dict__}>'
 
 
 class StartNode(DFANode):
@@ -247,6 +167,8 @@ class UnquotedLiteral(DFANode):
             state.goto_node(StartNode(), step_back=True)
 
     def get_token_type(self, source: str, state: LexerState):
+        if state.prev_token_type == 'EXEC_ARG':
+            return 'EXEC_ARG'
         if source in KEYWORDS:
             return KEYWORDS[source]
         if state.prev_token_type in ['CATCH', 'COLON', 'FOR', 'FN', 'USE']:
@@ -281,7 +203,6 @@ class EggLexer:
     def lex(self, data) -> Iterator[Token]:
         self.lexer_state = LexerState(data + ' #')
         while self.lexer_state.has_data():
-
             for token in self.step():
                 yield token
         if self.lexer_state.state_node.__class__ != CommentNode:
@@ -289,7 +210,6 @@ class EggLexer:
 
     def step(self) -> Iterator[Token]:
         atom = self.lexer_state.read()
-        #print( "-", atom, self.lexer_state.state_node.__class__)
         for token in self.lexer_state.state_node.step(atom, self.lexer_state):
             yield token
         self.lexer_state.head += 1
