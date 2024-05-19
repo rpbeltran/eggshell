@@ -20,8 +20,10 @@ OPERATORS = {
     '$': 'CURRY',
     '+': 'PLUS',
     '-': 'MINUS',
+    '*': 'TIMES',
     '/': 'DIVIDE',
     '%': 'MOD',
+    '^': 'POWER',
 }
 
 OPERATOR_STARTS = {op[0] for op in OPERATORS}

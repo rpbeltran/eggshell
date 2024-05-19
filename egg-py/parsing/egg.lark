@@ -1,42 +1,104 @@
-?start: expression
+?start: top_level_expression
 
-?expression: write_to_file | append_to_file | assignment | pipeline
+
+# -- Expressions --
+
+?top_level_expression: write_to_file | append_to_file | expression
+
+?expression: pipeline | paren_expr | number | IDENTIFIER | QUOTED_STRING
+?paren_expr: PAREN_OPEN expression PAREN_CLOSE
+
+
+# -- Assignment --
 
 ?assignment: typed_assignment | untyped_assignment
 
-# todo: support optional "var" keyword before assignment
-typed_assignment: IDENTIFIER COLON IDENTIFIER ASSIGN value
-untyped_assignment: IDENTIFIER COLON ASSIGN value
+typed_assignment: IDENTIFIER COLON IDENTIFIER ASSIGN expression
+untyped_assignment: IDENTIFIER DECLARE expression
 
-?value: number | pipeline | IDENTIFIER
+
+# -- File Redirection --
+
+write_to_file: pipeline ANGLE_CLOSE (EXEC_ARG | IDENTIFIER | QUOTED_STRING)
+append_to_file: pipeline APPEND_FILE (EXEC_ARG | IDENTIFIER | QUOTED_STRING)
+
+
+# -- Arithmetic --
+
+arithmetic: addition | subtraction | arithmetic_2
+?arithmetic_2: multiply | divide | int_divide | modulus | arithmetic_3
+?arithmetic_3: raise_power | expression
+
+addition: (arithmetic_2 | paren_expr) PLUS (arithmetic_2 | paren_expr)
+subtraction: (arithmetic_2 | paren_expr) PLUS (arithmetic_2 | paren_expr)
+
+multiply: (arithmetic_3 | paren_expr) TIMES (arithmetic_3 | paren_expr)
+divide: (arithmetic_3 | paren_expr) DIVIDE (arithmetic_3 | paren_expr)
+int_divide: (arithmetic_3 | paren_expr) INT_DIV (arithmetic_3 | paren_expr)
+modulus: (arithmetic_3 | paren_expr) MOD (arithmetic_3 | paren_expr)
+
+raise_power: expression POWER expression
 
 number: INTEGER | FLOAT
 
-exec: EXEC_ARG+
 
+# -- Pipelines --
+
+exec: EXEC_ARG+
 ?pipeline: exec (PIPE pipeline)*
 
-# todo support ">" in lexer
-# write_to_file: pipeline ">" EXEC_ARG
-write_to_file: "write_to_file is UNDEFINED"
 
-# todo support ">>" in lexer
-# append_to_file: pipeline ">>" EXEC_ARG
-append_to_file: "append_to_file is UNDEFINED"
+# -- Lexer Declarations --
 
+# - DFA Tokens
 
-%declare ASSIGN
-%declare COLON
 %declare EXEC_ARG
 %declare FLOAT
 %declare IDENTIFIER
 %declare INTEGER
-%declare PAREN_CLOSE
-%declare PAREN_OPEN
-%declare PIPE
 %declare QUOTED_STRING
-%declare SEMICOLON
 
-%import common.SIGNED_INT
-%import common.SIGNED_FLOAT
-%import common.WS
+# - Operators
+
+%declare DECLARE
+%declare APPEND_FILE
+%declare INT_DIV
+%declare COLON
+%declare ASSIGN
+%declare PIPE
+%declare PAREN_OPEN
+%declare PAREN_CLOSE
+%declare CURLY_OPEN
+%declare CURLY_CLOSE
+%declare ANGLE_OPEN
+%declare ANGLE_CLOSE
+%declare SQUARE_OPEN
+%declare SQUARE_CLOSE
+%declare SEMICOLON
+%declare CURRY
+%declare PLUS
+%declare MINUS
+%declare DIVIDE
+%declare TIMES
+%declare MOD
+%declare POWER
+
+# - Keywords
+
+%declare FN
+%declare FOR
+%declare WHILE
+%declare CONTINUE
+%declare BREAK
+%declare TRUE
+%declare FALSE
+%declare AND
+%declare OR
+%declare XOR
+%declare NOT
+%declare RETURN
+%declare IF
+%declare ELSE
+%declare USE
+%declare TRY
+%declare CATCH
