@@ -1,5 +1,7 @@
 import lark.lexer
 
+from typing import Callable
+
 
 class Token:
     def __init__(self, token_type: str, source: str):
@@ -28,11 +30,11 @@ class LexerError(Exception):
 
 
 class LexerState:
-    def __init__(self, data):
+    def __init__(self, data, StartNodeType: Callable):
         self.data = data
         self.token_start = 0
         self.head = 0
-        self.state_node = StartNode()
+        self.state_node = StartNodeType()
         self.prev_token_type = None
 
     def has_data(self):

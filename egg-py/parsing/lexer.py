@@ -154,7 +154,7 @@ class EggLexer:
         self.lexer_state = None
 
     def lex(self, data) -> Iterator[Token]:
-        self.lexer_state = LexerState(data + ' #')
+        self.lexer_state = LexerState(data + ' #', StartNode)
         while self.lexer_state.has_data():
             for token in self.step():
                 yield token
