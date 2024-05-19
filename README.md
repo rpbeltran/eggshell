@@ -107,7 +107,7 @@ Lambdas are supported too with the syntax: `\a -> b` for a single arg or
 
 This function has a lambda in its body:
 ```
-fn factorial(n: int) -> int {
+fn factorial(n: int): int {
     answer := 1
     (1..n).ea $ \i -> @answer *= i
     ret @answer

@@ -3,10 +3,22 @@
 
 # -- Expressions --
 
-?top_level_expression: (write_to_file | append_to_file | declaration | expression | pipeline | trycatch) "SEMICOLON"?
+?top_level_expression: write_to_file SEMICOLON?
+                     | append_to_file SEMICOLON?
+                     | declaration SEMICOLON?
+                     | expression SEMICOLON?
+                     | pipeline SEMICOLON?
+                     | trycatch
+                     | define_function
 
 ?expression: arithmetic
-?atomic: exec | paren_expr | IDENTIFIER | QUOTED_STRING | lambda_func | number | logical_sequence
+?atomic: exec
+       | paren_expr
+       | IDENTIFIER
+       | QUOTED_STRING
+       | lambda_func
+       | number
+       | logical_sequence
 ?paren_expr: "PAREN_OPEN" (expression | pipeline) "PAREN_CLOSE"
 
 
@@ -60,13 +72,20 @@ logical_sequence: and_sequence | or_sequence
 and_sequence: atomic "SEQ_AND" atomic
 or_sequence:  atomic "SEQ_OR" atomic
 
+# -- Functions --
+
+define_function : "FN" IDENTIFIER func_arglist func_type? block
+
+?func_arglist : "PAREN_OPEN" (func_arg ("COMMA" func_arg)*)? "PAREN_CLOSE"
+?func_arg: IDENTIFIER (COLON IDENTIFIER)? (ASSIGN expression)?
+?func_type: "COLON" atomic
+
 
 # -- Lambdas --
 
-lambda_func: "LAMBDA" signature_args "ARROW" lambda_body
+lambda_func: "LAMBDA" (func_arglist | func_arg) "ARROW" lambda_body
 ?lambda_body: expression | block
-?signature_args : PAREN_OPEN signature_arg (COMMA signature_arg)* PAREN_CLOSE | signature_arg
-?signature_arg: IDENTIFIER (COLON IDENTIFIER)? (ASSIGN expression)?
+
 
 # -- Lexer Declarations --
 
