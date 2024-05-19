@@ -16,12 +16,12 @@ class Item {
     price: Float
     quantity: Int
 
-    fn total -> Float {
+    fn total (): Float {
         ret @price * @quantity
     }
 }
 
-fn get_items_from(file: Path) -> Status<[Item]> {
+fn get_items_from(file: Path) : Status<[Item]> {
     if !(@file.exists) {
         ret Status::Error("Provided file does not exist")
     }
@@ -95,11 +95,11 @@ foo bar | grep "spam" >> output_file.txt
 **User defined functions and lambdas**
 
 ```
-fn get_rows_for_user(username: str) -> [str] {
+fn get_rows_for_user(username: str): [str] {
     ret (cat data.csv | grep "{username}@company.com").split()
 }
 
-rows := get_rows_for_user("akhuang")
+rows := get_rows_for_user("user")
 ```
 
 Lambdas are supported too with the syntax: `\a -> b` for a single arg or
@@ -310,7 +310,7 @@ class Item {
   price: Float
   quantity: Int = 1
 
-  fn total -> Float {
+  fn total(): Float {
     ret @price * @quantity
   }
 }
