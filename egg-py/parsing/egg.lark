@@ -6,7 +6,7 @@
 ?top_level_expression: write_to_file | append_to_file | declaration | expression | pipeline
 
 ?expression: arithmetic
-?atomic: exec | paren_expr | IDENTIFIER | QUOTED_STRING | lambda_func | number
+?atomic: exec | paren_expr | IDENTIFIER | QUOTED_STRING | lambda_func | number | logical_sequence
 ?paren_expr: "PAREN_OPEN" (expression | pipeline) "PAREN_CLOSE"
 
 
@@ -48,6 +48,14 @@ number: INTEGER | FLOAT
 exec: EXEC_ARG+
 ?pipeline: exec ("PIPE" pipeline_target)+
 ?pipeline_target: exec | lambda_func | IDENTIFIER
+
+
+# -- Logical Sequencing --
+
+
+logical_sequence: and_sequence | or_sequence
+and_sequence: atomic "SEQ_AND" atomic
+or_sequence:  atomic "SEQ_OR" atomic
 
 
 # -- Lambdas --
@@ -94,6 +102,8 @@ lambda_func: "LAMBDA" signature_args "ARROW" lambda_body
 %declare TIMES
 %declare MOD
 %declare POWER
+%declare SEQ_AND
+%declare SEQ_OR
 
 # - Keywords
 

@@ -6,6 +6,8 @@ OPERATORS = {
     '//': 'INT_DIV',
     '\\': 'LAMBDA',
     '->': 'ARROW',
+    '&&': 'SEQ_AND',
+    '||': 'SEQ_OR',
     # 1-Char Operators
     ':': 'COLON',
     '=': 'ASSIGN',
