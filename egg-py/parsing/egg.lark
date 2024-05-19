@@ -3,9 +3,10 @@
 
 # -- Expressions --
 
-?top_level_expression: write_to_file | append_to_file | expression
+?top_level_expression: write_to_file | append_to_file | assignment | expression
 
-?expression: pipeline | paren_expr | number | IDENTIFIER | QUOTED_STRING
+?expression:  arithmetic
+?atomic: pipeline | paren_expr | IDENTIFIER | QUOTED_STRING | number
 ?paren_expr: PAREN_OPEN expression PAREN_CLOSE
 
 
@@ -25,19 +26,19 @@ append_to_file: pipeline APPEND_FILE (EXEC_ARG | IDENTIFIER | QUOTED_STRING)
 
 # -- Arithmetic --
 
-arithmetic: addition | subtraction | arithmetic_2
+?arithmetic: addition | subtraction | arithmetic_2
 ?arithmetic_2: multiply | divide | int_divide | modulus | arithmetic_3
-?arithmetic_3: raise_power | expression
+?arithmetic_3: raise_power | atomic
 
-addition: (arithmetic_2 | paren_expr) PLUS (arithmetic_2 | paren_expr)
-subtraction: (arithmetic_2 | paren_expr) PLUS (arithmetic_2 | paren_expr)
+addition: arithmetic_2 PLUS arithmetic_2
+subtraction: arithmetic_2 MINUS arithmetic_2
 
-multiply: (arithmetic_3 | paren_expr) TIMES (arithmetic_3 | paren_expr)
-divide: (arithmetic_3 | paren_expr) DIVIDE (arithmetic_3 | paren_expr)
-int_divide: (arithmetic_3 | paren_expr) INT_DIV (arithmetic_3 | paren_expr)
-modulus: (arithmetic_3 | paren_expr) MOD (arithmetic_3 | paren_expr)
+multiply: arithmetic_3 TIMES arithmetic_3
+divide: arithmetic_3 DIVIDE arithmetic_3
+int_divide: arithmetic_3 INT_DIV arithmetic_3
+modulus: arithmetic_3 MOD arithmetic_3
 
-raise_power: expression POWER expression
+raise_power: atomic POWER atomic
 
 number: INTEGER | FLOAT
 
