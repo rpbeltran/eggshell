@@ -1,5 +1,6 @@
 import lark.lexer
 
+
 class Token:
     def __init__(self, token_type: str, source: str):
         self.token_type = token_type

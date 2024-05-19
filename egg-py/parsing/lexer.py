@@ -1,55 +1,8 @@
 import lark.lexer
 from typing import Iterator
 
-from .lexer_util import (Token, LexerError, LexerState, DFANode)
-
-# Keep operators sorted by length plz.
-OPERATORS = {
-    # 2-Char Operators
-    ':=': 'DECLARE',
-    '>>': 'APPEND_FILE',
-    '//': 'INT_DIV',
-    # 1-Char Operators
-    ':': 'COLON',
-    '=': 'ASSIGN',
-    '|': 'PIPE',
-    '(': 'PAREN_OPEN',
-    ')': 'PAREN_CLOSE',
-    '{': 'CURLY_OPEN',
-    '}': 'CURLY_CLOSE',
-    '<': 'ANGLE_OPEN',
-    '>': 'ANGLE_CLOSE',
-    '[': 'SQUARE_OPEN',
-    ']': 'SQUARE_CLOSE',
-    ';': 'SEMICOLON',
-    '$': 'CURRY',
-    '+': 'PLUS',
-    '-': 'MINUS',
-    '/': 'DIVIDE',
-    '%': 'MOD',
-}
-
-OPERATOR_STARTS = {op[0] for op in OPERATORS}
-
-KEYWORDS = {
-    'fn': 'FN',
-    'for': 'FOR',
-    'while': 'WHILE',
-    'continue': 'CONTINUE',
-    'break': 'BREAK',
-    'true': 'TRUE',
-    'false': 'FALSE',
-    'and': 'AND',
-    'or': 'OR',
-    'xor': 'XOR',
-    'not': 'NOT',
-    'ret': 'RETURN',
-    'if': 'IF',
-    'else': 'ELSE',
-    'use': 'USE',
-    'try': 'TRY',
-    'catch': 'CATCH',
-}
+from .lexer_constants import KEYWORDS, OPERATORS, OPERATOR_STARTS
+from .lexer_util import DFANode, LexerError, LexerState, Token
 
 
 class StartNode(DFANode):
@@ -153,7 +106,7 @@ class UnquotedLiteral(DFANode):
         space = False
         if c.isspace():
             c = state.peek_one(strip=True)
-            space=True
+            space = True
         elif c in '@':
             raise LexerError('Read unexpected char', state)
 
