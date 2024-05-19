@@ -121,12 +121,12 @@ lambda_func: "LAMBDA" (func_arglist | func_arg) "ARROW" lambda_body
 %declare PAREN_CLOSE
 %declare CURLY_OPEN
 %declare CURLY_CLOSE
-%declare ANGLE_OPEN
-%declare ANGLE_CLOSE
-%declare SQUARE_OPEN
-%declare SQUARE_CLOSE
+%declare ANGLE_OPEN # todo: support generics in types and support comparisons
+%declare ANGLE_CLOSE # todo: support generics in types and support comparisons
+%declare SQUARE_OPEN # todo: support array access
+%declare SQUARE_CLOS # todo: support array access
 %declare SEMICOLON
-%declare CURRY
+%declare CURRY # todo: support currying
 %declare PLUS
 %declare MINUS
 %declare DIVIDE
@@ -139,19 +139,19 @@ lambda_func: "LAMBDA" (func_arglist | func_arg) "ARROW" lambda_body
 # - Keywords
 
 %declare FN
-%declare FOR
-%declare WHILE
-%declare CONTINUE
-%declare BREAK
-%declare TRUE
-%declare FALSE
-%declare AND
-%declare OR
-%declare XOR
-%declare NOT
-%declare RETURN
-%declare IF
-%declare ELSE
+%declare FOR # todo: support for loops
+%declare WHILE # todo: support while loops
+%declare CONTINUE # todo: support CONTINUE in loop bodies
+%declare BREAK # todo: support BREAK in loop bodies
+%declare TRUE # todo: support literal booleans
+%declare FALSE # todo: support literal booleans
+%declare AND # todo: support boolean arithmetic
+%declare OR # todo: support boolean arithmetic
+%declare XOR # todo: support boolean arithmetic
+%declare NOT # todo: support boolean arithmetic
+%declare RETURN # todo: support return in function bodies
+%declare IF # todo: support if-else
+%declare ELSE # todo: support if-else
 %declare USE
 %declare TRY
 %declare CATCH
