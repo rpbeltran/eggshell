@@ -21,6 +21,7 @@
        | number
        | logical_sequence
        | curried_func
+       | boolean_literal
 ?paren_expr: "PAREN_OPEN" top_level_atomic "PAREN_CLOSE"
 
 
@@ -62,6 +63,11 @@ raise_power: atomic "POWER" atomic
 number: INTEGER | FLOAT
 
 
+# -- Booleans --
+
+?boolean_literal: FALSE | TRUE
+
+
 # -- Pipelines --
 
 exec: EXEC_ARG+
@@ -71,6 +77,7 @@ exec: EXEC_ARG+
 # -- Code Blocks --
 
 block: "CURLY_OPEN" top_level_expression* "CURLY_CLOSE"
+
 
 # -- Error Handling --
 
@@ -150,8 +157,8 @@ curried_func: atomic ("CURRY" atomic)+
 %declare WHILE # todo: support while loops
 %declare CONTINUE # todo: support CONTINUE in loop bodies
 %declare BREAK # todo: support BREAK in loop bodies
-%declare TRUE # todo: support literal booleans
-%declare FALSE # todo: support literal booleans
+%declare TRUE
+%declare FALSE
 %declare AND # todo: support boolean arithmetic
 %declare OR # todo: support boolean arithmetic
 %declare XOR # todo: support boolean arithmetic
