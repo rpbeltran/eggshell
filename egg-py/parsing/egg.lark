@@ -6,10 +6,11 @@
 ?top_level_expression: write_to_file SEMICOLON?
                      | append_to_file SEMICOLON?
                      | declaration SEMICOLON?
-                     | expression SEMICOLON?
-                     | pipeline SEMICOLON?
+                     | top_level_atomic SEMICOLON?
                      | trycatch
                      | define_function
+
+?top_level_atomic: pipeline | expression
 
 ?expression: arithmetic
 ?atomic: exec
@@ -19,7 +20,8 @@
        | lambda_func
        | number
        | logical_sequence
-?paren_expr: "PAREN_OPEN" (expression | pipeline) "PAREN_CLOSE"
+       | curried_func
+?paren_expr: "PAREN_OPEN" top_level_atomic "PAREN_CLOSE"
 
 
 # -- Identifiers and Namespaces --
@@ -63,8 +65,7 @@ number: INTEGER | FLOAT
 # -- Pipelines --
 
 exec: EXEC_ARG+
-?pipeline: exec ("PIPE" pipeline_target)+
-?pipeline_target: exec | lambda_func | identifier
+?pipeline: atomic ("PIPE" atomic)+
 
 
 # -- Code Blocks --
@@ -93,6 +94,11 @@ define_function : "FN" NAME func_arglist func_type? block
 
 lambda_func: "LAMBDA" (func_arglist | func_arg) "ARROW" lambda_body
 ?lambda_body: expression | block
+
+
+# -- Currying --
+
+curried_func: atomic ("CURRY" atomic)+
 
 
 # -- Lexer Declarations --
@@ -126,7 +132,7 @@ lambda_func: "LAMBDA" (func_arglist | func_arg) "ARROW" lambda_body
 %declare SQUARE_OPEN # todo: support array access
 %declare SQUARE_CLOS # todo: support array access
 %declare SEMICOLON
-%declare CURRY # todo: support currying
+%declare CURRY
 %declare PLUS
 %declare MINUS
 %declare DIVIDE

@@ -109,7 +109,7 @@ class UnquotedLiteral(DFANode):
         elif c in '@':
             raise LexerError('Read unexpected char', state)
 
-        if c in '(:=':
+        if c in '(:=$':
             yield state.get_token('NAME', inclusive=False)
             state.goto_node(StartNode(), step_back=True)
         elif space or c in '{})|;':
