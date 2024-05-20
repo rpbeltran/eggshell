@@ -72,7 +72,6 @@ exec: EXEC_ARG+
 
 block: "CURLY_OPEN" top_level_expression* "CURLY_CLOSE"
 
-
 # -- Error Handling --
 
 trycatch: "TRY" block "CATCH" block
@@ -83,17 +82,19 @@ or_sequence:  atomic "SEQ_OR" atomic
 
 # -- Functions --
 
-define_function : "FN" NAME func_arglist func_type? block
+define_function : "FN" NAME func_arglist func_type? func_block
 
 ?func_arglist : "PAREN_OPEN" (func_arg ("COMMA" func_arg)*)? "PAREN_CLOSE"
 ?func_arg: NAME (COLON identifier)? (ASSIGN expression)?
 ?func_type: "COLON" atomic
 
+func_block: "CURLY_OPEN" (top_level_expression | return_expr)* "CURLY_CLOSE"
+return_expr : "RETURN" expression "SEMICOLON"?
 
 # -- Lambdas --
 
 lambda_func: "LAMBDA" (func_arglist | func_arg) "ARROW" lambda_body
-?lambda_body: expression | block
+?lambda_body: expression | func_block
 
 
 # -- Currying --
@@ -155,7 +156,7 @@ curried_func: atomic ("CURRY" atomic)+
 %declare OR # todo: support boolean arithmetic
 %declare XOR # todo: support boolean arithmetic
 %declare NOT # todo: support boolean arithmetic
-%declare RETURN # todo: support return in function bodies
+%declare RETURN
 %declare IF # todo: support if-else
 %declare ELSE # todo: support if-else
 %declare USE
