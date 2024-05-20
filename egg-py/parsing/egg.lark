@@ -7,7 +7,8 @@
                      | append_to_file SEMICOLON?
                      | declaration SEMICOLON?
                      | top_level_atomic SEMICOLON?
-                     | trycatch
+                     | try_catch
+                     | if
                      | define_function
 
 ?top_level_atomic: pipeline | expression
@@ -76,6 +77,13 @@ cmp_gt: arithmetic "ANGLE_OPEN" arithmetic
 cmp_lt: arithmetic "ANGLE_CLOSE" arithmetic
 
 
+# -- If / Else --
+
+if: "IF" atomic block elif* else?
+elif: "ELSE" "IF" atomic block
+else: "ELSE" block
+
+
 # -- Pipelines --
 
 exec: EXEC_ARG+
@@ -89,7 +97,7 @@ block: "CURLY_OPEN" top_level_expression* "CURLY_CLOSE"
 
 # -- Error Handling --
 
-trycatch: "TRY" block "CATCH" block
+try_catch: "TRY" block "CATCH" block
 logical_sequence: and_sequence | or_sequence
 and_sequence: atomic "SEQ_AND" atomic
 or_sequence:  atomic "SEQ_OR" atomic
@@ -175,8 +183,8 @@ curried_func: atomic ("CURRY" atomic)+
 %declare XOR # todo: support boolean arithmetic
 %declare NOT # todo: support boolean arithmetic
 %declare RETURN
-%declare IF # todo: support if-else
-%declare ELSE # todo: support if-else
+%declare IF
+%declare ELSE
 %declare USE
 %declare TRY
 %declare CATCH
