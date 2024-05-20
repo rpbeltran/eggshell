@@ -9,6 +9,9 @@ OPERATORS = {
     '&&': 'SEQ_AND',
     '||': 'SEQ_OR',
     '::': 'NAMESPACE',
+    '==': 'EQUALS',
+    '>=': 'GTE',
+    '<=': 'LTE',
     # 1-Char Operators
     ':': 'COLON',
     '=': 'ASSIGN',

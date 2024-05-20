@@ -12,7 +12,7 @@
 
 ?top_level_atomic: pipeline | expression
 
-?expression: arithmetic
+?expression: arithmetic | comparison
 ?atomic: exec
        | paren_expr
        | identifier
@@ -44,7 +44,7 @@ write_to_file: pipeline "ANGLE_CLOSE" (EXEC_ARG | identifier | QUOTED_STRING)
 append_to_file: pipeline "APPEND_FILE" (EXEC_ARG | identifier | QUOTED_STRING)
 
 
-# -- Arithmetic --
+# -- Integer Arithmetic --
 
 ?arithmetic: addition | subtraction | arithmetic_2
 ?arithmetic_2: multiply | divide | int_divide | modulus | arithmetic_3
@@ -63,9 +63,17 @@ raise_power: atomic "POWER" atomic
 number: INTEGER | FLOAT
 
 
-# -- Booleans --
+# -- Boolean Arithmetic --
 
 ?boolean_literal: FALSE | TRUE
+
+?comparison: cmp_equal | cmp_gte | cmp_lte | cmp_gt | cmp_lt
+
+cmp_equal: arithmetic "EQUALS" arithmetic
+cmp_gte: arithmetic "GTE" arithmetic
+cmp_lte: arithmetic "LTE" arithmetic
+cmp_gt: arithmetic "ANGLE_OPEN" arithmetic
+cmp_lt: arithmetic "ANGLE_CLOSE" arithmetic
 
 
 # -- Pipelines --
@@ -135,10 +143,13 @@ curried_func: atomic ("CURRY" atomic)+
 %declare PAREN_CLOSE
 %declare CURLY_OPEN
 %declare CURLY_CLOSE
-%declare ANGLE_OPEN # todo: support generics in types and support comparisons
-%declare ANGLE_CLOSE # todo: support generics in types and support comparisons
+%declare ANGLE_OPEN # todo: support generics in types
+%declare ANGLE_CLOSE # todo: support generics in types
 %declare SQUARE_OPEN # todo: support array access
 %declare SQUARE_CLOS # todo: support array access
+%declare EQUALS
+%declare GTE
+%declare LTE
 %declare SEMICOLON
 %declare CURRY
 %declare PLUS
