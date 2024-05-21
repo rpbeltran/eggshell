@@ -97,8 +97,10 @@ or_sequence:  atomic "SEQ_OR" atomic
 
 define_function : "FN" NAME func_arglist func_type? block
 
-?func_arglist : "PAREN_OPEN" (func_arg ("COMMA" func_arg)*)? "PAREN_CLOSE"
-?func_arg: NAME (COLON identifier)? (ASSIGN expression)?
+func_arglist : "PAREN_OPEN" (func_arg ("COMMA" func_arg)*)? "PAREN_CLOSE"
+?func_arg: NAME (arg_type)? (arg_default)?
+arg_type: "COLON" atomic
+arg_default: "ASSIGN" expression
 ?func_type: "COLON" atomic
 
 return_expr : "RETURN" expression
@@ -200,66 +202,10 @@ select: atomic "SQUARE_OPEN" expression "SQUARE_CLOSE"
 
 # -- Lexer Declarations --
 
-# - DFA Tokens
-
 %declare EXEC_ARG
 %declare FLOAT
 %declare NAME
 %declare INTEGER
 %declare QUOTED_STRING
-
-# - Operators
-
-%declare DECLARE
-%declare APPEND_FILE
-%declare INT_DIV
-%declare COLON
-%declare ASSIGN
-%declare PIPE
-%declare ARROW
-%declare LAMBDA
-%declare COMMA
-%declare NAMESPACE
-%declare PAREN_OPEN
-%declare PAREN_CLOSE
-%declare CURLY_OPEN
-%declare CURLY_CLOSE
-%declare ANGLE_OPEN # todo: support generics in types
-%declare ANGLE_CLOSE # todo: support generics in types
-%declare SQUARE_OPEN # todo: support array access
-%declare SQUARE_CLOSE # todo: support array access
-%declare EQUALS
-%declare GTE
-%declare LTE
-%declare SEMICOLON
-%declare CURRY
-%declare PLUS
-%declare MINUS
-%declare DIVIDE
-%declare TIMES
-%declare MOD
-%declare POWER
-%declare SEQ_AND
-%declare SEQ_OR
-
-# - Keywords
-
-%declare FN
-%declare ALWAYS_LOOP
-%declare FOR
-%declare WHILE
-%declare CONTINUE
-%declare BREAK
 %declare TRUE
 %declare FALSE
-%declare AND
-%declare OR
-%declare XOR
-%declare NOT
-%declare RETURN
-%declare IF
-%declare IN
-%declare ELSE
-%declare USE
-%declare TRY
-%declare CATCH
