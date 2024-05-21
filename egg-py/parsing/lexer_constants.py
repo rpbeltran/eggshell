@@ -50,6 +50,7 @@ KEYWORDS = {
     'or': 'OR',
     'xor': 'XOR',
     'not': 'NOT',
+    'return': 'RETURN',
     'ret': 'RETURN',
     'if': 'IF',
     'in': 'IN',

@@ -11,6 +11,9 @@
                      | if
                      | loop
                      | define_function
+                     | continue_expr
+                     | break_expr
+                     | return_expr
 
 ?top_level_atomic: pipeline | expression
 
@@ -95,7 +98,6 @@ exec: EXEC_ARG+
 
 block: "CURLY_OPEN" top_level_expression* "CURLY_CLOSE"
 
-
 # -- Error Handling --
 
 try_catch: "TRY" block "CATCH" block
@@ -106,19 +108,18 @@ or_sequence:  atomic "SEQ_OR" atomic
 
 # -- Functions --
 
-define_function : "FN" NAME func_arglist func_type? func_block
+define_function : "FN" NAME func_arglist func_type? block
 
 ?func_arglist : "PAREN_OPEN" (func_arg ("COMMA" func_arg)*)? "PAREN_CLOSE"
 ?func_arg: NAME (COLON identifier)? (ASSIGN expression)?
 ?func_type: "COLON" atomic
 
-func_block: "CURLY_OPEN" (top_level_expression | return_expr)* "CURLY_CLOSE"
-return_expr : "RETURN" expression "SEMICOLON"?
+return_expr : "RETURN" expression
 
 # -- Lambdas --
 
 lambda_func: "LAMBDA" (func_arglist | func_arg) "ARROW" lambda_body
-?lambda_body: expression | func_block
+?lambda_body: expression | block
 
 
 # -- Currying --
@@ -129,16 +130,14 @@ curried_func: atomic ("CURRY" atomic)+
 # -- Loops --
 
 ?loop: always_loop | for | while
-always_loop: "ALWAYS_LOOP" label? loop_block
+always_loop: "ALWAYS_LOOP" label? block
 for: "FOR" NAME "IN" expression label? block
 while: "WHILE" expression label? block
 
 label: "AS" NAME
-?loop_block: "CURLY_OPEN" loop_block_inner* "CURLY_CLOSE"
-?loop_block_inner: top_level_expression | continue_expr | break_expr
 
-continue_expr : "CONTINUE" NAME? "SEMICOLON"?
-break_expr : "BREAK" NAME? "SEMICOLON"?
+continue_expr : "CONTINUE" NAME?
+break_expr : "BREAK" NAME?
 
 # -- Lexer Declarations --
 
