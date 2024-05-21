@@ -391,3 +391,21 @@ todo: write more here
 1. Lists
 2. Sets
 3. Hashmaps
+
+
+## Random Details
+
+These things should probably go somewhere other than the README at some point.
+
+### Operator Precedence Chart
+
+From highest to lowest priority (higher priorities evaluate first):
+
+1. negation: `not`, `!`
+2. exponentiation: `^`
+3. multiplication/division: `*`, `/`, `//`, `%`
+4. comparison: `!=`, `==`, `>`, `>=`, `<`, `<=`
+5. conjunction: `and` 
+6. disjunction: `or`, `xor`
+7. currying: `$`
+8. pipelining: `|`
