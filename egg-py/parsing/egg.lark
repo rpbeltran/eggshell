@@ -44,6 +44,12 @@
 identifier: (NAME "NAMESPACE")* NAME
 
 
+# -- Type Constraints --
+
+?type: identifier type_generic?
+type_generic: "ANGLE_OPEN" _type_generic_inner "ANGLE_CLOSE"
+_type_generic_inner: type ("COMMA" type)*
+
 # -- Variable Assignment And Declaration --
 
 ?declaration: declare_typed_variable
@@ -51,10 +57,10 @@ identifier: (NAME "NAMESPACE")* NAME
             | declare_typed_constant
             | declare_untyped_constant
 
-declare_typed_variable: "VAR"? NAME "COLON" identifier "ASSIGN" expression
+declare_typed_variable: "VAR"? NAME "COLON" type "ASSIGN" expression
 declare_untyped_variable: "VAR"? NAME "DECLARE" expression
 
-declare_typed_constant: "CONST" NAME "COLON" identifier "ASSIGN" expression
+declare_typed_constant: "CONST" NAME "COLON" type "ASSIGN" expression
 declare_untyped_constant: "CONST" NAME "DECLARE" expression
 
 assign_variable: identifier "ASSIGN" expression
@@ -120,7 +126,7 @@ define_function : "FN" NAME func_arglist func_type? block
 
 func_arglist : "PAREN_OPEN" (func_arg ("COMMA" func_arg)*)? "PAREN_CLOSE"
 ?func_arg: NAME (arg_type)? (arg_default)?
-arg_type: "COLON" atomic
+arg_type: "COLON" type
 arg_default: "ASSIGN" expression
 ?func_type: "COLON" atomic
 
