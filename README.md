@@ -401,11 +401,12 @@ These things should probably go somewhere other than the README at some point.
 
 From highest to lowest priority (higher priorities evaluate first):
 
-1. negation: `not`, `!`
-2. exponentiation: `^`
-3. multiplication/division: `*`, `/`, `//`, `%`
-4. comparison: `!=`, `==`, `>`, `>=`, `<`, `<=`
-5. conjunction: `and` 
-6. disjunction: `or`, `xor`
-7. currying: `$`
-8. pipelining: `|`
+1. selection: `my_list[i]`
+2. negation: `not`, `!`
+3. exponentiation: `^`
+4. multiplication/division: `*`, `/`, `//`, `%`
+5. comparison: `!=`, `==`, `>`, `>=`, `<`, `<=`
+6. conjunction: `and` 
+7. disjunction: `or`, `xor`
+8. currying: `$`
+9. pipelining: `|`

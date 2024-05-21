@@ -112,7 +112,7 @@ class UnquotedLiteral(DFANode):
         if c in '(:=$':
             yield state.get_token('NAME', inclusive=False)
             state.goto_node(StartNode(), step_back=True)
-        elif space or c in '{})|;':
+        elif space or c in '{}[])|;':
             source = state.get_token_source(inclusive=False)
             token_type = self.get_token_type(source, state)
             yield state.get_token(token_type, source=source)

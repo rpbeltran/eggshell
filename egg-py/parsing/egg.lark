@@ -23,6 +23,7 @@
 ?atomic: exec
        | paren_expr
        | identifier
+       | select
        | QUOTED_STRING
        | lambda_func
        | INTEGER
@@ -189,6 +190,12 @@ raise_power: arithmetic_unary "POWER" arithmetic_unary
 
 unary_negate: "MINUS" atomic
 unary_not: "NOT" atomic
+
+# -- Selection
+
+?arithmetic_select: select | select | atomic
+
+select: atomic "SQUARE_OPEN" expression "SQUARE_CLOSE"
 
 
 # -- Lexer Declarations --
