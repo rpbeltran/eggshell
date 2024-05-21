@@ -33,6 +33,7 @@ OPERATORS = {
     '/': 'DIVIDE',
     '%': 'MOD',
     '^': 'POWER',
+    '!': 'NOT',
 }
 
 OPERATOR_STARTS = {op[0] for op in OPERATORS}
