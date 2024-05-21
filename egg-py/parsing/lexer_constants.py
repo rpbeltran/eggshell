@@ -36,6 +36,7 @@ OPERATORS = {
     '%': 'MOD',
     '^': 'POWER',
     '!': 'NOT',
+    '~': 'ASYNC',
 }
 
 OPERATOR_STARTS = {op[0] for op in OPERATORS}

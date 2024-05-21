@@ -34,6 +34,7 @@
        | list
        | map
        | range
+       | async_expr
 
 ?paren_expr: "PAREN_OPEN" non_atomic "PAREN_CLOSE"
 
@@ -98,6 +99,11 @@ exec: EXEC_ARG+
 # -- Code Blocks --
 
 block: "CURLY_OPEN" top_level_expression* "CURLY_CLOSE"
+
+
+# -- ASYNC --
+
+async_expr: "ASYNC" (paren_expr | block)
 
 
 # -- Error Handling --
