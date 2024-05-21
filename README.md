@@ -83,7 +83,7 @@ Early design and prototyping stage
 
 ## An Inclomplete Assortment of Planned Language Features
 
-**The basics**
+**Executing Commands**
 
 These parts look a lot like Bash
 
@@ -92,11 +92,40 @@ cd ~/very/nice/path
 foo bar | grep "spam" >> output_file.txt     
 ```
 
+If we type in an arbitrary word (which is not a reserved keyword), eggshell will
+attempt to find an executable the path that matches and will execute it. We will
+refer to this as "implicit execution".
+
+We can
+also disambiguate our intention to execute some string by surrounding it in
+backticks as in `foo bar`. If by chance your executable includes certain
+charecters such as spaces, you will need to surround it in quotes
+(even if you are using backticks) such as in the following cases.
+
+```
+"hello world.py" a b c
+`"hello world.py" a b c`
+```
+
+Unlike in Bash however, implicit execution is not permitted within code blocks
+surrounded by curly braces. So inside of a function for example, we must use
+backticks. In these cases, `a := b` will assume b is the name of another
+variable, not a target to execute.
+
+```
+fn a() {
+  hello := `echo hello`
+  print(hello)
+}
+```
+
+There are a handful of other times when implicit execution is not permitted
+
 **User defined functions and lambdas**
 
 ```
 fn get_rows_for_user(username: str): [str] {
-    ret (cat data.csv | grep "{username}@company.com").split()
+    ret `cat data.csv` | `grep "{username}@company.com"`).split()
 }
 
 rows := get_rows_for_user("user")
@@ -109,8 +138,8 @@ This function has a lambda in its body:
 ```
 fn factorial(n: int): int {
     answer := 1
-    (1..n).ea $ \i -> @answer *= i
-    ret @answer
+    (1..n).ea $ \i -> answer *= i
+    ret answer
 }
 
 factorial_of_10 := factorial(10)
@@ -144,8 +173,8 @@ Lambda functions can also have multiple lines using curly braces as below:
 
 ```
 add3 := \(a,b,c) {
-    d:= @a + @b
-    return @d + @c 
+    d:= a + b
+    return d + c 
 }
 ```
 
@@ -311,7 +340,7 @@ class Item {
   quantity: Int = 1
 
   fn total(): Float {
-    ret @price * @quantity
+    ret this.price * this.quantity
   }
 }
 

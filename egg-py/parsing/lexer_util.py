@@ -36,6 +36,7 @@ class LexerState:
         self.head = 0
         self.state_node = StartNodeType()
         self.prev_token_types = []
+        self.curly_depth = 0
 
     def has_data(self):
         return self.head < len(self.data)
@@ -80,6 +81,11 @@ class LexerState:
 
     def clear_prev(self):
         self.prev_token_types = []
+
+    def get_prev(self) -> str:
+        if self.prev_token_types:
+            return self.prev_token_types[-1]
+        return ""
 
 
 class DFANode:

@@ -8,7 +8,7 @@ from .lexer_util import DFANode, LexerError, LexerState, Token
 class StartNode(DFANode):
     def step(self, c: str, state: LexerState) -> Iterator[Token]:
         if c == '\n':
-            state.prev_token_types = []
+            state.clear_prev()
         elif c.isspace():
             pass
         elif c.isalpha() or c in '_./':
@@ -45,6 +45,10 @@ class OperatorsNode(DFANode):
             if data.startswith(pattern):
                 found = True
                 state.step_forward(len(pattern) - 1)
+                if token_type == "CURLY_OPEN":
+                    state.curly_depth += 1
+                elif token_type == "CURLY_CLOSE":
+                    state.curly_depth -= 1
                 yield state.get_token(token_type, inclusive=True)
                 state.goto_node(StartNode(), step_back=False)
                 break
@@ -119,11 +123,11 @@ class UnquotedLiteral(DFANode):
             state.goto_node(StartNode(), step_back=True)
 
     def get_token_type(self, source: str, state: LexerState):
-        if state.prev_token_types[-1] == 'EXEC_ARG':
+        if state.get_prev() == 'EXEC_ARG':
             return 'EXEC_ARG'
         if source in KEYWORDS:
             return KEYWORDS[source]
-        if state.prev_token_types[-1] in [
+        if state.curly_depth > 0 or state.get_prev() in [
             'AS',
             'BREAK',
             'CATCH',
@@ -154,7 +158,7 @@ class NumberNode(DFANode):
             state.goto_node(StartNode(), step_back=True)
 
     def get_token_type(self, state: LexerState) -> str:
-        if state.prev_token_types[-1] == 'EXEC_ARG':
+        if state.get_prev() == 'EXEC_ARG':
             return 'EXEC_ARG'
         return 'FLOAT' if self.has_decimal else 'INTEGER'
 
