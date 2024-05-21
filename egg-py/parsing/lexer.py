@@ -8,7 +8,7 @@ from .lexer_util import DFANode, LexerError, LexerState, Token
 class StartNode(DFANode):
     def step(self, c: str, state: LexerState) -> Iterator[Token]:
         if c == '\n':
-            state.prev_token_type = None
+            state.prev_token_types = []
         elif c.isspace():
             pass
         elif c.isalpha() or c in '_./':
@@ -61,7 +61,7 @@ class CommentNode(DFANode):
 
 class IdentifierNode(DFANode):
     def step(self, c: str, state: LexerState) -> Iterator[Token]:
-        if c.isspace() or c in r':=+-/[]{}()':
+        if c.isspace() or c in r':=+-/[]{}()<>':
             if state.token_start == state.head:
                 raise LexerError('Empty identifier not permitted', state)
             yield state.get_token('NAME', inclusive=False)
@@ -112,18 +112,18 @@ class UnquotedLiteral(DFANode):
         if c in '(:=$':
             yield state.get_token('NAME', inclusive=False)
             state.goto_node(StartNode(), step_back=True)
-        elif space or c in '{}[])|;':
+        elif space or c in '<>{}[])|;':
             source = state.get_token_source(inclusive=False)
             token_type = self.get_token_type(source, state)
             yield state.get_token(token_type, source=source)
             state.goto_node(StartNode(), step_back=True)
 
     def get_token_type(self, source: str, state: LexerState):
-        if state.prev_token_type == 'EXEC_ARG':
+        if state.prev_token_types[-1] == 'EXEC_ARG':
             return 'EXEC_ARG'
         if source in KEYWORDS:
             return KEYWORDS[source]
-        if state.prev_token_type in [
+        if state.prev_token_types[-1] in [
             'AS',
             'BREAK',
             'CATCH',
@@ -154,7 +154,7 @@ class NumberNode(DFANode):
             state.goto_node(StartNode(), step_back=True)
 
     def get_token_type(self, state: LexerState) -> str:
-        if state.prev_token_type == 'EXEC_ARG':
+        if state.prev_token_types[-1] == 'EXEC_ARG':
             return 'EXEC_ARG'
         return 'FLOAT' if self.has_decimal else 'INTEGER'
 
