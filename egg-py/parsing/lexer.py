@@ -124,8 +124,11 @@ class UnquotedLiteral(DFANode):
         if source in KEYWORDS:
             return KEYWORDS[source]
         if state.prev_token_type in [
+            'AS',
+            'BREAK',
             'CATCH',
             'COLON',
+            'CONTINUE',
             'FOR',
             'FN',
             'USE',

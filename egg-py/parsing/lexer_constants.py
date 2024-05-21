@@ -57,4 +57,5 @@ KEYWORDS = {
     'use': 'USE',
     'try': 'TRY',
     'catch': 'CATCH',
+    'as': 'AS',
 }

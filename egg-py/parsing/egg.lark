@@ -129,15 +129,16 @@ curried_func: atomic ("CURRY" atomic)+
 # -- Loops --
 
 ?loop: always_loop | for | while
-always_loop: "ALWAYS_LOOP" loop_block
-for: "FOR" NAME "IN" expression block
-while: "WHILE" expression block
+always_loop: "ALWAYS_LOOP" label? loop_block
+for: "FOR" NAME "IN" expression label? block
+while: "WHILE" expression label? block
 
-loop_block: "CURLY_OPEN" loop_block_inner* "CURLY_CLOSE"
+label: "AS" NAME
+?loop_block: "CURLY_OPEN" loop_block_inner* "CURLY_CLOSE"
 ?loop_block_inner: top_level_expression | continue_expr | break_expr
 
-continue_expr : "CONTINUE" "SEMICOLON"?
-break_expr : "BREAK" "SEMICOLON"?
+continue_expr : "CONTINUE" NAME? "SEMICOLON"?
+break_expr : "BREAK" NAME? "SEMICOLON"?
 
 # -- Lexer Declarations --
 
