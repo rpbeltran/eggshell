@@ -84,7 +84,7 @@ cmp_lt: arithmetic "ANGLE_CLOSE" arithmetic
 # -- If / Else --
 
 if: "IF" atomic block elif* else?
-elif: "ELSE" "IF" atomic block
+elif: "ELSE" "IF" atomic block | "ELIF" atomic block
 else: "ELSE" block
 
 

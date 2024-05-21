@@ -55,6 +55,7 @@ KEYWORDS = {
     'if': 'IF',
     'in': 'IN',
     'else': 'ELSE',
+    'elif': 'ELIF',
     'use': 'USE',
     'try': 'TRY',
     'catch': 'CATCH',
