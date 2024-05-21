@@ -3,12 +3,13 @@
 
 # -- Expressions --
 
-?top_level_expression: write_to_file SEMICOLON?
-                     | append_to_file SEMICOLON?
-                     | declaration SEMICOLON?
-                     | top_level_atomic SEMICOLON?
+?top_level_expression: write_to_file "SEMICOLON"?
+                     | append_to_file "SEMICOLON"?
+                     | declaration "SEMICOLON"?
+                     | top_level_atomic "SEMICOLON"?
                      | try_catch
                      | if
+                     | loop
                      | define_function
 
 ?top_level_atomic: pipeline | expression
@@ -125,6 +126,19 @@ lambda_func: "LAMBDA" (func_arglist | func_arg) "ARROW" lambda_body
 curried_func: atomic ("CURRY" atomic)+
 
 
+# -- Loops --
+
+?loop: always_loop | for | while
+always_loop: "ALWAYS_LOOP" loop_block
+for: "FOR" NAME "IN" expression block
+while: "WHILE" expression block
+
+loop_block: "CURLY_OPEN" loop_block_inner* "CURLY_CLOSE"
+?loop_block_inner: top_level_expression | continue_expr | break_expr
+
+continue_expr : "CONTINUE" "SEMICOLON"?
+break_expr : "BREAK" "SEMICOLON"?
+
 # -- Lexer Declarations --
 
 # - DFA Tokens
@@ -172,10 +186,11 @@ curried_func: atomic ("CURRY" atomic)+
 # - Keywords
 
 %declare FN
-%declare FOR # todo: support for loops
-%declare WHILE # todo: support while loops
-%declare CONTINUE # todo: support CONTINUE in loop bodies
-%declare BREAK # todo: support BREAK in loop bodies
+%declare ALWAYS_LOOP
+%declare FOR
+%declare WHILE
+%declare CONTINUE
+%declare BREAK
 %declare TRUE
 %declare FALSE
 %declare AND # todo: support boolean arithmetic
@@ -184,6 +199,7 @@ curried_func: atomic ("CURRY" atomic)+
 %declare NOT # todo: support boolean arithmetic
 %declare RETURN
 %declare IF
+%declare IN
 %declare ELSE
 %declare USE
 %declare TRY
