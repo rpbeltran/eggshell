@@ -71,7 +71,7 @@ _range_inner: expression "RANGE" expression
 
 # -- Maps --
 
-map: "CURLY_OPEN" _map_inner "CURLY_CLOSE"
+map: "CURLY_OPEN" _map_inner? "CURLY_CLOSE"
 _map_inner: map_entry ("COMMA" map_entry)*
 map_entry: expression "COLON" expression
 
@@ -123,8 +123,8 @@ return_expr : "RETURN" expression
 
 # -- Lambdas --
 
-lambda_func: "LAMBDA" (func_arglist | func_arg) "ARROW" lambda_body
-?lambda_body: expression | block
+lambda_func: "LAMBDA" (func_arglist | func_arg) "ARROW" expression
+           | "LAMBDA" (func_arglist | func_arg) block
 
 
 # -- Currying --

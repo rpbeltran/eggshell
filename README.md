@@ -325,6 +325,8 @@ Maps in egg behave similarly to dictionaries in Python.
 
 ```
 a : Map = { "apple": @Apple, "orange": @Orange }
+
+a := { }
 ```
 
 They are in essence heterogeneous hashmaps (the keys need not all be the same
