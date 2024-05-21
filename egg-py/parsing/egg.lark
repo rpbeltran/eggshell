@@ -32,6 +32,7 @@
        | logical_sequence
        | curried_func
        | list
+       | map
        | range
 
 ?paren_expr: "PAREN_OPEN" non_atomic "PAREN_CLOSE"
@@ -66,6 +67,13 @@ _list_inner: expression ("COMMA" expression)*
 range: "SQUARE_OPEN" _range_inner "SQUARE_CLOSE"
      | "PAREN_OPEN" _range_inner "PAREN_CLOSE"
 _range_inner: expression "RANGE" expression
+
+
+# -- Maps --
+
+map: "CURLY_OPEN" _map_inner "CURLY_CLOSE"
+_map_inner: map_entry ("COMMA" map_entry)*
+map_entry: expression "COLON" expression
 
 
 # -- File Redirection --
