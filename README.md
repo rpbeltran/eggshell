@@ -319,6 +319,25 @@ class Item {
 ```
 
 
+**Maps**
+
+Maps in egg behave similarly to dictionaries in Python.  
+
+```
+a : Map = { "apple": @Apple, "orange": @Orange }
+```
+
+They are in essence heterogeneous hashmaps (the keys need not all be the same
+type, nor the values). Though type constraints may be added as desired!
+
+```
+valid_map : Map<str, int> = { "apple": 1, "orange": 2 }
+try {
+  invalid_map : Map<str, int> = { "apple": 1, "orange": false }
+} catch {
+  say "non-int value 'false' throws an error";
+}
+```
 
 **Working with Environment Variables**
 
@@ -410,3 +429,5 @@ From highest to lowest priority (higher priorities evaluate first):
 7. disjunction: `or`, `xor`
 8. currying: `$`
 9. pipelining: `|`
+10. assignment: `:=`
+11. semicolon: `;`

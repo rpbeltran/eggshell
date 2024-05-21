@@ -63,4 +63,6 @@ KEYWORDS = {
     'try': 'TRY',
     'catch': 'CATCH',
     'as': 'AS',
+    'var': 'VAR',
+    'const': 'CONST',
 }

@@ -5,8 +5,7 @@
 
 ?top_level_expression: write_to_file "SEMICOLON"?
                      | append_to_file "SEMICOLON"?
-                     | declaration "SEMICOLON"?
-                     | top_level_atomic "SEMICOLON"?
+                     | non_atomic "SEMICOLON"?
                      | try_catch
                      | if
                      | loop
@@ -15,7 +14,7 @@
                      | break_expr
                      | return_expr
 
-?top_level_atomic: pipeline | expression
+?non_atomic: pipeline | expression | declaration
 
 
 # -- Atomics --
@@ -35,7 +34,7 @@
        | list
        | range
 
-?paren_expr: "PAREN_OPEN" top_level_atomic "PAREN_CLOSE"
+?paren_expr: "PAREN_OPEN" non_atomic "PAREN_CLOSE"
 
 
 # -- Identifiers and Namespaces --
@@ -43,18 +42,26 @@
 identifier: (NAME "NAMESPACE")* NAME
 
 
-# -- Variable Declaration --
+# -- Variable Assignment And Declaration --
 
-?declaration: typed_declaration | untyped_declaration
+?declaration: declare_typed_variable
+            | declare_untyped_variable
+            | declare_typed_constant
+            | declare_untyped_constant
 
-typed_declaration: identifier "COLON" identifier "ASSIGN" expression
-untyped_declaration: identifier "DECLARE" expression
+declare_typed_variable: "VAR"? NAME "COLON" identifier "ASSIGN" expression
+declare_untyped_variable: "VAR"? NAME "DECLARE" expression
+
+declare_typed_constant: "CONST" NAME "COLON" identifier "ASSIGN" expression
+declare_untyped_constant: "CONST" NAME "DECLARE" expression
+
+assign_variable: identifier "ASSIGN" expression
 
 
 # -- Lists --
 
 list: "SQUARE_OPEN" _list_inner? "SQUARE_CLOSE"
-_list_inner: top_level_atomic ("COMMA" top_level_atomic)*
+_list_inner: expression ("COMMA" expression)*
 
 range: "SQUARE_OPEN" _range_inner "SQUARE_CLOSE"
      | "PAREN_OPEN" _range_inner "PAREN_CLOSE"
