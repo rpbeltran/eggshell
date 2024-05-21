@@ -1,7 +1,7 @@
 ?start: top_level_expression
 
 
-# -- Expressions --
+# -- Top Level --
 
 ?top_level_expression: write_to_file "SEMICOLON"?
                      | append_to_file "SEMICOLON"?
@@ -17,16 +17,21 @@
 
 ?top_level_atomic: pipeline | expression
 
-?expression: arithmetic | comparison
+
+# -- Atomics --
+
 ?atomic: exec
        | paren_expr
        | identifier
        | QUOTED_STRING
        | lambda_func
-       | number
+       | INTEGER
+       | FLOAT
+       | TRUE
+       | FALSE
        | logical_sequence
        | curried_func
-       | boolean_literal
+
 ?paren_expr: "PAREN_OPEN" top_level_atomic "PAREN_CLOSE"
 
 
@@ -49,38 +54,6 @@ write_to_file: pipeline "ANGLE_CLOSE" (EXEC_ARG | identifier | QUOTED_STRING)
 append_to_file: pipeline "APPEND_FILE" (EXEC_ARG | identifier | QUOTED_STRING)
 
 
-# -- Integer Arithmetic --
-
-?arithmetic: addition | subtraction | arithmetic_2
-?arithmetic_2: multiply | divide | int_divide | modulus | arithmetic_3
-?arithmetic_3: raise_power | atomic
-
-addition: arithmetic_2 "PLUS" arithmetic_2
-subtraction: arithmetic_2 "MINUS" arithmetic_2
-
-multiply: arithmetic_3 "TIMES" arithmetic_3
-divide: arithmetic_3 "DIVIDE" arithmetic_3
-int_divide: arithmetic_3 "INT_DIV" arithmetic_3
-modulus: arithmetic_3 "MOD" arithmetic_3
-
-raise_power: atomic "POWER" atomic
-
-number: INTEGER | FLOAT
-
-
-# -- Boolean Arithmetic --
-
-?boolean_literal: FALSE | TRUE
-
-?comparison: cmp_equal | cmp_gte | cmp_lte | cmp_gt | cmp_lt
-
-cmp_equal: arithmetic "EQUALS" arithmetic
-cmp_gte: arithmetic "GTE" arithmetic
-cmp_lte: arithmetic "LTE" arithmetic
-cmp_gt: arithmetic "ANGLE_OPEN" arithmetic
-cmp_lt: arithmetic "ANGLE_CLOSE" arithmetic
-
-
 # -- If / Else --
 
 if: "IF" atomic block elif* else?
@@ -97,6 +70,7 @@ exec: EXEC_ARG+
 # -- Code Blocks --
 
 block: "CURLY_OPEN" top_level_expression* "CURLY_CLOSE"
+
 
 # -- Error Handling --
 
@@ -115,6 +89,7 @@ define_function : "FN" NAME func_arglist func_type? block
 ?func_type: "COLON" atomic
 
 return_expr : "RETURN" expression
+
 
 # -- Lambdas --
 
@@ -138,6 +113,71 @@ label: "AS" NAME
 
 continue_expr : "CONTINUE" NAME?
 break_expr : "BREAK" NAME?
+
+
+# -- Arithmetic --
+
+?expression: arithmetic_or
+
+# --- Disjunction
+
+?arithmetic_or: or_expr | xor_expr | arithmetic_and
+
+or_expr: arithmetic_and "OR" arithmetic_and
+xor_expr: arithmetic_and "XOR" arithmetic_and
+
+# --- Conjunction
+
+?arithmetic_and: and_expr | arithmetic_cmp
+
+and_expr: arithmetic_cmp "AND" arithmetic_cmp
+
+# --- Comparison
+
+?arithmetic_cmp: cmp_equal
+               | cmp_unequal
+               | cmp_gte
+               | cmp_lte
+               | cmp_gt
+               | cmp_lt
+               | arithmetic_add
+
+cmp_equal: arithmetic_add "EQUALS" arithmetic_add
+cmp_unequal: arithmetic_add "NOT_EQUALS" arithmetic_add
+cmp_gte: arithmetic_add "GTE" arithmetic_add
+cmp_lte: arithmetic_add "LTE" arithmetic_add
+cmp_gt: arithmetic_add "ANGLE_OPEN" arithmetic_add
+cmp_lt: arithmetic_add "ANGLE_CLOSE" arithmetic_add
+
+# --- Addition/Subtraction
+
+?arithmetic_add: addition | subtraction | arithmetic_mul
+
+addition: arithmetic_mul "PLUS" arithmetic_mul
+subtraction: arithmetic_mul "MINUS" arithmetic_mul
+
+# --- Multiplication/Division
+
+?arithmetic_mul: multiply | divide | int_divide | modulus | arithmetic_pow
+
+multiply: arithmetic_pow "TIMES" arithmetic_pow
+divide: arithmetic_pow "DIVIDE" arithmetic_pow
+int_divide: arithmetic_pow "INT_DIV" arithmetic_pow
+modulus: arithmetic_pow "MOD" arithmetic_pow
+
+# --- Exponentiation
+
+?arithmetic_pow: raise_power | arithmetic_unary
+
+raise_power: arithmetic_unary "POWER" arithmetic_unary
+
+# --- Unary Operations
+
+?arithmetic_unary: unary_negate | unary_not | atomic
+
+unary_negate: "MINUS" atomic
+unary_not: "NOT" atomic
+
 
 # -- Lexer Declarations --
 
@@ -168,7 +208,7 @@ break_expr : "BREAK" NAME?
 %declare ANGLE_OPEN # todo: support generics in types
 %declare ANGLE_CLOSE # todo: support generics in types
 %declare SQUARE_OPEN # todo: support array access
-%declare SQUARE_CLOS # todo: support array access
+%declare SQUARE_CLOSE # todo: support array access
 %declare EQUALS
 %declare GTE
 %declare LTE
@@ -193,10 +233,10 @@ break_expr : "BREAK" NAME?
 %declare BREAK
 %declare TRUE
 %declare FALSE
-%declare AND # todo: support boolean arithmetic
-%declare OR # todo: support boolean arithmetic
-%declare XOR # todo: support boolean arithmetic
-%declare NOT # todo: support boolean arithmetic
+%declare AND
+%declare OR
+%declare XOR
+%declare NOT
 %declare RETURN
 %declare IF
 %declare IN

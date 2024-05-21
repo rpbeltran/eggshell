@@ -10,6 +10,7 @@ OPERATORS = {
     '||': 'SEQ_OR',
     '::': 'NAMESPACE',
     '==': 'EQUALS',
+    '!=': 'NOT_EQUALS',
     '>=': 'GTE',
     '<=': 'LTE',
     # 1-Char Operators
