@@ -31,6 +31,8 @@
        | FALSE
        | logical_sequence
        | curried_func
+       | list
+       | range
 
 ?paren_expr: "PAREN_OPEN" top_level_atomic "PAREN_CLOSE"
 
@@ -46,6 +48,16 @@ identifier: (NAME "NAMESPACE")* NAME
 
 typed_declaration: identifier "COLON" identifier "ASSIGN" expression
 untyped_declaration: identifier "DECLARE" expression
+
+
+# -- Lists --
+
+list: "SQUARE_OPEN" _list_inner? "SQUARE_CLOSE"
+_list_inner: top_level_atomic ("COMMA" top_level_atomic)*
+
+range: "SQUARE_OPEN" _range_inner "SQUARE_CLOSE"
+     | "PAREN_OPEN" _range_inner "PAREN_CLOSE"
+_range_inner: expression "RANGE" expression
 
 
 # -- File Redirection --

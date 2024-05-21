@@ -13,6 +13,7 @@ OPERATORS = {
     '!=': 'NOT_EQUALS',
     '>=': 'GTE',
     '<=': 'LTE',
+    '..': 'RANGE',
     # 1-Char Operators
     ':': 'COLON',
     '=': 'ASSIGN',
