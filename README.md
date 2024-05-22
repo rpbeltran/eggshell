@@ -17,26 +17,26 @@ class Item {
     quantity: Int
 
     fn total (): Float {
-        ret @price * @quantity
+        ret this.price * this.quantity
     }
 }
 
 fn get_items_from(file: Path) : Status<[Item]> {
-    if !(@file.exists) {
+    if !(file.exists) {
         ret Status::Error("Provided file does not exist")
     }
 
     lines : [str] = `read @file` | _.split
 
     items : [Item] = []
-    for (i, line) in @lines.with_indices {
-        cols := @line.split(',')
+    for (i, line) in lines.with_indices {
+        cols := line.split(',')
         if cols.len != 3 {
             ret Status::Err("Line {i} is invalid")
         }
-        @items.add(Item{@cols[0], @cols[1].float, @cols[2].int})
+        items.add(Item{cols[0], cols[1].float, cols[2].int})
     }
-    ret Status::Ok(@items)
+    ret Status::Ok(items)
 }
 
 fn main (args) {
@@ -344,7 +344,45 @@ class Item {
   }
 }
 
-@item : Item = Item{"thingy", 1.99} 
+item : Item = Item{"thingy", 1.99} 
+```
+
+**Lists**
+
+Lists in egg behave similarly to lists in other languages like Python. Like many
+dynamic programming languages, the elements in lists need not be the same type,
+unless of course type constraints have been added. Lists are 0-indexed as all
+things should be.
+
+```
+l := [1,2,"three",Four(),5.0]
+
+four := l[3]
+_3_4_5_ := l.slice(2,5)
+_1_3_5_ := l.slice(0,5,2) 
+
+l_reversed := l.rev()
+
+l.add(6)
+
+l.insert(1,1.5)
+
+[9,0,5,1].sort()
+
+nearest_to_7 := [9,0,5,1].sort_rev(abs(_ - 7 ))
+
+size := l.len()
+```
+
+# todo: support python-like slicing syntax `l[a:b:c]` 
+
+Lists is egg can also be used as sets.
+
+```
+l := [1,4,6,7,8, 4]
+s := l.uniq()
+s.add_uniq(3)
+s.add_uniq(4) # does nothing!
 ```
 
 
@@ -353,7 +391,7 @@ class Item {
 Maps in egg behave similarly to dictionaries in Python.  
 
 ```
-a : Map = { "apple": @Apple, "orange": @Orange }
+a : Map = { "apple": Apple, "orange": Orange }
 
 a := { }
 ```
@@ -426,8 +464,6 @@ use foo="hello", bar="world" : say "{foo} {bar}"
 
 ## Builtin Types and Data Structures
 
-todo: write more here
-
 **Basic Types**
 
 1. Str
@@ -439,8 +475,7 @@ todo: write more here
 **Provided Data Structures**
 
 1. Lists
-2. Sets
-3. Hashmaps
+2. Hashmaps
 
 
 ## Random Details
