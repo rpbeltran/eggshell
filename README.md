@@ -358,8 +358,10 @@ things should be.
 l := [1,2,"three",Four(),5.0]
 
 four := l[3]
-_3_4_5_ := l.slice(2,5)
-_1_3_5_ := l.slice(0,5,2) 
+_3_4_5_ := l[2:5]
+_1_3_5_ := l[0:5:2] 
+
+l_last := l[-1]
 
 l_reversed := l.rev()
 
@@ -373,8 +375,6 @@ nearest_to_7 := [9,0,5,1].sort_rev(abs(_ - 7 ))
 
 size := l.len()
 ```
-
-# todo: support python-like slicing syntax `l[a:b:c]` 
 
 Lists is egg can also be used as sets.
 

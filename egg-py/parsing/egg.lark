@@ -224,7 +224,8 @@ unary_not: "NOT" atomic
 
 ?arithmetic_select: select | select | atomic
 
-select: atomic "SQUARE_OPEN" expression "SQUARE_CLOSE"
+select: atomic "SQUARE_OPEN" _select_inner "SQUARE_CLOSE"
+_select_inner: expression ("COLON" expression ("COLON" expression)?)?
 
 
 # -- Lexer Declarations --
