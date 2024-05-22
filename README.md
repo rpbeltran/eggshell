@@ -487,7 +487,7 @@ These things should probably go somewhere other than the README at some point.
 From highest to lowest priority (higher priorities evaluate first):
 
 1. selection: `my_list[i]`
-2. negation: `not`, `!`
+2. negation: `not`, `!`, `-` (unary)
 3. exponentiation: `^`
 4. multiplication/division: `*`, `/`, `//`, `%`
 5. comparison: `!=`, `==`, `>`, `>=`, `<`, `<=`
@@ -497,3 +497,14 @@ From highest to lowest priority (higher priorities evaluate first):
 9. pipelining: `|`
 10. assignment: `:=`
 11. semicolon: `;`
+
+### Chaining Comparisons
+
+Comparison operators can be chained like such:
+
+```
+a < b > 3 == 4 != 5
+```
+
+The result will be true iff all adjacent values uphold their connecting
+comparison. 
