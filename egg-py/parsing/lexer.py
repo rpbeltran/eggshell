@@ -1,17 +1,31 @@
 import lark.lexer
 from typing import Iterator
 
-from .lexer_constants import KEYWORDS, OPERATORS, OPERATOR_STARTS
+from .lexer_constants import (
+    KEYWORDS,
+    OPERATORS,
+    OPERATOR_STARTS,
+    BLOCK_OPERATORS,
+    BLOCK_OPERATOR_STARTS
+)
 from .lexer_util import DFANode, LexerError, LexerState, Token
 
 
 class StartNode(DFANode):
     def step(self, c: str, state: LexerState) -> Iterator[Token]:
+
+        allowed_operator_starts = OPERATOR_STARTS
+        if state.in_block():
+            allowed_operator_starts = BLOCK_OPERATOR_STARTS
+
         if c == '\n':
             state.clear_prev()
         elif c.isspace():
             pass
-        elif c.isalpha() or c in '_./':
+        elif c in allowed_operator_starts:
+            state.token_start = state.head
+            state.goto_node(OperatorsNode(), step_back=True)
+        elif c.isalpha() or c in './':
             state.token_start = state.head
             state.goto_node(UnquotedLiteral(), step_back=True)
         elif c.isdigit() or (c == '-' and state.peek_one().isdigit()):
@@ -29,9 +43,6 @@ class StartNode(DFANode):
         elif c == '`':
             state.token_start = state.head + 1
             state.goto_node(QuotedArgListNode(), step_back=False)
-        elif c in OPERATOR_STARTS:
-            state.token_start = state.head
-            state.goto_node(OperatorsNode(), step_back=True)
         else:
             raise LexerError('Read unimplemented char', state)
         yield from ()
@@ -41,7 +52,12 @@ class OperatorsNode(DFANode):
     def step(self, c: str, state: LexerState) -> Iterator[Token]:
         found = False
         data = c + state.peek()
-        for pattern, token_type in OPERATORS.items():
+
+        allowed_operators = OPERATORS
+        if state.in_block():
+            allowed_operators = BLOCK_OPERATORS
+
+        for pattern, token_type in allowed_operators.items():
             if data.startswith(pattern):
                 found = True
                 state.step_forward(len(pattern) - 1)
@@ -49,6 +65,14 @@ class OperatorsNode(DFANode):
                     state.curly_depth += 1
                 elif token_type == "CURLY_CLOSE":
                     state.curly_depth -= 1
+                elif token_type == "PAREN_OPEN":
+                    state.paren_depth += 1
+                elif token_type == "PAREN_CLOSE":
+                    state.paren_depth -= 1
+                elif token_type == "SQUARE_OPEN":
+                    state.square_depth += 1
+                elif token_type == "SQUARE_CLOSE":
+                    state.square_depth -= 1
                 yield state.get_token(token_type, inclusive=True)
                 state.goto_node(StartNode(), step_back=False)
                 break
@@ -127,7 +151,7 @@ class UnquotedLiteral(DFANode):
             return 'EXEC_ARG'
         if source in KEYWORDS:
             return KEYWORDS[source]
-        if state.curly_depth > 0 or state.get_prev() in [
+        if state.in_block() or state.get_prev() in [
             'AS',
             'BREAK',
             'CATCH',

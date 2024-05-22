@@ -108,9 +108,9 @@ charecters such as spaces, you will need to surround it in quotes
 ```
 
 Unlike in Bash however, implicit execution is not permitted within code blocks
-surrounded by curly braces. So inside of a function for example, we must use
-backticks. In these cases, `a := b` will assume b is the name of another
-variable, not a target to execute.
+surrounded by curly braces, parenthesis, or square brackets. So inside of a
+function for example, we must use backticks. In these cases, `a := b` will
+assume b is the name of another variable, not a target to execute.
 
 ```
 fn a() {
@@ -119,7 +119,11 @@ fn a() {
 }
 ```
 
-There are a handful of other times when implicit execution is not permitted
+When implicit execution is allowed at the top level, the following things are not allowed:
+1. implicit variable names in rhs, instead use `a := @b`
+2. multiplication and division, instead use `(a / b)` or `div(a,b)`
+
+These requirements are there in order to avoid ambiguities.
 
 **User defined functions and lambdas**
 
@@ -507,4 +511,4 @@ a < b > 3 == 4 != 5
 ```
 
 The result will be true iff all adjacent values uphold their connecting
-comparison. 
+comparison.

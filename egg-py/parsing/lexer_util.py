@@ -37,6 +37,8 @@ class LexerState:
         self.state_node = StartNodeType()
         self.prev_token_types = []
         self.curly_depth = 0
+        self.paren_depth = 0
+        self.square_depth = 0
 
     def has_data(self):
         return self.head < len(self.data)
@@ -86,6 +88,13 @@ class LexerState:
         if self.prev_token_types:
             return self.prev_token_types[-1]
         return ""
+
+    def in_block(self) -> bool:
+        return (
+                self.curly_depth > 0 or
+                self.paren_depth > 0 or
+                self.square_depth > 0
+        )
 
 
 class DFANode:

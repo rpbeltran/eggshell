@@ -3,7 +3,6 @@ OPERATORS = {
     # 2-Char Operators
     ':=': 'DECLARE',
     '>>': 'APPEND_FILE',
-    '//': 'INT_DIV',
     '\\': 'LAMBDA',
     '->': 'ARROW',
     '&&': 'SEQ_AND',
@@ -31,15 +30,22 @@ OPERATORS = {
     '$': 'CURRY',
     '+': 'PLUS',
     '-': 'MINUS',
-    '*': 'TIMES',
-    '/': 'DIVIDE',
     '%': 'MOD',
     '^': 'POWER',
     '!': 'NOT',
     '~': 'ASYNC',
 }
 
+BLOCK_OPERATORS = {
+    '**': 'POWER',
+    '//': 'INT_DIV',
+    **OPERATORS,
+    '*': 'TIMES',
+    '/': 'DIVIDE',
+}
+
 OPERATOR_STARTS = {op[0] for op in OPERATORS}
+BLOCK_OPERATOR_STARTS = {op[0] for op in BLOCK_OPERATORS}
 
 KEYWORDS = {
     'fn': 'FN',
