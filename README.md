@@ -226,8 +226,22 @@ try {
 }
 ```
 
-These are exactly equivalent. In general, the first syntax is nice for
-one-liners in shell while try-catch will often be better in scripts.
+These are exactly equivalent, but try-catch blocks have an additional ability to
+catch the exact error thrown inside the try and store it:
+
+
+```
+try {
+    do_a
+    do_b
+    do_c
+} catch e: Error {
+    say("Handling error: {e}")
+    do_x
+    do_y
+    do_z
+}
+```
 
 **While Loops**
 
