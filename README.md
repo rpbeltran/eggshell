@@ -129,7 +129,7 @@ These requirements are there in order to avoid ambiguities.
 
 ```
 fn get_rows_for_user(username: str): [str] {
-    ret `cat data.csv` | `grep "{username}@company.com"`).split()
+    ret `cat data.csv` | `grep "{username}@company.com"`.split()
 }
 
 rows := get_rows_for_user("user")
@@ -280,7 +280,7 @@ first_evens := @first_odds.map $ 2*(_-1)
 Promises in bash are similar to their counterparts in Javascript.
 
 ```
-promise := ~(long_running_executable a b c)
+promise := ~(`long_running_executable a b c`)
 say "I get printed almost immediately!"
 promise.await()
 say "I get printed after the long task finishes..."
@@ -289,9 +289,9 @@ say "I get printed after the long task finishes..."
 We can chain them together like so:
 
 ```
-~(foo).then( \foo_out -> { 
-    say foo_out
-    do_something_else
+~(`foo`).then( \foo_out -> { 
+    say(foo_out)
+    `do_something_else`
 }).success(say _).error(say _).then(say _)
 ```
 

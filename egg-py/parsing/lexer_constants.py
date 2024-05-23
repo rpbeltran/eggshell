@@ -1,7 +1,19 @@
 # Keep operators sorted by length plz.
 OPERATORS = {
+    # 4-Char Operators
+    '(**)': 'POWER',
+    '(//)': 'INT_DIV',
+    # 3-Char Operators
+    '(*)': 'TIMES',
+    '(/)': 'DIVIDE',
     # 2-Char Operators
     ':=': 'DECLARE',
+    '+=': 'PLUS_ASSIGN',
+    '-=': 'MINUS_ASSIGN',
+    '*=': 'TIMES_ASSIGN',
+    '/=': 'DIVIDE_ASSIGN',
+    '%=': 'MOD_ASSIGN',
+    '|=': 'PIPE_ASSIGN',
     '>>': 'APPEND_FILE',
     '\\': 'LAMBDA',
     '->': 'ARROW',

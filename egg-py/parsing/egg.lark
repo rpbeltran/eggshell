@@ -14,7 +14,7 @@
                      | break_expr
                      | return_expr
 
-?non_atomic: pipeline | expression | declaration
+?non_atomic: pipeline | expression | declaration | reassignment
 
 
 # -- Atomics --
@@ -65,8 +65,20 @@ declare_untyped_variable: "VAR"? NAME "DECLARE" expression
 declare_typed_constant: "CONST" NAME "COLON" type "ASSIGN" expression
 declare_untyped_constant: "CONST" NAME "DECLARE" expression
 
-assign_variable: identifier "ASSIGN" expression
-
+?reassignment: reassign
+             | plus_assign
+             | minus_assign
+             | times_assign
+             | divide_assign
+             | mod_assign
+             | pipe_assign
+reassign: identifier "ASSIGN" expression
+plus_assign: identifier "PLUS_ASSIGN" expression
+minus_assign: identifier "MINUS_ASSIGN" expression
+times_assign: identifier "TIMES_ASSIGN" expression
+divide_assign: identifier "DIVIDE_ASSIGN" expression
+mod_assign: identifier "MOD_ASSIGN" expression
+pipe_assign: identifier "PIPE_ASSIGN" expression
 
 # -- Lists --
 
