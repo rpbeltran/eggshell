@@ -155,6 +155,7 @@ class UnquotedLiteral(DFANode):
             'AS',
             'BREAK',
             'CATCH',
+            'CLASS',
             'COLON',
             'CONTINUE',
             'FOR',

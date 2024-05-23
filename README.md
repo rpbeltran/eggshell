@@ -12,12 +12,12 @@ While being sane and extendable for use in scripts:
 
 ```
 class Item {
-    name: Str
-    price: Float
+    name: Str,
+    price: Float,
     quantity: Int
 
     fn total (): Float {
-        ret this.price * this.quantity
+        ret price * quantity
     }
 }
 
@@ -353,16 +353,26 @@ todo: write more here
 
 ```
 class Item {
-  name: Str
-  price: Float
+  name: Str,
+  price: Float,
   quantity: Int = 1
 
   fn total(): Float {
-    ret this.price * this.quantity
+    ret price * quantity
   }
 }
 
 item : Item = Item{"thingy", 1.99} 
+```
+
+Egg supports polymorphism. 
+
+```
+class Cow : Animal {
+    fn make_sound() {
+      say("moo")
+    }
+} 
 ```
 
 **Lists**

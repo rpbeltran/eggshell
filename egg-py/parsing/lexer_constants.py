@@ -84,4 +84,5 @@ KEYWORDS = {
     'as': 'AS',
     'var': 'VAR',
     'const': 'CONST',
+    'class': 'CLASS',
 }

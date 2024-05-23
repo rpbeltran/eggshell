@@ -9,6 +9,8 @@
                      | try_catch
                      | if
                      | loop
+                     | define_class
+                     | define_derived_class
                      | define_function
                      | continue_expr
                      | break_expr
@@ -79,6 +81,18 @@ times_assign: identifier "TIMES_ASSIGN" expression
 divide_assign: identifier "DIVIDE_ASSIGN" expression
 mod_assign: identifier "MOD_ASSIGN" expression
 pipe_assign: identifier "PIPE_ASSIGN" expression
+
+# -- Classes --
+
+define_class: "CLASS" NAME "CURLY_OPEN" _class_inner "CURLY_CLOSE"
+define_derived_class: "CLASS" NAME "COLON" identifier "CURLY_OPEN" _class_inner "CURLY_CLOSE"
+_class_inner: class_fields class_methods
+class_fields: ((class_field "COMMA")* class_field)?
+?class_field: class_field_typed | class_field_untyped
+class_field_typed: NAME "COLON" type ("ASSIGN" expression)?
+class_field_untyped: NAME ("DECLARE" expression)?
+
+class_methods: define_function*
 
 # -- Lists --
 
