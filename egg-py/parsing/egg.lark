@@ -25,6 +25,7 @@
        | paren_expr
        | identifier
        | identifier_with_fields
+       | function_pointer
        | select
        | lambda_func
        | logical_sequence
@@ -51,11 +52,17 @@ identifier: identifier_namespace? NAME
 identifier_namespace: (NAME "NAMESPACE")+
 
 
+# -- Function Pointers --
+
+function_pointer: (identifier_with_fields | identifier) "ELLIPSIS"
+
+
 # -- Type Constraints --
 
 ?type: identifier type_generic?
 type_generic: "ANGLE_OPEN" _type_generic_inner "ANGLE_CLOSE"
 _type_generic_inner: type ("COMMA" type)*
+
 
 # -- Variable Assignment And Declaration --
 
@@ -85,6 +92,7 @@ divide_assign: identifier "DIVIDE_ASSIGN" expression
 mod_assign: identifier "MOD_ASSIGN" expression
 pipe_assign: identifier "PIPE_ASSIGN" expression
 
+
 # -- Classes --
 
 define_class: "CLASS" NAME "CURLY_OPEN" _class_inner "CURLY_CLOSE"
@@ -96,6 +104,7 @@ class_field_typed: NAME "COLON" type ("ASSIGN" expression)?
 class_field_untyped: NAME ("DECLARE" expression)?
 
 class_methods: define_function*
+
 
 # -- Lists --
 
@@ -250,13 +259,10 @@ raise_power: arithmetic_unary "POWER" arithmetic_pow
 unary_negate: "MINUS" atomic
 unary_not: "NOT" atomic
 
-# -- Selection
-
-?arithmetic_select: select | select | atomic
+# -- Selection --
 
 select: atomic "SQUARE_OPEN" _select_inner "SQUARE_CLOSE"
 _select_inner: expression ("COLON" expression ("COLON" expression)?)?
-
 
 # -- Lexer Declarations --
 
