@@ -24,6 +24,7 @@
 ?atomic: exec
        | paren_expr
        | identifier
+       | identifier_with_fields
        | select
        | lambda_func
        | logical_sequence
@@ -45,7 +46,9 @@ literal: QUOTED_STRING
 
 # -- Identifiers and Namespaces --
 
-identifier: (NAME "NAMESPACE")* NAME
+identifier_with_fields: identifier_namespace? NAME ("DOT" NAME)+
+identifier: identifier_namespace? NAME
+identifier_namespace: (NAME "NAMESPACE")+
 
 
 # -- Type Constraints --

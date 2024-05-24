@@ -89,9 +89,15 @@ class CommentNode(DFANode):
 
 class IdentifierNode(DFANode):
     def step(self, c: str, state: LexerState) -> Iterator[Token]:
-        if c.isspace() or c in r':=+-/[]{}()<>':
+        if c == '.' and state.peek_one() != '.':
             if state.token_start == state.head:
-                raise LexerError('Empty identifier not permitted', state)
+                raise LexerError('Identifier is empty', state)
+            yield state.get_token('NAME', inclusive=False)
+            yield state.get_token('DOT', inclusive=True)
+            state.token_start = state.head + 1
+        elif c.isspace() or c in r':=+-/[]{}()<>.':
+            if state.token_start == state.head:
+                raise LexerError('Identifier is empty', state)
             yield state.get_token('NAME', inclusive=False)
             state.goto_node(StartNode(), step_back=True)
         elif c in '@':
