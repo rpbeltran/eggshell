@@ -318,8 +318,8 @@ This is done with:
 ```
 egg my_egg.egg
 ```
-That will call the script in a new process but will not make `foo()` available to
-use by the calling script. 
+That will call the script in a new process but will not make `foo()` available
+to use by the calling script.
 
 The second thing we may want to do is fetch the user defined functions and types
 for use in our own script. This is done with:

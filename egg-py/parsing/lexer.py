@@ -6,7 +6,7 @@ from .lexer_constants import (
     OPERATORS,
     OPERATOR_STARTS,
     BLOCK_OPERATORS,
-    BLOCK_OPERATOR_STARTS
+    BLOCK_OPERATOR_STARTS,
 )
 from .lexer_util import DFANode, LexerError, LexerState, Token
 
@@ -61,17 +61,17 @@ class OperatorsNode(DFANode):
             if data.startswith(pattern):
                 found = True
                 state.step_forward(len(pattern) - 1)
-                if token_type == "CURLY_OPEN":
+                if token_type == 'CURLY_OPEN':
                     state.curly_depth += 1
-                elif token_type == "CURLY_CLOSE":
+                elif token_type == 'CURLY_CLOSE':
                     state.curly_depth -= 1
-                elif token_type == "PAREN_OPEN":
+                elif token_type == 'PAREN_OPEN':
                     state.paren_depth += 1
-                elif token_type == "PAREN_CLOSE":
+                elif token_type == 'PAREN_CLOSE':
                     state.paren_depth -= 1
-                elif token_type == "SQUARE_OPEN":
+                elif token_type == 'SQUARE_OPEN':
                     state.square_depth += 1
-                elif token_type == "SQUARE_CLOSE":
+                elif token_type == 'SQUARE_CLOSE':
                     state.square_depth -= 1
                 yield state.get_token(token_type, inclusive=True)
                 state.goto_node(StartNode(), step_back=False)

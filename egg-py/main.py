@@ -16,15 +16,17 @@ def get_args() -> argparse.Namespace:
     """  # todo: enable once something else is even supported
 
     arg_parser.add_argument(
-        "-l", "--lex",
-        help="Run just the lexer instead of executing.",
-        action="store_true")
+        '-l',
+        '--lex',
+        help='Run just the lexer instead of executing.',
+        action='store_true',
+    )
 
     arg_parser.add_argument(
         '-r',
         '--run',
         help='Path of script to be executed.'
-        'If ommitted, interactive mode will be enabled.',
+        'If omitted, interactive mode will be enabled.',
         required=False,
     )
 
@@ -40,7 +42,7 @@ def show_lex(egg_code: str):
     lexer = EggLexer()
     tokens = lexer.lex(egg_code)
     tokens_str = ', '.join([str(token) for token in tokens])
-    print(f"[{tokens_str}]")
+    print(f'[{tokens_str}]')
 
 
 def main():

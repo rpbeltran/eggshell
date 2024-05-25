@@ -259,10 +259,12 @@ raise_power: arithmetic_unary "POWER" arithmetic_pow
 unary_negate: "MINUS" atomic
 unary_not: "NOT" atomic
 
+
 # -- Selection --
 
 select: atomic "SQUARE_OPEN" _select_inner "SQUARE_CLOSE"
 _select_inner: expression ("COLON" expression ("COLON" expression)?)?
+
 
 # -- Lexer Declarations --
 

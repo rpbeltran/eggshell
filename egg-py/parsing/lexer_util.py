@@ -87,13 +87,13 @@ class LexerState:
     def get_prev(self) -> str:
         if self.prev_token_types:
             return self.prev_token_types[-1]
-        return ""
+        return ''
 
     def in_block(self) -> bool:
         return (
-                self.curly_depth > 0 or
-                self.paren_depth > 0 or
-                self.square_depth > 0
+            self.curly_depth > 0
+            or self.paren_depth > 0
+            or self.square_depth > 0
         )
 
 
