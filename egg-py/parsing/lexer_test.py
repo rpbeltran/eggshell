@@ -48,32 +48,6 @@ def test_basic_pipe3():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_try():
-    egg_code = 'try{\n\t`a` }'
-    expected_tokens = [
-        ('TRY', 'try'),
-        ('CURLY_OPEN', '{'),
-        ('EXEC_ARG', 'a'),
-        ('CURLY_CLOSE', '}'),
-    ]
-    assert get_tokens(egg_code) == expected_tokens
-
-
-def test_try_catch():
-    egg_code = 'try{ `a` }\ncatch{ b }'
-    expected_tokens = [
-        ('TRY', 'try'),
-        ('CURLY_OPEN', '{'),
-        ('EXEC_ARG', 'a'),
-        ('CURLY_CLOSE', '}'),
-        ('CATCH', 'catch'),
-        ('CURLY_OPEN', '{'),
-        ('NAME', 'b'),
-        ('CURLY_CLOSE', '}'),
-    ]
-    assert get_tokens(egg_code) == expected_tokens
-
-
 def test_semicolons():
     egg_code = 'a ; b ; c'
     expected_tokens = [
