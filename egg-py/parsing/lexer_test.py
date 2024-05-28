@@ -157,7 +157,7 @@ def test_lambda2():
     expected_tokens = [
         ('LAMBDA', '\\'),
         ('PAREN_OPEN', '('),
-        ('NAME', 'a,'),
+        ('NAME', 'a'),
         ('COMMA', ','),
         ('NAME', 'b'),
         ('PAREN_CLOSE', ')'),
