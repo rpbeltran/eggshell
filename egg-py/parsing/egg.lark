@@ -31,6 +31,7 @@
        | lambda_func
        | logical_sequence
        | curried_func
+       | function_call
        | list
        | map
        | range
@@ -186,6 +187,12 @@ return_expr : "RETURN" expression
 
 lambda_func: "LAMBDA" (func_arglist | func_arg) "ARROW" expression
            | "LAMBDA" (func_arglist | func_arg) block
+
+
+# -- Function Calls --
+
+function_call: atomic "PAREN_OPEN" function_call_args "PAREN_CLOSE"
+function_call_args: (expression ("COMMA" expression)*)?
 
 
 # -- Currying --

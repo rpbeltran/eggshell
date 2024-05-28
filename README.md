@@ -443,29 +443,29 @@ to help avoid collisions with user defined variables and functions as well as
 executables in path.
 
 To access an environment variable with a default value, use `env.get` as in:
-`@env.get("FOO", "default_value")`
+`env.get("FOO", "default_value")`
 
 To temporarily set an environment variable, then return it to prior state,
 employ the `push` and `pop` methods:
 
 ```
-@env.push("FOO", "hello")
+env.push("FOO", "hello")
 ./do_something_that_uses_foo
-@env.pop("FOO")
+env.pop("FOO")
 ```
 
 You can also call `env.push` and `env.pop` without any arguments and it will
 reset all environment variables to their previous state.
 
 ```
-@env["foo"] = "Hello"
-@env["bar"] = "World"
+env["foo"] = "Hello"
+env["bar"] = "World"
 
-@env.push
-@env["foo"] = "Alice"
-@env["bar"] = "Bob"
+env.push()
+env["foo"] = "Alice"
+env["bar"] = "Bob"
 say "hello {env['foo']} and {env['bar']}" 
-@env.pop
+env.pop()
 
 say "{env['foo']} {env['bar']}"
 ```
