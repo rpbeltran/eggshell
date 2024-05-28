@@ -339,9 +339,9 @@ def test_field_access():
     egg_code = '@a.b.c'
     expected_tokens = [
         ('NAME', 'a'),
-        ('DOT', 'a.'),
+        ('DOT', '.'),
         ('NAME', 'b'),
-        ('DOT', 'b.'),
+        ('DOT', '.'),
         ('NAME', 'c'),
     ]
     assert get_tokens(egg_code) == expected_tokens
@@ -620,6 +620,77 @@ def test_logic():
         ('NOT', 'not'),
         ('NOT', '!'),
         ('NAME', 'd'),
+        ('PAREN_CLOSE', ')'),
+    ]
+    assert get_tokens(egg_code) == expected_tokens
+
+
+def test_function_call():
+    egg_code = 'a()'
+    expected_tokens = [
+        ('NAME', 'a'),
+        ('PAREN_OPEN', '('),
+        ('PAREN_CLOSE', ')'),
+    ]
+    assert get_tokens(egg_code) == expected_tokens
+
+
+def test_function_call_args():
+    egg_code = 'a(b,c)'
+    expected_tokens = [
+        ('NAME', 'a'),
+        ('PAREN_OPEN', '('),
+        ('NAME', 'b'),
+        ('COMMA', ','),
+        ('NAME', 'c'),
+        ('PAREN_CLOSE', ')'),
+    ]
+    assert get_tokens(egg_code) == expected_tokens
+
+
+def test_function_call_in_block():
+    egg_code = '{a(b)}'
+    expected_tokens = [
+        ('CURLY_OPEN', '{'),
+        ('NAME', 'a'),
+        ('PAREN_OPEN', '('),
+        ('NAME', 'b'),
+        ('PAREN_CLOSE', ')'),
+        ('CURLY_CLOSE', '}'),
+    ]
+    assert get_tokens(egg_code) == expected_tokens
+
+
+def test_env_access():
+    egg_code = 'env["foo"]'
+    expected_tokens = [
+        ('EXEC_ARG', 'env'),
+        ('SQUARE_OPEN', '['),
+        ('QUOTED_STRING', 'foo'),
+        ('SQUARE_CLOSE', ']'),
+    ]
+    assert get_tokens(egg_code) == expected_tokens
+
+
+def test_env_get():
+    egg_code = 'env.get()'
+    expected_tokens = [
+        ('NAME', 'env'),
+        ('DOT', '.'),
+        ('NAME', 'get'),
+        ('PAREN_OPEN', '('),
+        ('PAREN_CLOSE', ')'),
+    ]
+    assert get_tokens(egg_code) == expected_tokens
+
+
+def test_method_call():
+    egg_code = '@thing.method()'
+    expected_tokens = [
+        ('NAME', 'thing'),
+        ('DOT', '.'),
+        ('NAME', 'method'),
+        ('PAREN_OPEN', '('),
         ('PAREN_CLOSE', ')'),
     ]
     assert get_tokens(egg_code) == expected_tokens
