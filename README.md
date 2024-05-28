@@ -301,7 +301,7 @@ We can chain them together like so:
 Consider `my_egg.egg` with the following contents:
 
 ```
-import my_library.egg
+import "my_library.egg"
 
 fn foo() {
   say "hello world"
@@ -325,14 +325,14 @@ The second thing we may want to do is fetch the user defined functions and types
 for use in our own script. This is done with:
 
 ```
-import my_egg.egg
+import "my_egg.egg"
 ```
 
 That will make foo available to the calling script under the namespace "my_egg",
 so we can say:
 
 ```
-import my_egg.egg
+import "my_egg.egg"
 
 my_egg::foo()
 ```
@@ -342,7 +342,7 @@ my_egg.egg must be run in order to import it. The namespace of a module is
 decided by its parsing its filename. But we can change it like so:
 
 ```
-import my_egg.egg as foo_lib
+import "my_egg.egg" as foo_lib
 
 foo_lib::foo()
 ```
