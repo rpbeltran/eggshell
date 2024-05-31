@@ -151,7 +151,9 @@ class UnquotedLiteral(DFANode):
                 if i + 1 < len(name_parts):
                     yield state.get_token('DOT', source='.')
             state.goto_node(StartNode(), step_back=True)
-        elif space or c in '<>{}[])|;,' or c == '.' and state.peek_one() == '.':
+        elif (
+            space or c in '<>{}[])|;,' or c == '.' and state.peek_one() == '.'
+        ):
             source = state.get_token_source(inclusive=False)
             token_type = self.get_token_type(source, state)
             yield state.get_token(token_type, source=source)

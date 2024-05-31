@@ -24,9 +24,5 @@ def get_ast(src) -> str:
 
 def test_pipe2():
     src = 'a | b'
-    expected_ast = (
-        'pipeline'
-        '\n  exec\ta'
-        '\n  exec\tb'
-    )
+    expected_ast = 'pipeline' '\n  exec\ta' '\n  exec\tb'
     assert get_ast(src) == expected_ast
