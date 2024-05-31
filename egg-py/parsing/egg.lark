@@ -30,7 +30,6 @@
        | select
        | lambda_func
        | logical_sequence
-       | curried_func
        | function_call
        | list
        | map
@@ -195,11 +194,6 @@ function_call: atomic "PAREN_OPEN" function_call_args "PAREN_CLOSE"
 function_call_args: (expression ("COMMA" expression)*)?
 
 
-# -- Currying --
-
-curried_func: atomic ("CURRY" atomic)+
-
-
 # -- Loops --
 
 ?loop: always_loop | for | while
@@ -215,7 +209,14 @@ break_expr : "BREAK" NAME?
 
 # -- Arithmetic --
 
-?expression: arithmetic_or
+?expression: arithmetic_curry
+
+# --- Currying
+
+?arithmetic_curry: curried_func | arithmetic_or
+
+curried_func: arithmetic_curry ("CURRY" arithmetic_or)
+
 
 # --- Disjunction
 
