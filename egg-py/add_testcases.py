@@ -9,29 +9,19 @@ lexer_test_path = f'{here}/parsing/lexer_test.py'
 parser_test_path = f'{here}/parsing/parser_test.py'
 
 
-def get_lexer_test_code(test_name, egg_code) -> str:
-    token_string = '\n'.join(
-        f'        {tok},' for tok in lexer_test.get_tokens(egg_code)
-    )
-
-    return '\n'.join(
-        (
-            f'\n',
-            f'def test_{test_name}():',
-            f'    egg_code = {repr(egg_code)}',
-            f'    expected_tokens = [',
-            token_string,
-            f'    ]',
-            f'    assert get_tokens(egg_code) == expected_tokens',
-            '',
-        )
-    )
+def get_lexer_test_code(test_name, src) -> str:
+    token_string = '\n'.join( ' '*8 + tok for tok in lexer_test.get_tokens(src))
+    return f"""
+def test_{test_name}():
+    src = {repr(src)}
+    expected_tokens = [\n{token_string}\n    ]
+    assert get_tokens(src) == expected_tokens\n"""
 
 
 def make_parser_test_code(test_name, src) -> str:
     ast_lines = parser_test.get_ast(src).split('\n')
     expected_ast_inner = '\n'.join(
-        '        ' + repr(f'\n{line}' if i != 0 else line)
+        ' '*8 + repr(f'\n{line}' if i != 0 else line)
         for i, line in enumerate(ast_lines)
     )
 
