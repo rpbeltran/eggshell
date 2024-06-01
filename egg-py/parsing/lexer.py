@@ -217,9 +217,14 @@ class NumberNode(DFANode):
 
     def step(self, c: str, state: LexerState) -> Iterator[Token]:
         if c == '.':
-            if self.has_decimal:
+            if state.peek_one() == ".":
+                token_type = self.get_token_type(state)
+                yield state.get_token(token_type, inclusive=False)
+                state.goto_node(StartNode(), step_back=True)
+            elif self.has_decimal:
                 raise LexerError('Read unexpected char', state)
-            self.has_decimal = True
+            else:
+                self.has_decimal = True
         elif not (c.isdigit() or c == '-'):
             token_type = self.get_token_type(state)
             yield state.get_token(token_type, inclusive=False)
