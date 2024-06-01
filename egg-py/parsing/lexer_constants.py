@@ -76,6 +76,7 @@ KEYWORDS = {
     'return': 'RETURN',
     'ret': 'RETURN',
     'if': 'IF',
+    'do': 'DO',
     'in': 'IN',
     'import': 'IMPORT',
     'else': 'ELSE',

@@ -665,3 +665,13 @@ def test_method_call():
         ('PAREN_CLOSE', ')'),
     ]
     assert get_tokens(egg_code) == expected_tokens
+
+
+def test_do_block():
+    egg_code = 'do {}'
+    expected_tokens = [
+        ('DO', 'do'),
+        ('CURLY_OPEN', '{'),
+        ('CURLY_CLOSE', '}'),
+    ]
+    assert get_tokens(egg_code) == expected_tokens

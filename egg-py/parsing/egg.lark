@@ -36,6 +36,7 @@
        | range
        | async_expr
        | literal
+       | do_block
 
 literal: QUOTED_STRING
        | INTEGER
@@ -180,6 +181,11 @@ arg_default: "ASSIGN" expression
 ?func_type: "COLON" atomic
 
 return_expr : "RETURN" expression
+
+
+# -- Do Blocks --
+
+do_block: "DO" block
 
 
 # -- Lambdas --
