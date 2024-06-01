@@ -24,8 +24,7 @@
 
 ?atomic: exec
        | paren_expr
-       | identifier
-       | identifier_with_fields
+       | id_or_field
        | function_pointer
        | select
        | lambda_func
@@ -49,9 +48,9 @@ literal: QUOTED_STRING
 
 # -- Identifiers and Namespaces --
 
-identifier_with_fields: identifier_namespace? NAME ("DOT" NAME)+
-identifier: identifier_namespace? NAME
-identifier_namespace: (NAME "NAMESPACE")+
+?id_or_field: identifier | select_field
+select_field: id_or_field "DOT" NAME
+identifier: (NAME "NAMESPACE")*  NAME
 
 
 # -- Function Pointers --
@@ -61,12 +60,12 @@ import: "IMPORT" QUOTED_STRING
 
 # -- Function Pointers --
 
-function_pointer: (identifier_with_fields | identifier) "ELLIPSIS"
+function_pointer: id_or_field "ELLIPSIS"
 
 
 # -- Type Constraints --
 
-?type: identifier type_generic?
+?type: id_or_field type_generic?
 type_generic: "ANGLE_OPEN" _type_generic_inner "ANGLE_CLOSE"
 _type_generic_inner: type ("COMMA" type)*
 
@@ -91,19 +90,19 @@ declare_untyped_constant: "CONST" NAME "DECLARE" expression
              | divide_assign
              | mod_assign
              | pipe_assign
-reassign: identifier "ASSIGN" expression
-plus_assign: identifier "PLUS_ASSIGN" expression
-minus_assign: identifier "MINUS_ASSIGN" expression
-times_assign: identifier "TIMES_ASSIGN" expression
-divide_assign: identifier "DIVIDE_ASSIGN" expression
-mod_assign: identifier "MOD_ASSIGN" expression
-pipe_assign: identifier "PIPE_ASSIGN" expression
+reassign: id_or_field "ASSIGN" expression
+plus_assign: id_or_field "PLUS_ASSIGN" expression
+minus_assign: id_or_field "MINUS_ASSIGN" expression
+times_assign: id_or_field "TIMES_ASSIGN" expression
+divide_assign: id_or_field "DIVIDE_ASSIGN" expression
+mod_assign: id_or_field "MOD_ASSIGN" expression
+pipe_assign: id_or_field "PIPE_ASSIGN" expression
 
 
 # -- Classes --
 
 define_class: "CLASS" NAME "CURLY_OPEN" _class_inner "CURLY_CLOSE"
-define_derived_class: "CLASS" NAME "COLON" identifier "CURLY_OPEN" _class_inner "CURLY_CLOSE"
+define_derived_class: "CLASS" NAME "COLON" id_or_field "CURLY_OPEN" _class_inner "CURLY_CLOSE"
 _class_inner: class_fields class_methods
 class_fields: ((class_field "COMMA")* class_field)?
 ?class_field: class_field_typed | class_field_untyped
@@ -132,8 +131,8 @@ map_entry: expression "COLON" expression
 
 # -- File Redirection --
 
-write_to_file: pipeline "ANGLE_CLOSE" (EXEC_ARG | identifier | QUOTED_STRING)
-append_to_file: pipeline "APPEND_FILE" (EXEC_ARG | identifier | QUOTED_STRING)
+write_to_file: pipeline "ANGLE_CLOSE" (EXEC_ARG | id_or_field | QUOTED_STRING)
+append_to_file: pipeline "APPEND_FILE" (EXEC_ARG | id_or_field | QUOTED_STRING)
 
 
 # -- If / Else --
