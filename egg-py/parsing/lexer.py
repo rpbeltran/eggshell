@@ -63,7 +63,6 @@ def match_operator(c: str, state: LexerState) -> Optional[Tuple[str, str]]:
 
 
 class OperatorsNode(DFANode):
-
     def __init__(self, pattern, operator):
         self.pattern = pattern
         self.operator = operator
@@ -141,17 +140,49 @@ class QuotedArgListNode(DFANode):
             state.goto_node(StartNode(), step_back=False)
 
 
+tokens_before_names = [
+    'AS',
+    'BREAK',
+    'CATCH',
+    'CLASS',
+    'COLON',
+    'CONTINUE',
+    'DOT',
+    'FOR',
+    'FN',
+    'USE',
+    'LAMBDA',
+    'NAMESPACE',
+    # Artithmetic
+    'POWER',
+    'INT_DIV',
+    'TIMES',
+    'DIVIDE',
+    'PLUS',
+    'MINUS',
+    'MOD',
+]
+
+
 class UnquotedLiteral(DFANode):
     def step(self, c: str, state: LexerState) -> Iterator[Token]:
         space = False
         if c.isspace():
             c = state.peek_one(strip=True)
             space = True
-        elif c in '@':
-            raise LexerError('Read unexpected char', state)
 
-        if c in '(:=':
-            source = state.get_token_source(inclusive=False)
+        source = state.get_token_source(inclusive=False)
+        predicted_token_type = self.get_token_type(source, state)
+
+        if (
+            c == '.'
+            and state.peek_one() != '.'
+            and predicted_token_type == 'NAME'
+        ):
+            yield state.get_token('NAME', source=source)
+            yield state.get_token('DOT', source='.')
+            state.goto_node(StartNode(), step_back=False)
+        elif c in '(:=':
             for i, name_part in enumerate(name_parts := source.split('.')):
                 yield state.get_token('NAME', source=name_part)
                 if i + 1 < len(name_parts):
@@ -160,37 +191,19 @@ class UnquotedLiteral(DFANode):
         elif (
             space or c in '<>{}[])|;,' or c == '.' and state.peek_one() == '.'
         ):
-            source = state.get_token_source(inclusive=False)
-            token_type = self.get_token_type(source, state)
-            yield state.get_token(token_type, source=source)
+            yield state.get_token(predicted_token_type, source=source)
             state.goto_node(StartNode(), step_back=True)
+        elif c in '@':
+            raise LexerError(
+                'Read unexpected char from unquoted esxpression', state
+            )
 
     def get_token_type(self, source: str, state: LexerState):
         if state.get_prev() == 'EXEC_ARG':
             return 'EXEC_ARG'
         if source in KEYWORDS:
             return KEYWORDS[source]
-        if state.in_block() or state.get_prev() in [
-            'AS',
-            'BREAK',
-            'CATCH',
-            'CLASS',
-            'COLON',
-            'CONTINUE',
-            'FOR',
-            'FN',
-            'USE',
-            'LAMBDA',
-            'NAMESPACE',
-            # Artithmetic
-            'POWER',
-            'INT_DIV',
-            'TIMES',
-            'DIVIDE',
-            'PLUS',
-            'MINUS',
-            'MOD',
-        ]:
+        if state.in_block() or state.get_prev() in tokens_before_names:
             return 'NAME'
         return 'EXEC_ARG'
 
