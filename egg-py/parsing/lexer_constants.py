@@ -6,6 +6,9 @@ OPERATORS = {
     # 3-Char Operators
     '(*)': 'TIMES',
     '(/)': 'DIVIDE',
+    '(+)': 'PLUS',
+    '(-)': 'MINUS',
+    '(%)': 'MOD',
     '...': 'ELLIPSIS',
     # 2-Char Operators
     ':=': 'DECLARE',
