@@ -183,10 +183,13 @@ class UnquotedLiteral(DFANode):
             yield state.get_token('DOT', source='.')
             state.goto_node(StartNode(), step_back=False)
         elif c in '(:=':
-            for i, name_part in enumerate(name_parts := source.split('.')):
-                yield state.get_token('NAME', source=name_part)
-                if i + 1 < len(name_parts):
-                    yield state.get_token('DOT', source='.')
+            if source in KEYWORDS:
+                yield state.get_token(predicted_token_type, source=source)
+            else:
+                for i, name_part in enumerate(name_parts := source.split('.')):
+                    yield state.get_token('NAME', source=name_part)
+                    if i + 1 < len(name_parts):
+                        yield state.get_token('DOT', source='.')
             state.goto_node(StartNode(), step_back=True)
         elif (
             space or c in '<>{}[])|;,' or c == '.' and state.peek_one() == '.'
