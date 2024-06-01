@@ -210,7 +210,7 @@ do_with_1_2_3(say...)
 
 This works the same as in Bash:
 ```
-(do_a && do_b && do_c) || (do_x; do_y; do_z)
+(do_a && do_b && do_c) || do_x
 ```
 
 But we also support another:
@@ -221,8 +221,6 @@ try {
     do_c
 } catch {
     do_x
-    do_y
-    do_z
 }
 ```
 
@@ -241,6 +239,18 @@ try {
     do_y
     do_z
 }
+```
+
+**Do Blocks**
+
+Consider the bash code `(a && b && c) || (x; y; z)` and
+notice how semicolons within a parenthesis allow bash to express a sequence of
+actions in a sort of code block without creating a function. In Egg, we can
+construct a similar "atomic sequence" using "do blocks".
+
+The equivalent code in Egg would be:
+```
+(`a` && `b` && `c`) || do {`x`; `y`; `z`}
 ```
 
 **Loops**
