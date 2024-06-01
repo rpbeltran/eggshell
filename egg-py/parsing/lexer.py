@@ -25,12 +25,15 @@ class StartNode(DFANode):
         elif (match := match_operator(c, state)) != None:
             state.token_start = state.head
             state.goto_node(OperatorsNode(match[0], match[1]), step_back=True)
-        elif c.isalpha() or c in './*+-%':
-            state.token_start = state.head
-            state.goto_node(UnquotedLiteral(), step_back=True)
         elif c.isdigit() or (c == '-' and state.peek_one().isdigit()):
             state.token_start = state.head
             state.goto_node(NumberNode(), step_back=True)
+        elif state.get_prev() in ['NAME', 'FLOAT', 'INTEGER'] and c == '-':
+            state.token_start = state.head
+            state.goto_node(NumberNode(), step_back=True)
+        elif c.isalpha() or c in './*+-%':
+            state.token_start = state.head
+            state.goto_node(UnquotedLiteral(), step_back=True)
         elif c == '#':
             state.token_start = state.head
             state.goto_node(CommentNode(), step_back=False)
