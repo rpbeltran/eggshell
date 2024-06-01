@@ -178,7 +178,14 @@ class UnquotedLiteral(DFANode):
             'FN',
             'USE',
             'LAMBDA',
-            'NAMESPACE',
+            # Artithmetic
+            'POWER',
+            'INT_DIV',
+            'TIMES',
+            'DIVIDE',
+            'PLUS',
+            'MINUS',
+            'MOD',
         ]:
             return 'NAME'
         return 'EXEC_ARG'
