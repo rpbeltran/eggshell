@@ -121,7 +121,7 @@ fn a() {
 
 When implicit execution is allowed at the top level, the following things are not allowed:
 1. implicit variable names in rhs, instead use `a := @b`
-2. multiplication and division, instead use `(a / b)` or `div(a,b)`
+2. arithmetic operators, unless surrounded in parentheses as in: `a (+) b (*) c`
 
 These requirements are there in order to avoid ambiguities.
 
@@ -159,7 +159,7 @@ factorial_of_10 := 10 | @factorial
 Functions can also receive arguments via "currying" syntax:
 
 ```
-add3 : Fn = \(a, b, c) -> @a + @b + @c
+add3 : Fn = \(a, b, c) -> @a (+) @b (+) @c
 
 plus_15 := add3 $ 10 $ 5
 
