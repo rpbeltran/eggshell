@@ -566,3 +566,13 @@ a < b > 3 == 4 != 5
 
 The result will be true iff all adjacent values uphold their connecting
 comparison.
+
+## Planned Language Features Currently Specification
+1) implicit lambdas
+2) with statements
+3) comprehensions
+4) fn foo (*args){}
+5) pipes within explicit executions like: `a | b`
+6) empty parts of slices like l[::2]
+7) try shorthand: ? { `foo` }
+8) toplevel background processes: ~ foo
