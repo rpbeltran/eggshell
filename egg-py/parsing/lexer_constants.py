@@ -44,9 +44,6 @@ OPERATORS = {
     ']': 'SQUARE_CLOSE',
     ';': 'SEMICOLON',
     '$': 'CURRY',
-    '+': 'PLUS',
-    '-': 'MINUS',
-    '%': 'MOD',
     '^': 'POWER',
     '!': 'NOT',
     '~': 'ASYNC',
@@ -58,6 +55,9 @@ BLOCK_OPERATORS = {
     **OPERATORS,
     '*': 'TIMES',
     '/': 'DIVIDE',
+    '+': 'PLUS',
+    '-': 'MINUS',
+    '%': 'MOD',
 }
 
 OPERATOR_STARTS = {op[0] for op in OPERATORS}

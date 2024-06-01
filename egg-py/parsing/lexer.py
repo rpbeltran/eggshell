@@ -1,5 +1,5 @@
 import lark.lexer
-from typing import Iterator
+from typing import Iterator, Optional, Tuple
 
 from .lexer_constants import (
     KEYWORDS,
@@ -22,10 +22,10 @@ class StartNode(DFANode):
             state.clear_prev()
         elif c.isspace():
             pass
-        elif c in allowed_operator_starts:
+        elif (match := match_operator(c, state)) != None:
             state.token_start = state.head
-            state.goto_node(OperatorsNode(), step_back=True)
-        elif c.isalpha() or c in './':
+            state.goto_node(OperatorsNode(match[0], match[1]), step_back=True)
+        elif c.isalpha() or c in './*+-%':
             state.token_start = state.head
             state.goto_node(UnquotedLiteral(), step_back=True)
         elif c.isdigit() or (c == '-' and state.peek_one().isdigit()):
@@ -48,36 +48,39 @@ class StartNode(DFANode):
         yield from ()
 
 
-class OperatorsNode(DFANode):
-    def step(self, c: str, state: LexerState) -> Iterator[Token]:
-        found = False
+def match_operator(c: str, state: LexerState) -> Optional[Tuple[str, str]]:
+    starts = BLOCK_OPERATOR_STARTS if state.in_block() else OPERATOR_STARTS
+    operators = BLOCK_OPERATORS if state.in_block() else OPERATORS
+    if c in starts:
         data = c + state.peek()
-
-        allowed_operators = OPERATORS
-        if state.in_block():
-            allowed_operators = BLOCK_OPERATORS
-
-        for pattern, token_type in allowed_operators.items():
+        for pattern, token_type in operators.items():
             if data.startswith(pattern):
-                found = True
-                state.step_forward(len(pattern) - 1)
-                if token_type == 'CURLY_OPEN':
-                    state.curly_depth += 1
-                elif token_type == 'CURLY_CLOSE':
-                    state.curly_depth -= 1
-                elif token_type == 'PAREN_OPEN':
-                    state.paren_depth += 1
-                elif token_type == 'PAREN_CLOSE':
-                    state.paren_depth -= 1
-                elif token_type == 'SQUARE_OPEN':
-                    state.square_depth += 1
-                elif token_type == 'SQUARE_CLOSE':
-                    state.square_depth -= 1
-                yield state.get_token(token_type, inclusive=True)
-                state.goto_node(StartNode(), step_back=False)
-                break
-        if not found:
-            raise LexerError('Read unimplemented char', state)
+                return pattern, token_type
+    return None
+
+
+class OperatorsNode(DFANode):
+
+    def __init__(self, pattern, operator):
+        self.pattern = pattern
+        self.operator = operator
+
+    def step(self, c: str, state: LexerState) -> Iterator[Token]:
+        state.step_forward(len(self.pattern) - 1)
+        if self.operator == 'CURLY_OPEN':
+            state.curly_depth += 1
+        elif self.operator == 'CURLY_CLOSE':
+            state.curly_depth -= 1
+        elif self.operator == 'PAREN_OPEN':
+            state.paren_depth += 1
+        elif self.operator == 'PAREN_CLOSE':
+            state.paren_depth -= 1
+        elif self.operator == 'SQUARE_OPEN':
+            state.square_depth += 1
+        elif self.operator == 'SQUARE_CLOSE':
+            state.square_depth -= 1
+        yield state.get_token(self.operator, inclusive=True)
+        state.goto_node(StartNode(), step_back=False)
 
 
 class CommentNode(DFANode):
