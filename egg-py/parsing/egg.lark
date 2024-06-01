@@ -162,7 +162,7 @@ async_expr: "ASYNC" (paren_expr | block)
 
 try_catch: try_catch_bound | try_catch_unbound
 try_catch_bound: "TRY" NAME ("COLON" type)? block "CATCH" block
-try_catch_unbound: "TRY" block "CATCH" block
+try_catch_unbound: "TRY" block ("CATCH" block)?
 
 logical_sequence: and_sequence | or_sequence
 and_sequence: atomic "SEQ_AND" atomic
