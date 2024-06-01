@@ -243,37 +243,57 @@ try {
 }
 ```
 
-**While Loops**
+**Loops**
 
+Egg supports three basic types of loops, all of which will likely feel familiar:
+
+Infinite loops:
+```
+loop {
+  if input("Enter guess: ") == correct_answer {
+    break
+  }
+  say $ "Guess again"   
+}
+```
+
+While loops:
 ```
 a := 1
 while (a < 10) {
-    say a
+    say $ a
     a += 1
 }
 ```
 
-**For Loops**
-
-The code blocks below have identical meaning:
+For loops:
 ```
 for i in (0..10) {
     say i
 }
 ```
 
+Additionally, most collections types have a `.ea` "for each" method:
 ```
+# Print 0 through 9
 (0..10).ea $ say _ 
 ```
 
-`ea` is a method of Lists and is short for "for each".
-
-A similar method for lists is `map`.
-
+Loops can also have labels for breaking or continuing outer loops using the `as`
+keyword:
 ```
-first_odds := [1,3,5,7,9,11]
-first_evens := @first_odds.map $ 2*(_-1)
+loop as outer_loop {
+  ...
+  while(...) as inner_loop {
+    ...
+    if (...) {
+      continue outer_loop
+    }
+  }
+}
 ```
+
+Labeled loops are supported for `loop`, `for` and `while` loops.
 
 **Asynchronous Programming**
 
