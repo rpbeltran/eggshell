@@ -153,6 +153,9 @@ tokens_before_names = [
     'USE',
     'LAMBDA',
     'NAMESPACE',
+    # Closing braces
+    'PAREN_CLOSE',
+    'SQUARE_CLOSE',
     # Artithmetic
     'POWER',
     'INT_DIV',
@@ -179,7 +182,8 @@ class UnquotedLiteral(DFANode):
             and state.peek_one() != '.'
             and predicted_token_type == 'NAME'
         ):
-            yield state.get_token('NAME', source=source)
+            if len(source) != 0:
+                yield state.get_token('NAME', source=source)
             yield state.get_token('DOT', source='.')
             state.goto_node(StartNode(), step_back=False)
         elif c in '(:=':
@@ -187,7 +191,8 @@ class UnquotedLiteral(DFANode):
                 yield state.get_token(predicted_token_type, source=source)
             else:
                 for i, name_part in enumerate(name_parts := source.split('.')):
-                    yield state.get_token('NAME', source=name_part)
+                    if len(name_part) != 0:
+                        yield state.get_token('NAME', source=name_part)
                     if i + 1 < len(name_parts):
                         yield state.get_token('DOT', source='.')
             state.goto_node(StartNode(), step_back=True)
