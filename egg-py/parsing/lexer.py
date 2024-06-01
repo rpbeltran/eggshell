@@ -181,6 +181,7 @@ class UnquotedLiteral(DFANode):
             'FN',
             'USE',
             'LAMBDA',
+            'NAMESPACE',
             # Artithmetic
             'POWER',
             'INT_DIV',
