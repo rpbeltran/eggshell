@@ -3,8 +3,7 @@
 
 # -- Top Level --
 
-?top_level_expression: write_to_file "SEMICOLON"?
-                     | append_to_file "SEMICOLON"?
+?top_level_expression: append_to_file "SEMICOLON"?
                      | non_atomic "SEMICOLON"?
                      | try_catch
                      | if
@@ -131,8 +130,7 @@ map_entry: expression "COLON" expression
 
 # -- File Redirection --
 
-write_to_file: pipeline "ANGLE_CLOSE" (EXEC_ARG | id_or_field | QUOTED_STRING)
-append_to_file: pipeline "APPEND_FILE" (EXEC_ARG | id_or_field | QUOTED_STRING)
+append_to_file: pipeline "APPEND_FILE" expression
 
 
 # -- If / Else --
