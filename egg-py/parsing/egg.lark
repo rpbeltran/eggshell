@@ -22,19 +22,21 @@
 # -- Atomics --
 
 ?atomic: exec
-       | paren_expr
-       | id_or_field
        | function_pointer
-       | select
        | lambda_func
        | logical_sequence
-       | function_call
-       | list
-       | map
-       | range
-       | async_expr
-       | literal
        | do_block
+       | selectable_atomic
+
+?selectable_atomic: id_or_field
+                  | paren_expr
+                  | select
+                  | function_call
+                  | list
+                  | map
+                  | range
+                  | async_expr
+                  | literal
 
 literal: QUOTED_STRING
        | INTEGER
@@ -48,7 +50,7 @@ literal: QUOTED_STRING
 # -- Identifiers and Namespaces --
 
 ?id_or_field: identifier | select_field
-select_field: id_or_field "DOT" NAME
+select_field: selectable_atomic "DOT" NAME
 identifier: (NAME "NAMESPACE")*  NAME
 
 
@@ -279,7 +281,7 @@ unary_not: "NOT" atomic
 
 # -- Selection --
 
-select: atomic "SQUARE_OPEN" _select_inner "SQUARE_CLOSE"
+select: selectable_atomic "SQUARE_OPEN" _select_inner "SQUARE_CLOSE"
 _select_inner: expression ("COLON" expression ("COLON" expression)?)?
 
 
