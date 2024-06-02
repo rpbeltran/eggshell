@@ -1,10 +1,12 @@
-?start: top_level_expression
+?start: "SEMICOLON"* line*
 
 
 # -- Top Level --
 
-?top_level_expression: append_to_file "SEMICOLON"?
-                     | non_atomic "SEMICOLON"?
+?line: top_level_expression "SEMICOLON"*
+
+?top_level_expression: append_to_file
+                     | non_atomic
                      | try_catch
                      | if
                      | loop
@@ -150,7 +152,7 @@ exec: EXEC_ARG+
 
 # -- Code Blocks --
 
-block: "CURLY_OPEN" top_level_expression* "CURLY_CLOSE"
+block: "CURLY_OPEN" line* "CURLY_CLOSE"
 
 
 # -- ASYNC --
