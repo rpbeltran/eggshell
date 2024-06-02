@@ -17,8 +17,8 @@ class StartNode(DFANode):
         allowed_operator_starts = OPERATOR_STARTS
         if state.in_block():
             allowed_operator_starts = BLOCK_OPERATOR_STARTS
-
         if c == '\n':
+            yield Token('SEMICOLON', '')
             state.clear_prev()
         elif c.isspace():
             pass
@@ -88,8 +88,9 @@ class OperatorsNode(DFANode):
 class CommentNode(DFANode):
     def step(self, c: str, state: LexerState) -> Iterator[Token]:
         if c == '\n':
+            yield Token('SEMICOLON', '')
             state.goto_node(StartNode())
-        yield from ()
+
 
 
 class IdentifierNode(DFANode):
@@ -170,7 +171,7 @@ tokens_before_names = [
 class UnquotedLiteral(DFANode):
     def step(self, c: str, state: LexerState) -> Iterator[Token]:
         space = False
-        if c.isspace():
+        if c.isspace() and c != '\n':
             c = state.peek_one(strip=True)
             space = True
 
@@ -197,9 +198,11 @@ class UnquotedLiteral(DFANode):
                         yield state.get_token('DOT', source='.')
             state.goto_node(StartNode(), step_back=True)
         elif (
-            space or c in '<>{}[])|;,' or c == '.' and state.peek_one() == '.'
+            space or c in '<>{}[])|;,\n' or c == '.' and state.peek_one() == '.'
         ):
             yield state.get_token(predicted_token_type, source=source)
+            if c == '\n':
+                yield Token('SEMICOLON', '')
             state.goto_node(StartNode(), step_back=True)
         elif c in '@':
             raise LexerError(
