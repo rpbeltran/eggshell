@@ -11,7 +11,7 @@ parser_test_path = f'{here}/parsing/parser_test.py'
 
 def get_lexer_test_code(test_name, src) -> str:
     token_string = '\n'.join( ' '*8 + tok for tok in lexer_test.get_tokens(src))
-    return f"""
+    return f"""\n
 def test_{test_name}():
     src = {repr(src)}
     expected_tokens = [\n{token_string}\n    ]
@@ -25,7 +25,7 @@ def make_parser_test_code(test_name, src) -> str:
         for i, line in enumerate(ast_lines)
     )
 
-    return f"""
+    return f"""\n
 def test_{test_name}():
     src = {repr(src)}
     expected_ast = (\n{expected_ast_inner}\n    )
