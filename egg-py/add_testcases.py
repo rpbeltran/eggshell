@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import os
 
 import parsing.lexer_test as lexer_test
