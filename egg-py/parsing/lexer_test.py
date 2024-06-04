@@ -754,3 +754,27 @@ def test_with_as():
         ('CURLY_CLOSE', '}'),
     ]
     assert get_tokens(src) == expected_tokens
+
+
+def test_explicit_pipeline():
+    src = '`a | b | c`'
+    expected_tokens = [
+        ('EXEC_ARG', 'a'),
+        ('PIPE', '|'),
+        ('EXEC_ARG', 'b'),
+        ('PIPE', '|'),
+        ('EXEC_ARG', 'c'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_explicit_pipeline_minified():
+    src = '`a|b|c`'
+    expected_tokens = [
+        ('EXEC_ARG', 'a'),
+        ('PIPE', '|'),
+        ('EXEC_ARG', 'b'),
+        ('PIPE', '|'),
+        ('EXEC_ARG', 'c'),
+    ]
+    assert get_tokens(src) == expected_tokens

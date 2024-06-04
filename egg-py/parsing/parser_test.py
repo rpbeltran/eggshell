@@ -15,10 +15,7 @@ INSTRUCTIONS: To add new test cases:
 
 
 # Maps new test cases from test-name to test-code
-new_test_cases: Dict[str, str] = {
-    "with" : "with a.y() {}",
-    "with_as" : "with a.y() as x {}"
-}
+new_test_cases: Dict[str, str] = {}
 
 parser = get_parser()
 
@@ -951,5 +948,16 @@ def test_with_as():
         '\n    function_call_args'
         '\n  x'
         '\n  block'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_explicit_pipeline():
+    src = '`a | b | c`'
+    expected_ast = (
+        'pipeline'
+        '\n  exec\ta'
+        '\n  exec\tb'
+        '\n  exec\tc'
     )
     assert get_ast(src) == expected_ast

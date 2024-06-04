@@ -581,4 +581,3 @@ comparison.
 1) implicit lambdas
 2) comprehensions
 3) fn foo (*args, **kwargs){}
-4) pipes within explicit executions like: `a | b`

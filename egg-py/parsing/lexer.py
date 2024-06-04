@@ -132,6 +132,11 @@ class QuotedArgListNode(DFANode):
     def step(self, c: str, state: LexerState) -> Iterator[Token]:
         if self.escaped or c == '\\':
             self.escaped = not self.escaped
+        elif c == '|':
+            if state.head != state.token_start:
+                yield state.get_token('EXEC_ARG', inclusive=False)
+            yield Token(f'PIPE', '|')
+            state.token_start = state.head + 1
         elif c.isspace():
             if state.head != state.token_start:
                 yield state.get_token('EXEC_ARG', inclusive=False)
