@@ -687,3 +687,30 @@ def test_multiline_parenthetical():
         ('PAREN_CLOSE', ')'),
     ]
     assert get_tokens(src) == expected_tokens
+
+
+def test_slice():
+    src = '@a[1:2:3]'
+    expected_tokens = [
+        ('NAME', 'a'),
+        ('SQUARE_OPEN', '['),
+        ('INTEGER', '1'),
+        ('COLON', ':'),
+        ('INTEGER', '2'),
+        ('COLON', ':'),
+        ('INTEGER', '3'),
+        ('SQUARE_CLOSE', ']'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_slice_empty():
+    src = '@a[::]'
+    expected_tokens = [
+        ('NAME', 'a'),
+        ('SQUARE_OPEN', '['),
+        ('COLON', ':'),
+        ('COLON', ':'),
+        ('SQUARE_CLOSE', ']'),
+    ]
+    assert get_tokens(src) == expected_tokens

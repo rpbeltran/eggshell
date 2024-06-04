@@ -867,3 +867,88 @@ def test_concatenation_executions():
         '\n  exec\tb'
     )
     assert get_ast(src) == expected_ast
+
+
+def test_slice():
+    src = '@a[1:2:3]'
+    expected_ast = (
+        'select'
+        '\n  select_slice'
+        '\n    identifier\ta'
+        '\n    slice_start'
+        '\n      literal\t1'
+        '\n    slice_end'
+        '\n      literal\t2'
+        '\n    slice_jump'
+        '\n      literal\t3'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_slice2():
+    src = '@a[1:2]'
+    expected_ast = (
+        'select'
+        '\n  select_slice'
+        '\n    identifier\ta'
+        '\n    slice_start'
+        '\n      literal\t1'
+        '\n    slice_end'
+        '\n      literal\t2'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_slice_empty():
+    src = '@a[::]'
+    expected_ast = (
+        'select'
+        '\n  select_slice'
+        '\n    identifier\ta'
+        '\n    slice_start'
+        '\n    slice_end'
+        '\n    slice_jump'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_slice_rev():
+    src = '@a[::-1]'
+    expected_ast = (
+        'select'
+        '\n  select_slice'
+        '\n    identifier\ta'
+        '\n    slice_start'
+        '\n    slice_end'
+        '\n    slice_jump'
+        '\n      unary_negate'
+        '\n        literal\t1'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_slice_end_only():
+    src = '@a[:1]'
+    expected_ast = (
+        'select'
+        '\n  select_slice'
+        '\n    identifier\ta'
+        '\n    slice_start'
+        '\n    slice_end'
+        '\n      literal\t1'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_slice_end_only2():
+    src = '@a[:1:]'
+    expected_ast = (
+        'select'
+        '\n  select_slice'
+        '\n    identifier\ta'
+        '\n    slice_start'
+        '\n    slice_end'
+        '\n      literal\t1'
+        '\n    slice_jump'
+    )
+    assert get_ast(src) == expected_ast

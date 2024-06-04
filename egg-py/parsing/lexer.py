@@ -14,9 +14,6 @@ from .lexer_util import DFANode, LexerError, LexerState, Token
 class StartNode(DFANode):
     def step(self, c: str, state: LexerState) -> Iterator[Token]:
 
-        allowed_operator_starts = OPERATOR_STARTS
-        if state.in_block():
-            allowed_operator_starts = BLOCK_OPERATOR_STARTS
         if c == '\n':
             if state.paren_depth == 0:
                 yield Token('SEMICOLON', '')
@@ -58,6 +55,8 @@ def match_operator(c: str, state: LexerState) -> Optional[Tuple[str, str]]:
     if c in starts:
         data = c + state.peek()
         for pattern, token_type in operators.items():
+            if token_type == "NAMESPACE" and state.get_prev() == "SQUARE_OPEN":
+                continue
             if data.startswith(pattern):
                 return pattern, token_type
     return None
