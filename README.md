@@ -421,7 +421,7 @@ _1_3_5_ := l[0:5:2]
 
 l_last := l[-1]
 
-l_reversed := l.rev()
+l_reversed := l[::-1]
 
 l.add(6)
 
@@ -577,12 +577,8 @@ a < b > 3 == 4 != 5
 The result will be true iff all adjacent values uphold their connecting
 comparison.
 
-## Planned Language Features Currently Specification
+## Planned Language Features Currently Lacking Specification
 1) implicit lambdas
-2) with statements
-3) comprehensions
-4) fn foo (*args){}
-5) pipes within explicit executions like: `a | b`
-6) empty parts of slices like l[::2]
-7) try shorthand: ? { `foo` }
-8) toplevel background processes: ~ foo
+2) comprehensions
+3) fn foo (*args, **kwargs){}
+4) pipes within explicit executions like: `a | b`
