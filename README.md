@@ -475,8 +475,18 @@ executables in path.
 To access an environment variable with a default value, use `env.get` as in:
 `env.get("FOO", "default_value")`
 
+To set an environment variable for the duration of the script, use:
+`@env.set("FOO", "hello")` or `@env["FOO"] = "Hello"`
+
+To check if an environment variable is set, use:
+`@env.has("FOO")`
+
+If you know that an environment variable is set, you can access it like a
+dictionary which will throw an error if it is not defined:
+`@env["FOO"]`
+
 To temporarily set an environment variable, then return it to prior state,
-employ the `push` and `pop` methods:
+you can employ the `push` and `pop` methods:
 
 ```
 env.push("FOO", "hello")
@@ -500,25 +510,25 @@ env.pop()
 say "{env['foo']} {env['bar']}"
 ```
 
+Calling `env.pop()` if no states have been pushed with `env.push()` (or if all
+pushed states have been popped before), env will be reset to it's value when the
+script or shell was created. This can also be forced with `env.reset()`.
+
 Will display "hello Alice and Bob" on the first `say` and "hello world" on the
 second.
 
-To set an environment variable for the duration of the script, use:
-`@env.set("FOO", "hello")` or `@env["FOO"] = "Hello"`
-
-To check if an environment variable is set, use:
-`@env.has("FOO")`
-
-If you know that an environment variable is set, you can access it like a
-dictionary which will throw an error if it is not defined:
-`@env["FOO"]`
-
-You can also call a function or executable with temporary environment variables
-with the syntax `use <assignments> : <expression>`
+One more way of setting the environment temporarily is with a context. Contexts
+work similar to their equivalents in Python.
 
 ```
-use foo="hello", bar="world" : say "{foo} {bar}"
+with env.ctx(foo="hello", bar="world") {
+  say $ "{env['foo']} {env['bar']}"
+}
 ```
+
+This will set `foo` and `bar` environment variables for the duration of the with
+block only. 
+
 
 ## Builtin Types and Data Structures
 

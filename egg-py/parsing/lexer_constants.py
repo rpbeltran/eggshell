@@ -85,11 +85,11 @@ KEYWORDS = {
     'import': 'IMPORT',
     'else': 'ELSE',
     'elif': 'ELIF',
-    'use': 'USE',
     'try': 'TRY',
     'catch': 'CATCH',
     'as': 'AS',
     'var': 'VAR',
     'const': 'CONST',
     'class': 'CLASS',
+    'with': 'WITH',
 }

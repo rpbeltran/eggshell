@@ -9,6 +9,7 @@
                      | non_atomic
                      | try_catch
                      | if
+                     | with_block
                      | loop
                      | define_class
                      | define_derived_class
@@ -157,6 +158,11 @@ block: "CURLY_OPEN" "SEMICOLON"* line* "CURLY_CLOSE"
 # -- ASYNC --
 
 async_expr: "ASYNC" (paren_expr | block)
+
+
+# -- With Blocks--
+
+with_block: "WITH" expression ("AS" NAME)? block
 
 
 # -- Error Handling --

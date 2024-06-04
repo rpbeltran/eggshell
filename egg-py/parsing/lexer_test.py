@@ -722,3 +722,35 @@ def test_slice_empty():
         ('SQUARE_CLOSE', ']'),
     ]
     assert get_tokens(src) == expected_tokens
+
+
+def test_with():
+    src = 'with a.y() {}'
+    expected_tokens = [
+        ('WITH', 'with'),
+        ('NAME', 'a'),
+        ('DOT', '.'),
+        ('NAME', 'y'),
+        ('PAREN_OPEN', '('),
+        ('PAREN_CLOSE', ')'),
+        ('CURLY_OPEN', '{'),
+        ('CURLY_CLOSE', '}'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_with_as():
+    src = 'with a.y() as x {}'
+    expected_tokens = [
+        ('WITH', 'with'),
+        ('NAME', 'a'),
+        ('DOT', '.'),
+        ('NAME', 'y'),
+        ('PAREN_OPEN', '('),
+        ('PAREN_CLOSE', ')'),
+        ('AS', 'as'),
+        ('NAME', 'x'),
+        ('CURLY_OPEN', '{'),
+        ('CURLY_CLOSE', '}'),
+    ]
+    assert get_tokens(src) == expected_tokens

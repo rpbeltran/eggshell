@@ -15,7 +15,10 @@ INSTRUCTIONS: To add new test cases:
 
 
 # Maps new test cases from test-name to test-code
-new_test_cases: Dict[str, str] = {}
+new_test_cases: Dict[str, str] = {
+    "with" : "with a.y() {}",
+    "with_as" : "with a.y() as x {}"
+}
 
 parser = get_parser()
 
@@ -919,5 +922,34 @@ def test_select_slice_end_only2():
         '\n  slice_end'
         '\n    literal\t1'
         '\n  slice_jump'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_with():
+    src = 'with a.y() {}'
+    expected_ast = (
+        'with_block'
+        '\n  function_call'
+        '\n    select_field'
+        '\n      identifier\ta'
+        '\n      y'
+        '\n    function_call_args'
+        '\n  block'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_with_as():
+    src = 'with a.y() as x {}'
+    expected_ast = (
+        'with_block'
+        '\n  function_call'
+        '\n    select_field'
+        '\n      identifier\ta'
+        '\n      y'
+        '\n    function_call_args'
+        '\n  x'
+        '\n  block'
     )
     assert get_ast(src) == expected_ast
