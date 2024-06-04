@@ -252,10 +252,11 @@ comparison_chain: arithmetic_add (comparison_symbol arithmetic_add)+
 
 # --- Addition/Subtraction
 
-?arithmetic_add: addition | subtraction | arithmetic_mul
+?arithmetic_add: addition | subtraction | concatenate | arithmetic_mul
 
 addition: arithmetic_add "PLUS" arithmetic_mul
 subtraction: arithmetic_add "MINUS" arithmetic_mul
+concatenate: arithmetic_add "CONCAT" arithmetic_mul
 
 # --- Multiplication/Division
 

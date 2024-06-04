@@ -847,3 +847,23 @@ def test_returned_obj_methods():
         '\n  x'
     )
     assert get_ast(src) == expected_ast
+
+
+def test_concatenation():
+    src = '@a ++ @b'
+    expected_ast = (
+        'concatenate'
+        '\n  identifier\ta'
+        '\n  identifier\tb'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_concatenation_executions():
+    src = 'a ++ b'
+    expected_ast = (
+        'concatenate'
+        '\n  exec\ta'
+        '\n  exec\tb'
+    )
+    assert get_ast(src) == expected_ast

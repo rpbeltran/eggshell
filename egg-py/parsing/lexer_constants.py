@@ -29,6 +29,7 @@ OPERATORS = {
     '>=': 'GTE',
     '<=': 'LTE',
     '..': 'RANGE',
+    '++': 'CONCAT',
     # 1-Char Operators
     ':': 'COLON',
     '=': 'ASSIGN',
