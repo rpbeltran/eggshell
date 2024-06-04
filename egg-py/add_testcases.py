@@ -10,7 +10,8 @@ parser_test_path = f'{here}/parsing/parser_test.py'
 
 
 def get_lexer_test_code(test_name, src) -> str:
-    token_string = '\n'.join( ' '*8 + tok for tok in lexer_test.get_tokens(src))
+    token_string = '\n'.join(
+        f'        {tok},' for tok in lexer_test.get_tokens(src))
     return f"""\n
 def test_{test_name}():
     src = {repr(src)}
