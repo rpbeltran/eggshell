@@ -1,6 +1,6 @@
 import lark.lexer
 
-from typing import Callable, Iterable
+from typing import Callable, Optional
 
 
 class Token:
@@ -35,7 +35,7 @@ class LexerState:
         self.token_start = 0
         self.head = 0
         self.state_node = StartNodeType()
-        self.prev_token_types = []
+        self.prev_token_type = None
         self.curly_depth = 0
         self.paren_depth = 0
         self.square_depth = 0
@@ -56,7 +56,7 @@ class LexerState:
     def get_token(self, token_type, end=None, inclusive=True, source=None):
         if source is None:
             source = self.get_token_source(end, inclusive)
-        self.prev_token_types.append(token_type)
+        self.prev_token_type = token_type
         return Token(token_type, source)
 
     def goto_node(self, state, step_back=False):
@@ -82,12 +82,10 @@ class LexerState:
         return ''
 
     def clear_prev(self):
-        self.prev_token_types = []
+        self.prev_token_type = None
 
-    def get_prev(self) -> str:
-        if self.prev_token_types:
-            return self.prev_token_types[-1]
-        return ''
+    def get_prev(self) -> Optional[str]:
+        return self.prev_token_type
 
     def in_block(self) -> bool:
         return (
