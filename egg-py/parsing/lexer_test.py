@@ -675,3 +675,15 @@ def test_do_block():
         ('CURLY_CLOSE', '}'),
     ]
     assert get_tokens(egg_code) == expected_tokens
+
+
+def test_multiline_parenthetical():
+    src = '(a\n+\n\n\n\t2)'
+    expected_tokens = [
+        ('PAREN_OPEN', '('),
+        ('NAME', 'a'),
+        ('PLUS', '+'),
+        ('INTEGER', '2'),
+        ('PAREN_CLOSE', ')'),
+    ]
+    assert get_tokens(src) == expected_tokens
