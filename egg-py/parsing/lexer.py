@@ -13,7 +13,6 @@ from .lexer_util import DFANode, LexerError, LexerState, Token
 
 class StartNode(DFANode):
     def step(self, c: str, state: LexerState) -> Iterator[Token]:
-
         if c == '\n':
             if state.paren_depth == 0:
                 yield Token('SEMICOLON', '')
@@ -121,17 +120,34 @@ class QuotedLiteralNode(DFANode):
         if self.escaped or c == '\\':
             self.escaped = not self.escaped
         elif c == self.quote_type:
-            yield state.get_token('QUOTED_STRING', inclusive=False)
+            if state.get_prev() == 'EXEC_ARG':
+                yield state.get_token('EXEC_ARG', inclusive=False)
+            else:
+                yield state.get_token('QUOTED_STRING', inclusive=False)
             state.goto_node(StartNode(), step_back=False)
 
 
 class QuotedArgListNode(DFANode):
     def __init__(self):
         self.escaped = False
+        self.quoted = False
+        self.quote_type = None
 
     def step(self, c: str, state: LexerState) -> Iterator[Token]:
         if self.escaped or c == '\\':
             self.escaped = not self.escaped
+        elif c in ['\'','"']:
+            if not self.quoted:
+                self.quoted = True
+                self.quote_type = c
+                state.token_start = state.head + 1
+            elif c == self.quote_type:
+                self.quoted = False
+                self.quote_type = None
+                yield state.get_token('EXEC_ARG', inclusive=False)
+                state.token_start = state.head + 1
+        elif self.quoted:
+            pass
         elif c == '|':
             if state.head != state.token_start:
                 yield state.get_token('EXEC_ARG', inclusive=False)

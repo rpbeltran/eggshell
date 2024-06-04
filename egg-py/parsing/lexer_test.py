@@ -15,7 +15,14 @@ INSTRUCTIONS: To add new test cases:
 
 
 # Maps new test cases from test-name to test-code
-new_test_cases: Dict[str, str] = {}
+new_test_cases: Dict[str, str] = {
+    "quoted_explicit_arg": '`a "b \' c" d`',
+    "quoted_explicit_arg2": '`"a b c" d e `',
+    "quoted_explicit_arg3": '`"a b\" c" d e `',
+    "single_quoted_explicit_arg": "`a 'b \" c' d`",
+    "single_quoted_explicit_arg2": "`'a b c' d e `",
+    "single_quoted_explicit_arg3": "`'a b\' c' d e ",
+}
 
 lexer = EggLexer()
 
@@ -776,5 +783,25 @@ def test_explicit_pipeline_minified():
         ('EXEC_ARG', 'b'),
         ('PIPE', '|'),
         ('EXEC_ARG', 'c'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_quoted_explicit_arg():
+    src = '`a "b \' c" d`'
+    expected_tokens = [
+        ('EXEC_ARG', 'a'),
+        ('EXEC_ARG', "b ' c"),
+        ('EXEC_ARG', 'd'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_quoted_explicit_arg2():
+    src = '`"a b c" d e `'
+    expected_tokens = [
+        ('EXEC_ARG', 'a b c'),
+        ('EXEC_ARG', 'd'),
+        ('EXEC_ARG', 'e'),
     ]
     assert get_tokens(src) == expected_tokens

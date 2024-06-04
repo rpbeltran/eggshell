@@ -42,14 +42,13 @@ def test_pipe3():
 
 
 def test_implicit_execution():
-    src = 'foo -ef bf c | wow'
+    src = 'foo -ef "bf c" | wow'
     expected_ast = (
         'pipeline'
         '\n  exec'
         '\n    foo'
         '\n    -ef'
-        '\n    bf'
-        '\n    c'
+        '\n    bf c'
         '\n  exec\twow'
     )
     assert get_ast(src) == expected_ast
@@ -64,8 +63,7 @@ def test_explicit_execution():
         '\n    -ef'
         '\n    bf'
         '\n    c'
-        '\n    "d'
-        '\n    e"'
+        '\n    d e'
         '\n  exec\twow'
     )
     assert get_ast(src) == expected_ast
