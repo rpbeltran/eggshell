@@ -25,9 +25,6 @@ class StartNode(DFANode):
         elif c.isdigit() or (c == '-' and state.peek_one().isdigit()):
             state.token_start = state.head
             state.goto_node(NumberNode(), step_back=True)
-        elif state.get_prev() in ['NAME', 'FLOAT', 'INTEGER'] and c == '-':
-            state.token_start = state.head
-            state.goto_node(NumberNode(), step_back=True)
         elif c.isalpha() or c in './*+-%':
             state.token_start = state.head
             state.goto_node(UnquotedLiteral(), step_back=True)
