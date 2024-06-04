@@ -283,7 +283,7 @@ unary_not: "NOT" atomic
 
 # -- Element Selection and Slicing --
 
-select: select_element | select_slice
+?select: select_element | select_slice
 select_element: selectable_atomic "SQUARE_OPEN" expression "SQUARE_CLOSE"
 
 select_slice: selectable_atomic "SQUARE_OPEN" _select_slice_inner "SQUARE_CLOSE"

@@ -264,6 +264,9 @@ class EggLexer:
             yield token
         self.lexer_state.head += 1
 
+    def reset(self):
+        self.lexer_state = None
+
 
 class EggLexerLark(lark.lexer.Lexer):
     def __init__(self, _):

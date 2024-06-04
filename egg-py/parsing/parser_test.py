@@ -372,43 +372,6 @@ def test_list():
     assert get_ast(src) == expected_ast
 
 
-def test_list_access():
-    src = '@a[i] (+) @b[j]'
-    expected_ast = (
-        'addition'
-        '\n  select'
-        '\n    identifier\ta'
-        '\n    identifier\ti'
-        '\n  select'
-        '\n    identifier\tb'
-        '\n    identifier\tj'
-    )
-    assert get_ast(src) == expected_ast
-
-
-def test_list_slice():
-    src = '@a[i:j]'
-    expected_ast = (
-        'select'
-        '\n  identifier\ta'
-        '\n  identifier\ti'
-        '\n  identifier\tj'
-    )
-    assert get_ast(src) == expected_ast
-
-
-def test_list_slice3():
-    src = '@a[i:j:k]'
-    expected_ast = (
-        'select'
-        '\n  identifier\ta'
-        '\n  identifier\ti'
-        '\n  identifier\tj'
-        '\n  identifier\tk'
-    )
-    assert get_ast(src) == expected_ast
-
-
 def test_range_square():
     src = '[i..j]'
     expected_ast = (
@@ -869,86 +832,90 @@ def test_concatenation_executions():
     assert get_ast(src) == expected_ast
 
 
-def test_slice():
+def test_select_element():
+    src = '@a[i]'
+    expected_ast = (
+        'select_element'
+        '\n  identifier\ta'
+        '\n  identifier\ti'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_select_slice():
     src = '@a[1:2:3]'
     expected_ast = (
-        'select'
-        '\n  select_slice'
-        '\n    identifier\ta'
-        '\n    slice_start'
-        '\n      literal\t1'
-        '\n    slice_end'
-        '\n      literal\t2'
-        '\n    slice_jump'
-        '\n      literal\t3'
+        'select_slice'
+        '\n  identifier\ta'
+        '\n  slice_start'
+        '\n    literal\t1'
+        '\n  slice_end'
+        '\n    literal\t2'
+        '\n  slice_jump'
+        '\n    literal\t3'
     )
     assert get_ast(src) == expected_ast
 
 
-def test_slice2():
+def test_select_slice2():
     src = '@a[1:2]'
     expected_ast = (
-        'select'
-        '\n  select_slice'
-        '\n    identifier\ta'
-        '\n    slice_start'
-        '\n      literal\t1'
-        '\n    slice_end'
-        '\n      literal\t2'
+        'select_slice'
+        '\n  identifier\ta'
+        '\n  slice_start'
+        '\n    literal\t1'
+        '\n  slice_end'
+        '\n    literal\t2'
     )
     assert get_ast(src) == expected_ast
 
 
-def test_slice_empty():
+def test_select_slice_empty():
     src = '@a[::]'
     expected_ast = (
-        'select'
-        '\n  select_slice'
-        '\n    identifier\ta'
-        '\n    slice_start'
-        '\n    slice_end'
-        '\n    slice_jump'
+        'select_slice'
+        '\n  identifier\ta'
+        '\n  slice_start'
+        '\n  slice_end'
+        '\n  slice_jump'
     )
     assert get_ast(src) == expected_ast
 
 
-def test_slice_rev():
+def test_select_slice_rev():
     src = '@a[::-1]'
     expected_ast = (
-        'select'
-        '\n  select_slice'
-        '\n    identifier\ta'
-        '\n    slice_start'
-        '\n    slice_end'
-        '\n    slice_jump'
-        '\n      unary_negate'
-        '\n        literal\t1'
+        'select_slice'
+        '\n  identifier\ta'
+        '\n  slice_start'
+        '\n  slice_end'
+        '\n  slice_jump'
+        '\n    unary_negate'
+        '\n      literal\t1'
     )
     assert get_ast(src) == expected_ast
 
 
-def test_slice_end_only():
+def test_select_slice_end_only():
     src = '@a[:1]'
     expected_ast = (
-        'select'
-        '\n  select_slice'
-        '\n    identifier\ta'
-        '\n    slice_start'
-        '\n    slice_end'
-        '\n      literal\t1'
+        'select_slice'
+        '\n  identifier\ta'
+        '\n  slice_start'
+        '\n  slice_end'
+        '\n    literal\t1'
     )
     assert get_ast(src) == expected_ast
 
 
-def test_slice_end_only2():
+def test_select_slice_end_only2():
     src = '@a[:1:]'
     expected_ast = (
-        'select'
-        '\n  select_slice'
-        '\n    identifier\ta'
-        '\n    slice_start'
-        '\n    slice_end'
-        '\n      literal\t1'
-        '\n    slice_jump'
+        'select_slice'
+        '\n  identifier\ta'
+        '\n  slice_start'
+        '\n  slice_end'
+        '\n    literal\t1'
+        '\n  slice_jump'
     )
     assert get_ast(src) == expected_ast

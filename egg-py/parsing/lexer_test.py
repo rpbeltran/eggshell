@@ -81,8 +81,10 @@ def test_function_return():
         ('COLON', ':'),
         ('NAME', 'int'),
         ('CURLY_OPEN', '{'),
+        ('SEMICOLON', ''),
         ('RETURN', 'ret'),
         ('INTEGER', '2'),
+        ('SEMICOLON', ''),
         ('CURLY_CLOSE', '}'),
     ]
     assert get_tokens(egg_code) == expected_tokens
@@ -322,6 +324,8 @@ def test_comment():
     egg_code = 'a # hello \n #world \n b'
     expected_tokens = [
         ('EXEC_ARG', 'a'),
+        ('SEMICOLON', ''),
+        ('SEMICOLON', ''),
         ('EXEC_ARG', 'b'),
     ]
     assert get_tokens(egg_code) == expected_tokens
@@ -355,6 +359,7 @@ def test_try():
     expected_tokens = [
         ('TRY', 'try'),
         ('CURLY_OPEN', '{'),
+        ('SEMICOLON', ''),
         ('EXEC_ARG', 'a'),
         ('CURLY_CLOSE', '}'),
     ]
