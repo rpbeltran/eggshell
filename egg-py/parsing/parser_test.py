@@ -17,9 +17,11 @@ INSTRUCTIONS: To add new test cases:
 # Maps new test cases from test-name to test-code
 new_test_cases: Dict[str, str] = {}
 
+parser = get_parser()
+
 
 def get_ast(src) -> str:
-    return get_parser().parse(src).pretty().strip()
+    return parser.parse(src).pretty().strip()
 
 
 def test_pipe2():

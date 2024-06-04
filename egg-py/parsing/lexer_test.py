@@ -17,9 +17,12 @@ INSTRUCTIONS: To add new test cases:
 # Maps new test cases from test-name to test-code
 new_test_cases: Dict[str, str] = {}
 
+lexer = EggLexer()
+
 
 def get_tokens(egg: str):
-    return [(token.token_type, token.source) for token in EggLexer().lex(egg)]
+    lexer.reset()
+    return [(token.token_type, token.source) for token in lexer.lex(egg)]
 
 
 def test_basic_pipe():
