@@ -45,7 +45,6 @@ OPERATORS = {
     ']': 'SQUARE_CLOSE',
     ';': 'SEMICOLON',
     '$': 'CURRY',
-    '^': 'POWER',
     '!': 'NOT',
     '~': 'ASYNC',
 }
