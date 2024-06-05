@@ -524,7 +524,7 @@ def test_map():
 
 
 def test_math():
-    egg_code = '(1 + 2 - 3 * 4 / 5 // 6 ** 7 ^ 8 % -9)'
+    egg_code = '(1 + 2 - 3 * 4 / 5 // 6 ** 7 ** 8 % -9)'
     expected_tokens = [
         ('PAREN_OPEN', '('),
         ('INTEGER', '1'),
@@ -540,7 +540,7 @@ def test_math():
         ('INTEGER', '6'),
         ('POWER', '**'),
         ('INTEGER', '7'),
-        ('POWER', '^'),
+        ('POWER', '**'),
         ('INTEGER', '8'),
         ('MOD', '%'),
         ('MINUS', '-'),
@@ -840,5 +840,231 @@ def test_map_comprehension():
         ('INTEGER', '10'),
         ('PAREN_CLOSE', ')'),
         ('SQUARE_CLOSE', ']'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_fn_normal_multi_and_kw_arg():
+    src = 'fn foo (a, b, *c, **d){}'
+    expected_tokens = [
+        ('FN', 'fn'),
+        ('NAME', 'foo'),
+        ('PAREN_OPEN', '('),
+        ('NAME', 'a'),
+        ('COMMA', ','),
+        ('NAME', 'b'),
+        ('COMMA', ','),
+        ('TIMES', '*'),
+        ('NAME', 'c'),
+        ('COMMA', ','),
+        ('POWER', '**'),
+        ('NAME', 'd'),
+        ('PAREN_CLOSE', ')'),
+        ('CURLY_OPEN', '{'),
+        ('CURLY_CLOSE', '}'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_fn_multi_and_kw_arg():
+    src = 'fn foo (*a, **b){}'
+    expected_tokens = [
+        ('FN', 'fn'),
+        ('NAME', 'foo'),
+        ('PAREN_OPEN', '('),
+        ('TIMES', '*'),
+        ('NAME', 'a'),
+        ('COMMA', ','),
+        ('POWER', '**'),
+        ('NAME', 'b'),
+        ('PAREN_CLOSE', ')'),
+        ('CURLY_OPEN', '{'),
+        ('CURLY_CLOSE', '}'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_fn_multi_arg():
+    src = 'fn foo (a, *b){}'
+    expected_tokens = [
+        ('FN', 'fn'),
+        ('NAME', 'foo'),
+        ('PAREN_OPEN', '('),
+        ('NAME', 'a'),
+        ('COMMA', ','),
+        ('TIMES', '*'),
+        ('NAME', 'b'),
+        ('PAREN_CLOSE', ')'),
+        ('CURLY_OPEN', '{'),
+        ('CURLY_CLOSE', '}'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_fn_multi_arg_only():
+    src = 'fn foo (*b){}'
+    expected_tokens = [
+        ('FN', 'fn'),
+        ('NAME', 'foo'),
+        ('PAREN_OPEN', '('),
+        ('TIMES', '*'),
+        ('NAME', 'b'),
+        ('PAREN_CLOSE', ')'),
+        ('CURLY_OPEN', '{'),
+        ('CURLY_CLOSE', '}'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_fn_kw_arg():
+    src = 'fn foo (a, **b){}'
+    expected_tokens = [
+        ('FN', 'fn'),
+        ('NAME', 'foo'),
+        ('PAREN_OPEN', '('),
+        ('NAME', 'a'),
+        ('COMMA', ','),
+        ('POWER', '**'),
+        ('NAME', 'b'),
+        ('PAREN_CLOSE', ')'),
+        ('CURLY_OPEN', '{'),
+        ('CURLY_CLOSE', '}'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_fn_kw_arg_only():
+    src = 'fn foo (**b){}'
+    expected_tokens = [
+        ('FN', 'fn'),
+        ('NAME', 'foo'),
+        ('PAREN_OPEN', '('),
+        ('POWER', '**'),
+        ('NAME', 'b'),
+        ('PAREN_CLOSE', ')'),
+        ('CURLY_OPEN', '{'),
+        ('CURLY_CLOSE', '}'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_lambda_normal_multi_and_kw_arg():
+    src = '\\(a, b, *c, **d){}'
+    expected_tokens = [
+        ('LAMBDA', '\\'),
+        ('PAREN_OPEN', '('),
+        ('NAME', 'a'),
+        ('COMMA', ','),
+        ('NAME', 'b'),
+        ('COMMA', ','),
+        ('TIMES', '*'),
+        ('NAME', 'c'),
+        ('COMMA', ','),
+        ('POWER', '**'),
+        ('NAME', 'd'),
+        ('PAREN_CLOSE', ')'),
+        ('CURLY_OPEN', '{'),
+        ('CURLY_CLOSE', '}'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_lambda_multi_and_kw_arg():
+    src = '\\(*a, **b){}'
+    expected_tokens = [
+        ('LAMBDA', '\\'),
+        ('PAREN_OPEN', '('),
+        ('TIMES', '*'),
+        ('NAME', 'a'),
+        ('COMMA', ','),
+        ('POWER', '**'),
+        ('NAME', 'b'),
+        ('PAREN_CLOSE', ')'),
+        ('CURLY_OPEN', '{'),
+        ('CURLY_CLOSE', '}'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_lambda_multi_arg():
+    src = '\\(a, *b){}'
+    expected_tokens = [
+        ('LAMBDA', '\\'),
+        ('PAREN_OPEN', '('),
+        ('NAME', 'a'),
+        ('COMMA', ','),
+        ('TIMES', '*'),
+        ('NAME', 'b'),
+        ('PAREN_CLOSE', ')'),
+        ('CURLY_OPEN', '{'),
+        ('CURLY_CLOSE', '}'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_lambda_multi_arg_only():
+    src = '\\(*b){}'
+    expected_tokens = [
+        ('LAMBDA', '\\'),
+        ('PAREN_OPEN', '('),
+        ('TIMES', '*'),
+        ('NAME', 'b'),
+        ('PAREN_CLOSE', ')'),
+        ('CURLY_OPEN', '{'),
+        ('CURLY_CLOSE', '}'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_lambda_multi_arg_only_no_paren():
+    src = '\\*b{}'
+    expected_tokens = [
+        ('LAMBDA', '\\'),
+        ('TIMES', '*'),
+        ('NAME', 'b'),
+        ('CURLY_OPEN', '{'),
+        ('CURLY_CLOSE', '}'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_lambda_kw_arg():
+    src = '\\(a, **b){}'
+    expected_tokens = [
+        ('LAMBDA', '\\'),
+        ('PAREN_OPEN', '('),
+        ('NAME', 'a'),
+        ('COMMA', ','),
+        ('POWER', '**'),
+        ('NAME', 'b'),
+        ('PAREN_CLOSE', ')'),
+        ('CURLY_OPEN', '{'),
+        ('CURLY_CLOSE', '}'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_lambda_kw_arg_only():
+    src = '\\(**b){}'
+    expected_tokens = [
+        ('LAMBDA', '\\'),
+        ('PAREN_OPEN', '('),
+        ('POWER', '**'),
+        ('NAME', 'b'),
+        ('PAREN_CLOSE', ')'),
+        ('CURLY_OPEN', '{'),
+        ('CURLY_CLOSE', '}'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_lambda_kw_arg_only_no_paren():
+    src = '\\**b{}'
+    expected_tokens = [
+        ('LAMBDA', '\\'),
+        ('POWER', '**'),
+        ('NAME', 'b'),
+        ('CURLY_OPEN', '{'),
+        ('CURLY_CLOSE', '}'),
     ]
     assert get_tokens(src) == expected_tokens

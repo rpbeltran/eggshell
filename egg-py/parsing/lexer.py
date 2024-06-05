@@ -46,8 +46,10 @@ class StartNode(DFANode):
 
 
 def match_operator(c: str, state: LexerState) -> Optional[Tuple[str, str]]:
-    starts = BLOCK_OPERATOR_STARTS if state.in_block() else OPERATOR_STARTS
-    operators = BLOCK_OPERATORS if state.in_block() else OPERATORS
+
+    in_block = state.in_block() or state.get_prev() == "LAMBDA"
+    starts = BLOCK_OPERATOR_STARTS if in_block else OPERATOR_STARTS
+    operators = BLOCK_OPERATORS if in_block else OPERATORS
     if c in starts:
         data = c + state.peek()
         for pattern, token_type in operators.items():

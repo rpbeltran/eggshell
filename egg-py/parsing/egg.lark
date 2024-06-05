@@ -190,10 +190,18 @@ or_sequence:  atomic "SEQ_OR" atomic
 
 # -- Functions --
 
-define_function : "FN" NAME func_arglist func_type? block
+define_function : "FN" NAME arg_list func_type? block
 
-func_arglist : "PAREN_OPEN" (func_arg ("COMMA" func_arg)*)? "PAREN_CLOSE"
-?func_arg: NAME (arg_type)? (arg_default)?
+arg_list : "PAREN_OPEN" _arg_list_inner "PAREN_CLOSE"
+_arg_list_inner: (arg ("COMMA" arg)*) ("COMMA" star_arg)? ("COMMA" kw_arg)?
+              | star_arg ("COMMA" kw_arg)?
+              | kw_arg?
+
+
+?arg: NAME (arg_type)? (arg_default)?
+star_arg: "TIMES" NAME (arg_type)?
+kw_arg: "POWER" NAME (arg_type)?
+
 arg_type: "COLON" type
 arg_default: "ASSIGN" expression
 ?func_type: "COLON" atomic
@@ -208,8 +216,8 @@ do_block: "DO" block
 
 # -- Lambdas --
 
-lambda_func: "LAMBDA" (func_arglist | func_arg) "ARROW" expression
-           | "LAMBDA" (func_arglist | func_arg) block
+lambda_func: "LAMBDA" (arg_list | arg | star_arg | kw_arg) "ARROW" expression
+           | "LAMBDA" (arg_list | arg | star_arg | kw_arg) block
 
 
 # -- Function Calls --

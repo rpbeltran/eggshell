@@ -262,7 +262,7 @@ def test_function():
     expected_ast = (
         'define_function'
         '\n  foo'
-        '\n  func_arglist'
+        '\n  arg_list'
         '\n  block'
         '\n    declare_untyped_variable'
         '\n      a'
@@ -278,13 +278,13 @@ def test_function_args():
     expected_ast = (
         'define_function'
         '\n  foo'
-        '\n  func_arglist'
+        '\n  arg_list'
         '\n    a'
-        '\n    func_arg'
+        '\n    arg'
         '\n      b'
         '\n      arg_type'
         '\n        identifier\tint'
-        '\n    func_arg'
+        '\n    arg'
         '\n      c'
         '\n      arg_type'
         '\n        identifier\tint'
@@ -305,7 +305,7 @@ def test_function_empty():
     expected_ast = (
         'define_function'
         '\n  foo'
-        '\n  func_arglist'
+        '\n  arg_list'
         '\n  block'
     )
     assert get_ast(src) == expected_ast
@@ -424,7 +424,7 @@ def test_lambda_no_arg():
         'pipeline'
         '\n  exec\ta'
         '\n  lambda_func'
-        '\n    func_arglist'
+        '\n    arg_list'
         '\n    exec\tx'
     )
     assert get_ast(src) == expected_ast
@@ -436,13 +436,13 @@ def test_lambda_3_args():
         'pipeline'
         '\n  exec\ta'
         '\n  lambda_func'
-        '\n    func_arglist'
+        '\n    arg_list'
         '\n      a'
-        '\n      func_arg'
+        '\n      arg'
         '\n        b'
         '\n        arg_type'
         '\n          identifier\tint'
-        '\n      func_arg'
+        '\n      arg'
         '\n        c'
         '\n        arg_type'
         '\n          identifier\tint'
@@ -648,7 +648,7 @@ def test_class():
         '\n  class_methods'
         '\n    define_function'
         '\n      my_method'
-        '\n      func_arglist'
+        '\n      arg_list'
         '\n      block'
     )
     assert get_ast(src) == expected_ast
@@ -990,5 +990,175 @@ def test_map_comprehension():
         '\n  range'
         '\n    literal\t0'
         '\n    literal\t10'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_fn_normal_multi_and_kw_arg():
+    src = 'fn foo (a, b, *c, **d){}'
+    expected_ast = (
+        'define_function'
+        '\n  foo'
+        '\n  arg_list'
+        '\n    a'
+        '\n    b'
+        '\n    star_arg\tc'
+        '\n    kw_arg\td'
+        '\n  block'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_fn_multi_and_kw_arg():
+    src = 'fn foo (*a, **b){}'
+    expected_ast = (
+        'define_function'
+        '\n  foo'
+        '\n  arg_list'
+        '\n    star_arg\ta'
+        '\n    kw_arg\tb'
+        '\n  block'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_fn_multi_arg():
+    src = 'fn foo (a, *b){}'
+    expected_ast = (
+        'define_function'
+        '\n  foo'
+        '\n  arg_list'
+        '\n    a'
+        '\n    star_arg\tb'
+        '\n  block'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_fn_multi_arg_only():
+    src = 'fn foo (*b){}'
+    expected_ast = (
+        'define_function'
+        '\n  foo'
+        '\n  arg_list'
+        '\n    star_arg\tb'
+        '\n  block'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_fn_kw_arg():
+    src = 'fn foo (a, **b){}'
+    expected_ast = (
+        'define_function'
+        '\n  foo'
+        '\n  arg_list'
+        '\n    a'
+        '\n    kw_arg\tb'
+        '\n  block'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_fn_kw_arg_only():
+    src = 'fn foo (**b){}'
+    expected_ast = (
+        'define_function'
+        '\n  foo'
+        '\n  arg_list'
+        '\n    kw_arg\tb'
+        '\n  block'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_lambda_normal_multi_and_kw_arg():
+    src = '\\(a, b, *c, **d){}'
+    expected_ast = (
+        'lambda_func'
+        '\n  arg_list'
+        '\n    a'
+        '\n    b'
+        '\n    star_arg\tc'
+        '\n    kw_arg\td'
+        '\n  block'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_lambda_multi_and_kw_arg():
+    src = '\\(*a, **b){}'
+    expected_ast = (
+        'lambda_func'
+        '\n  arg_list'
+        '\n    star_arg\ta'
+        '\n    kw_arg\tb'
+        '\n  block'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_lambda_multi_arg():
+    src = '\\(a, *b){}'
+    expected_ast = (
+        'lambda_func'
+        '\n  arg_list'
+        '\n    a'
+        '\n    star_arg\tb'
+        '\n  block'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_lambda_multi_arg_only():
+    src = '\\(*b){}'
+    expected_ast = (
+        'lambda_func'
+        '\n  arg_list'
+        '\n    star_arg\tb'
+        '\n  block'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_lambda_multi_arg_only_no_paren():
+    src = '\\*b{}'
+    expected_ast = (
+        'lambda_func'
+        '\n  star_arg\tb'
+        '\n  block'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_lambda_kw_arg():
+    src = '\\(a, **b){}'
+    expected_ast = (
+        'lambda_func'
+        '\n  arg_list'
+        '\n    a'
+        '\n    kw_arg\tb'
+        '\n  block'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_lambda_kw_arg_only():
+    src = '\\(**b){}'
+    expected_ast = (
+        'lambda_func'
+        '\n  arg_list'
+        '\n    kw_arg\tb'
+        '\n  block'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_lambda_kw_arg_only_no_paren():
+    src = '\\**b{}'
+    expected_ast = (
+        'lambda_func'
+        '\n  kw_arg\tb'
+        '\n  block'
     )
     assert get_ast(src) == expected_ast
