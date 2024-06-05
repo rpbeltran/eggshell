@@ -15,14 +15,7 @@ INSTRUCTIONS: To add new test cases:
 
 
 # Maps new test cases from test-name to test-code
-new_test_cases: Dict[str, str] = {
-    "quoted_explicit_arg": '`a "b \' c" d`',
-    "quoted_explicit_arg2": '`"a b c" d e `',
-    "quoted_explicit_arg3": '`"a b\" c" d e `',
-    "single_quoted_explicit_arg": "`a 'b \" c' d`",
-    "single_quoted_explicit_arg2": "`'a b c' d e `",
-    "single_quoted_explicit_arg3": "`'a b\' c' d e ",
-}
+new_test_cases: Dict[str, str] = {}
 
 lexer = EggLexer()
 
@@ -803,5 +796,49 @@ def test_quoted_explicit_arg2():
         ('EXEC_ARG', 'a b c'),
         ('EXEC_ARG', 'd'),
         ('EXEC_ARG', 'e'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_list_comprehension():
+    src = '[10**x for x in (0..10)]'
+    expected_tokens = [
+        ('SQUARE_OPEN', '['),
+        ('INTEGER', '10'),
+        ('POWER', '**'),
+        ('NAME', 'x'),
+        ('FOR', 'for'),
+        ('NAME', 'x'),
+        ('IN', 'in'),
+        ('PAREN_OPEN', '('),
+        ('INTEGER', '0'),
+        ('RANGE', '..'),
+        ('INTEGER', '10'),
+        ('PAREN_CLOSE', ')'),
+        ('SQUARE_CLOSE', ']'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_map_comprehension():
+    src = '{-x: 100**-x for x in (0..10)]'
+    expected_tokens = [
+        ('CURLY_OPEN', '{'),
+        ('MINUS', '-'),
+        ('NAME', 'x'),
+        ('COLON', ':'),
+        ('INTEGER', '100'),
+        ('POWER', '**'),
+        ('MINUS', '-'),
+        ('NAME', 'x'),
+        ('FOR', 'for'),
+        ('NAME', 'x'),
+        ('IN', 'in'),
+        ('PAREN_OPEN', '('),
+        ('INTEGER', '0'),
+        ('RANGE', '..'),
+        ('INTEGER', '10'),
+        ('PAREN_CLOSE', ')'),
+        ('SQUARE_CLOSE', ']'),
     ]
     assert get_tokens(src) == expected_tokens

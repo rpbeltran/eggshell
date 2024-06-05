@@ -37,6 +37,7 @@
                   | function_call
                   | list
                   | map
+                  | comprehension
                   | range
                   | async_expr
                   | literal
@@ -130,6 +131,17 @@ _range_inner: expression "RANGE" expression
 map: "CURLY_OPEN" _map_inner? "CURLY_CLOSE"
 _map_inner: map_entry ("COMMA" map_entry)*
 map_entry: expression "COLON" expression
+
+
+# -- Comprehensions --
+
+?comprehension: list_comprehension | map_comprehension
+
+list_comprehension: "SQUARE_OPEN" _list_comp_inner "SQUARE_CLOSE"
+_list_comp_inner: expression "FOR" NAME "IN" expression
+
+map_comprehension: "CURLY_OPEN" _map_comp_inner "CURLY_CLOSE"
+_map_comp_inner: expression "COLON" expression "FOR" NAME "IN" expression
 
 
 # -- File Redirection --

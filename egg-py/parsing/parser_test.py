@@ -959,3 +959,36 @@ def test_explicit_pipeline():
         '\n  exec\tc'
     )
     assert get_ast(src) == expected_ast
+
+
+def test_list_comprehension():
+    src = '[10**x for x in (0..10)]'
+    expected_ast = (
+        'list_comprehension'
+        '\n  raise_power'
+        '\n    literal\t10'
+        '\n    identifier\tx'
+        '\n  x'
+        '\n  range'
+        '\n    literal\t0'
+        '\n    literal\t10'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_map_comprehension():
+    src = '{-x: 10**-x for x in (0..10)}'
+    expected_ast = (
+        'map_comprehension'
+        '\n  unary_negate'
+        '\n    identifier\tx'
+        '\n  raise_power'
+        '\n    literal\t10'
+        '\n    unary_negate'
+        '\n      identifier\tx'
+        '\n  x'
+        '\n  range'
+        '\n    literal\t0'
+        '\n    literal\t10'
+    )
+    assert get_ast(src) == expected_ast
