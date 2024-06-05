@@ -156,6 +156,29 @@ like so:
 factorial_of_10 := 10 | @factorial
 ```
 
+Functions can also take two special types of arguments: `*args` which accepts
+multiple arguments and provides them as a list, and `**kwargs` which accepts
+arbitrary named arguments and returns them as a Map with string keywords. These
+arguments should be familiar to Python users.
+
+```
+fn sum(*args) {
+  total := 0;
+  args.ea(total += _)
+}
+```
+
+```
+fn run_with_env(executable: str, **extra_env: map<str,str> ) {
+  env.push
+  for item in extra_env {
+    env.set(item[0], item[1])
+  }
+  `{executable}`
+  env.pop
+}
+```
+
 Functions can also receive arguments via "currying" syntax:
 
 ```
