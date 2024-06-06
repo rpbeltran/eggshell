@@ -262,7 +262,7 @@ def test_function():
     expected_ast = (
         'define_function'
         '\n  foo'
-        '\n  arg_list'
+        '\n  param_list'
         '\n  block'
         '\n    declare_untyped_variable'
         '\n      a'
@@ -273,22 +273,22 @@ def test_function():
     assert get_ast(src) == expected_ast
 
 
-def test_function_args():
+def test_function_params():
     src = 'fn foo(a, b: int, c:int=4){\n\tr := a+b+c\n\tret r\n}'
     expected_ast = (
         'define_function'
         '\n  foo'
-        '\n  arg_list'
+        '\n  param_list'
         '\n    a'
-        '\n    arg'
+        '\n    param'
         '\n      b'
-        '\n      arg_type'
+        '\n      param_type'
         '\n        identifier\tint'
-        '\n    arg'
+        '\n    param'
         '\n      c'
-        '\n      arg_type'
+        '\n      param_type'
         '\n        identifier\tint'
-        '\n      arg_default'
+        '\n      param_default'
         '\n        literal\t4'
         '\n  block'
         '\n    declare_untyped_variable'
@@ -305,7 +305,7 @@ def test_function_empty():
     expected_ast = (
         'define_function'
         '\n  foo'
-        '\n  arg_list'
+        '\n  param_list'
         '\n  block'
     )
     assert get_ast(src) == expected_ast
@@ -418,35 +418,35 @@ def test_lambda_block():
     assert get_ast(src) == expected_ast
 
 
-def test_lambda_no_arg():
+def test_lambda_no_param():
     src = 'a | \\() -> x'
     expected_ast = (
         'pipeline'
         '\n  exec\ta'
         '\n  lambda_func'
-        '\n    arg_list'
+        '\n    param_list'
         '\n    exec\tx'
     )
     assert get_ast(src) == expected_ast
 
 
-def test_lambda_3_args():
+def test_lambda_3_params():
     src = 'a | \\(a, b:int, c:int=1) -> x'
     expected_ast = (
         'pipeline'
         '\n  exec\ta'
         '\n  lambda_func'
-        '\n    arg_list'
+        '\n    param_list'
         '\n      a'
-        '\n      arg'
+        '\n      param'
         '\n        b'
-        '\n        arg_type'
+        '\n        param_type'
         '\n          identifier\tint'
-        '\n      arg'
+        '\n      param'
         '\n        c'
-        '\n        arg_type'
+        '\n        param_type'
         '\n          identifier\tint'
-        '\n        arg_default'
+        '\n        param_default'
         '\n          literal\t1'
         '\n    exec\tx'
     )
@@ -476,10 +476,10 @@ def test_loop():
         '\n  block'
         '\n    function_call'
         '\n      identifier\tx'
-        '\n      function_call_args'
+        '\n      arg_list'
         '\n    function_call'
         '\n      identifier\ty'
-        '\n      function_call_args'
+        '\n      arg_list'
     )
     assert get_ast(src) == expected_ast
 
@@ -515,10 +515,10 @@ def test_while():
         '\n  block'
         '\n    function_call'
         '\n      identifier\tx'
-        '\n      function_call_args'
+        '\n      arg_list'
         '\n    function_call'
         '\n      identifier\ty'
-        '\n      function_call_args'
+        '\n      arg_list'
     )
     assert get_ast(src) == expected_ast
 
@@ -560,10 +560,10 @@ def test_for():
         '\n  block'
         '\n    function_call'
         '\n      identifier\tx'
-        '\n      function_call_args'
+        '\n      arg_list'
         '\n    function_call'
         '\n      identifier\ty'
-        '\n      function_call_args'
+        '\n      arg_list'
     )
     assert get_ast(src) == expected_ast
 
@@ -620,7 +620,7 @@ def test_methods():
         '\n      module_name'
         '\n      a'
         '\n    b'
-        '\n  function_call_args'
+        '\n  arg_list'
         '\n    literal\t1'
     )
     assert get_ast(src) == expected_ast
@@ -648,7 +648,7 @@ def test_class():
         '\n  class_methods'
         '\n    define_function'
         '\n      my_method'
-        '\n      arg_list'
+        '\n      param_list'
         '\n      block'
     )
     assert get_ast(src) == expected_ast
@@ -740,7 +740,7 @@ def test_try_catch():
     assert get_ast(src) == expected_ast
 
 
-def test_try_catch_arg():
+def test_try_catch_param():
     src = 'try{`x`} catch e {`y`}'
     expected_ast = (
         'try_catch'
@@ -754,7 +754,7 @@ def test_try_catch_arg():
     assert get_ast(src) == expected_ast
 
 
-def test_try_catch_arg_typed():
+def test_try_catch_param_typed():
     src = 'try{`x`} catch e: t {`y`}'
     expected_ast = (
         'try_catch'
@@ -806,7 +806,7 @@ def test_returned_obj_methods():
         'select_field'
         '\n  function_call'
         '\n    identifier\ta'
-        '\n    function_call_args'
+        '\n    arg_list'
         '\n  x'
     )
     assert get_ast(src) == expected_ast
@@ -929,7 +929,7 @@ def test_with():
         '\n    select_field'
         '\n      identifier\ta'
         '\n      y'
-        '\n    function_call_args'
+        '\n    arg_list'
         '\n  block'
     )
     assert get_ast(src) == expected_ast
@@ -943,7 +943,7 @@ def test_with_as():
         '\n    select_field'
         '\n      identifier\ta'
         '\n      y'
-        '\n    function_call_args'
+        '\n    arg_list'
         '\n  x'
         '\n  block'
     )
@@ -994,171 +994,188 @@ def test_map_comprehension():
     assert get_ast(src) == expected_ast
 
 
-def test_fn_normal_multi_and_kw_arg():
+def test_fn_normal_multi_and_kw_param():
     src = 'fn foo (a, b, *c, **d){}'
     expected_ast = (
         'define_function'
         '\n  foo'
-        '\n  arg_list'
+        '\n  param_list'
         '\n    a'
         '\n    b'
-        '\n    star_arg\tc'
-        '\n    kw_arg\td'
+        '\n    star_param\tc'
+        '\n    kw_param\td'
         '\n  block'
     )
     assert get_ast(src) == expected_ast
 
 
-def test_fn_multi_and_kw_arg():
+def test_fn_multi_and_kw_param():
     src = 'fn foo (*a, **b){}'
     expected_ast = (
         'define_function'
         '\n  foo'
-        '\n  arg_list'
-        '\n    star_arg\ta'
-        '\n    kw_arg\tb'
+        '\n  param_list'
+        '\n    star_param\ta'
+        '\n    kw_param\tb'
         '\n  block'
     )
     assert get_ast(src) == expected_ast
 
 
-def test_fn_multi_arg():
+def test_fn_multi_param():
     src = 'fn foo (a, *b){}'
     expected_ast = (
         'define_function'
         '\n  foo'
-        '\n  arg_list'
+        '\n  param_list'
         '\n    a'
-        '\n    star_arg\tb'
+        '\n    star_param\tb'
         '\n  block'
     )
     assert get_ast(src) == expected_ast
 
 
-def test_fn_multi_arg_only():
+def test_fn_multi_param_only():
     src = 'fn foo (*b){}'
     expected_ast = (
         'define_function'
         '\n  foo'
-        '\n  arg_list'
-        '\n    star_arg\tb'
+        '\n  param_list'
+        '\n    star_param\tb'
         '\n  block'
     )
     assert get_ast(src) == expected_ast
 
 
-def test_fn_kw_arg():
+def test_fn_kw_param():
     src = 'fn foo (a, **b){}'
     expected_ast = (
         'define_function'
         '\n  foo'
-        '\n  arg_list'
+        '\n  param_list'
         '\n    a'
-        '\n    kw_arg\tb'
+        '\n    kw_param\tb'
         '\n  block'
     )
     assert get_ast(src) == expected_ast
 
 
-def test_fn_kw_arg_only():
+def test_fn_kw_param_only():
     src = 'fn foo (**b){}'
     expected_ast = (
         'define_function'
         '\n  foo'
-        '\n  arg_list'
-        '\n    kw_arg\tb'
+        '\n  param_list'
+        '\n    kw_param\tb'
         '\n  block'
     )
     assert get_ast(src) == expected_ast
 
 
-def test_lambda_normal_multi_and_kw_arg():
+def test_lambda_normal_multi_and_kw_param():
     src = '\\(a, b, *c, **d){}'
     expected_ast = (
         'lambda_func'
-        '\n  arg_list'
+        '\n  param_list'
         '\n    a'
         '\n    b'
-        '\n    star_arg\tc'
-        '\n    kw_arg\td'
+        '\n    star_param\tc'
+        '\n    kw_param\td'
         '\n  block'
     )
     assert get_ast(src) == expected_ast
 
 
-def test_lambda_multi_and_kw_arg():
+def test_lambda_multi_and_kw_param():
     src = '\\(*a, **b){}'
     expected_ast = (
         'lambda_func'
-        '\n  arg_list'
-        '\n    star_arg\ta'
-        '\n    kw_arg\tb'
+        '\n  param_list'
+        '\n    star_param\ta'
+        '\n    kw_param\tb'
         '\n  block'
     )
     assert get_ast(src) == expected_ast
 
 
-def test_lambda_multi_arg():
+def test_lambda_multi_param():
     src = '\\(a, *b){}'
     expected_ast = (
         'lambda_func'
-        '\n  arg_list'
+        '\n  param_list'
         '\n    a'
-        '\n    star_arg\tb'
+        '\n    star_param\tb'
         '\n  block'
     )
     assert get_ast(src) == expected_ast
 
 
-def test_lambda_multi_arg_only():
+def test_lambda_multi_param_only():
     src = '\\(*b){}'
     expected_ast = (
         'lambda_func'
-        '\n  arg_list'
-        '\n    star_arg\tb'
+        '\n  param_list'
+        '\n    star_param\tb'
         '\n  block'
     )
     assert get_ast(src) == expected_ast
 
 
-def test_lambda_multi_arg_only_no_paren():
+def test_lambda_multi_param_only_no_paren():
     src = '\\*b{}'
     expected_ast = (
         'lambda_func'
-        '\n  star_arg\tb'
+        '\n  star_param\tb'
         '\n  block'
     )
     assert get_ast(src) == expected_ast
 
 
-def test_lambda_kw_arg():
+def test_lambda_kw_param():
     src = '\\(a, **b){}'
     expected_ast = (
         'lambda_func'
-        '\n  arg_list'
+        '\n  param_list'
         '\n    a'
-        '\n    kw_arg\tb'
+        '\n    kw_param\tb'
         '\n  block'
     )
     assert get_ast(src) == expected_ast
 
 
-def test_lambda_kw_arg_only():
+def test_lambda_kw_param_only():
     src = '\\(**b){}'
     expected_ast = (
         'lambda_func'
-        '\n  arg_list'
-        '\n    kw_arg\tb'
+        '\n  param_list'
+        '\n    kw_param\tb'
         '\n  block'
     )
     assert get_ast(src) == expected_ast
 
 
-def test_lambda_kw_arg_only_no_paren():
+def test_lambda_kw_param_only_no_paren():
     src = '\\**b{}'
     expected_ast = (
         'lambda_func'
-        '\n  kw_arg\tb'
+        '\n  kw_param\tb'
         '\n  block'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_kw_args():
+    src = 'foo(a, b=c, d=e)'
+    expected_ast = (
+        'function_call'
+        '\n  identifier\tfoo'
+        '\n  arg_list'
+        '\n    identifier\ta'
+        '\n    kwarg'
+        '\n      b'
+        '\n      identifier\tc'
+        '\n    kwarg'
+        '\n      d'
+        '\n      identifier\te'
     )
     assert get_ast(src) == expected_ast

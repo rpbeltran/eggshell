@@ -1068,3 +1068,22 @@ def test_lambda_kw_param_only_no_paren():
         ('CURLY_CLOSE', '}'),
     ]
     assert get_tokens(src) == expected_tokens
+
+
+def test_kw_args():
+    src = 'foo(a, b=c, d=e)'
+    expected_tokens = [
+        ('NAME', 'foo'),
+        ('PAREN_OPEN', '('),
+        ('NAME', 'a'),
+        ('COMMA', ','),
+        ('NAME', 'b'),
+        ('ASSIGN', '='),
+        ('NAME', 'c'),
+        ('COMMA', ','),
+        ('NAME', 'd'),
+        ('ASSIGN', '='),
+        ('NAME', 'e'),
+        ('PAREN_CLOSE', ')'),
+    ]
+    assert get_tokens(src) == expected_tokens

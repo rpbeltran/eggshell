@@ -193,13 +193,13 @@ or_sequence:  atomic "SEQ_OR" atomic
 define_function : "FN" NAME param_list func_type? block
 
 param_list : "PAREN_OPEN" _param_list_inner "PAREN_CLOSE"
-_param_list_inner: (param ("COMMA" param)*) ("COMMA" start_param)? ("COMMA" kw_param)?
-              | start_param ("COMMA" kw_param)?
+_param_list_inner: (param ("COMMA" param)*) ("COMMA" star_param)? ("COMMA" kw_param)?
+              | star_param ("COMMA" kw_param)?
               | kw_param?
 
 
 ?param: NAME (param_type)? (param_default)?
-start_param: "TIMES" NAME (param_type)?
+star_param: "TIMES" NAME (param_type)?
 kw_param: "POWER" NAME (param_type)?
 
 param_type: "COLON" type
@@ -216,14 +216,17 @@ do_block: "DO" block
 
 # -- Lambdas --
 
-lambda_func: "LAMBDA" (param_list | param | start_param | kw_param) "ARROW" expression
-           | "LAMBDA" (param_list | param | start_param | kw_param) block
+lambda_func: "LAMBDA" (param_list | param | star_param | kw_param) "ARROW" expression
+           | "LAMBDA" (param_list | param | star_param | kw_param) block
 
 
 # -- Function Calls --
 
-function_call: atomic "PAREN_OPEN" function_call_params "PAREN_CLOSE"
-function_call_params: (expression ("COMMA" expression)*)?
+function_call: atomic "PAREN_OPEN" arg_list "PAREN_CLOSE"
+arg_list: (arg ("COMMA" arg)*)?
+
+?arg: expression | kwarg
+kwarg: NAME "ASSIGN" expression
 
 
 # -- Loops --
