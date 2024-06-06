@@ -93,7 +93,7 @@ def test_function_return():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_function_arg():
+def test_function_param():
     egg_code = 'fn foo(a, b := 1, c: int = 2) {}'
     expected_tokens = [
         ('FN', 'fn'),
@@ -384,7 +384,7 @@ def test_try_catch():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_try_catch_arg():
+def test_try_catch_param():
     egg_code = 'try { `a` } catch e { `b` }'
     expected_tokens = [
         ('TRY', 'try'),
@@ -614,7 +614,7 @@ def test_function_call():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_function_call_args():
+def test_function_call_params():
     egg_code = 'a(b,c)'
     expected_tokens = [
         ('NAME', 'a'),
@@ -780,7 +780,7 @@ def test_explicit_pipeline_minified():
     assert get_tokens(src) == expected_tokens
 
 
-def test_quoted_explicit_arg():
+def test_quoted_explicit_param():
     src = '`a "b \' c" d`'
     expected_tokens = [
         ('EXEC_ARG', 'a'),
@@ -790,7 +790,7 @@ def test_quoted_explicit_arg():
     assert get_tokens(src) == expected_tokens
 
 
-def test_quoted_explicit_arg2():
+def test_quoted_explicit_param2():
     src = '`"a b c" d e `'
     expected_tokens = [
         ('EXEC_ARG', 'a b c'),
@@ -844,7 +844,7 @@ def test_map_comprehension():
     assert get_tokens(src) == expected_tokens
 
 
-def test_fn_normal_multi_and_kw_arg():
+def test_fn_normal_multi_and_kw_param():
     src = 'fn foo (a, b, *c, **d){}'
     expected_tokens = [
         ('FN', 'fn'),
@@ -866,7 +866,7 @@ def test_fn_normal_multi_and_kw_arg():
     assert get_tokens(src) == expected_tokens
 
 
-def test_fn_multi_and_kw_arg():
+def test_fn_multi_and_kw_param():
     src = 'fn foo (*a, **b){}'
     expected_tokens = [
         ('FN', 'fn'),
@@ -884,7 +884,7 @@ def test_fn_multi_and_kw_arg():
     assert get_tokens(src) == expected_tokens
 
 
-def test_fn_multi_arg():
+def test_fn_multi_param():
     src = 'fn foo (a, *b){}'
     expected_tokens = [
         ('FN', 'fn'),
@@ -901,7 +901,7 @@ def test_fn_multi_arg():
     assert get_tokens(src) == expected_tokens
 
 
-def test_fn_multi_arg_only():
+def test_fn_multi_param_only():
     src = 'fn foo (*b){}'
     expected_tokens = [
         ('FN', 'fn'),
@@ -916,7 +916,7 @@ def test_fn_multi_arg_only():
     assert get_tokens(src) == expected_tokens
 
 
-def test_fn_kw_arg():
+def test_fn_kw_param():
     src = 'fn foo (a, **b){}'
     expected_tokens = [
         ('FN', 'fn'),
@@ -933,7 +933,7 @@ def test_fn_kw_arg():
     assert get_tokens(src) == expected_tokens
 
 
-def test_fn_kw_arg_only():
+def test_fn_kw_param_only():
     src = 'fn foo (**b){}'
     expected_tokens = [
         ('FN', 'fn'),
@@ -948,7 +948,7 @@ def test_fn_kw_arg_only():
     assert get_tokens(src) == expected_tokens
 
 
-def test_lambda_normal_multi_and_kw_arg():
+def test_lambda_normal_multi_and_kw_param():
     src = '\\(a, b, *c, **d){}'
     expected_tokens = [
         ('LAMBDA', '\\'),
@@ -969,7 +969,7 @@ def test_lambda_normal_multi_and_kw_arg():
     assert get_tokens(src) == expected_tokens
 
 
-def test_lambda_multi_and_kw_arg():
+def test_lambda_multi_and_kw_param():
     src = '\\(*a, **b){}'
     expected_tokens = [
         ('LAMBDA', '\\'),
@@ -986,7 +986,7 @@ def test_lambda_multi_and_kw_arg():
     assert get_tokens(src) == expected_tokens
 
 
-def test_lambda_multi_arg():
+def test_lambda_multi_param():
     src = '\\(a, *b){}'
     expected_tokens = [
         ('LAMBDA', '\\'),
@@ -1002,7 +1002,7 @@ def test_lambda_multi_arg():
     assert get_tokens(src) == expected_tokens
 
 
-def test_lambda_multi_arg_only():
+def test_lambda_multi_param_only():
     src = '\\(*b){}'
     expected_tokens = [
         ('LAMBDA', '\\'),
@@ -1016,7 +1016,7 @@ def test_lambda_multi_arg_only():
     assert get_tokens(src) == expected_tokens
 
 
-def test_lambda_multi_arg_only_no_paren():
+def test_lambda_multi_param_only_no_paren():
     src = '\\*b{}'
     expected_tokens = [
         ('LAMBDA', '\\'),
@@ -1028,7 +1028,7 @@ def test_lambda_multi_arg_only_no_paren():
     assert get_tokens(src) == expected_tokens
 
 
-def test_lambda_kw_arg():
+def test_lambda_kw_param():
     src = '\\(a, **b){}'
     expected_tokens = [
         ('LAMBDA', '\\'),
@@ -1044,7 +1044,7 @@ def test_lambda_kw_arg():
     assert get_tokens(src) == expected_tokens
 
 
-def test_lambda_kw_arg_only():
+def test_lambda_kw_param_only():
     src = '\\(**b){}'
     expected_tokens = [
         ('LAMBDA', '\\'),
@@ -1058,7 +1058,7 @@ def test_lambda_kw_arg_only():
     assert get_tokens(src) == expected_tokens
 
 
-def test_lambda_kw_arg_only_no_paren():
+def test_lambda_kw_param_only_no_paren():
     src = '\\**b{}'
     expected_tokens = [
         ('LAMBDA', '\\'),
