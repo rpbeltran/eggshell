@@ -142,7 +142,7 @@ def test_math_in_block():
 
 
 def test_math_top_level():
-    src = '1 (**) 3 (+) 4 (*) 5 (-) 6 (//) 7 (/) 8 (%) 9 (+) -1'
+    src = '1 ** 3 + 4 * 5 - 6 // 7 / 8 % 9 + -1'
     expected_ast = (
         'addition'
         '\n  subtraction'
@@ -160,7 +160,8 @@ def test_math_top_level():
         '\n          literal\t7'
         '\n        literal\t8'
         '\n      literal\t9'
-        '\n  literal\t-1'
+        '\n  unary_negate'
+        '\n    literal\t1'
     )
     assert get_ast(src) == expected_ast
 
@@ -244,7 +245,7 @@ def test_identifier_in_block_3():
 
 
 def test_curry():
-    src = 'a $ @b (+) 1 $ c'
+    src = 'a $ @b + 1 $ c'
     expected_ast = (
         'curried_func'
         '\n  curried_func'

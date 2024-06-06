@@ -3,10 +3,10 @@ from typing import Iterator, Optional, Tuple
 
 from .lexer_constants import (
     KEYWORDS,
-    OPERATORS,
-    OPERATOR_STARTS,
-    BLOCK_OPERATORS,
-    BLOCK_OPERATOR_STARTS,
+    ALL_OPERATORS,
+    ALL_OPERATOR_STARTS,
+    NON_ARITHMETIC_OPERATORS,
+    NON_ARITHMETIC_OPERATOR_STARTS,
 )
 from .lexer_util import DFANode, LexerError, LexerState, Token
 
@@ -46,14 +46,17 @@ class StartNode(DFANode):
 
 
 def match_operator(c: str, state: LexerState) -> Optional[Tuple[str, str]]:
-
-    in_block = state.in_block() or state.get_prev() == "LAMBDA"
-    starts = BLOCK_OPERATOR_STARTS if in_block else OPERATOR_STARTS
-    operators = BLOCK_OPERATORS if in_block else OPERATORS
+    allow_arithmetic = state.in_block() or state.get_prev() != 'EXEC_ARG'
+    starts = (
+        ALL_OPERATOR_STARTS
+        if allow_arithmetic
+        else NON_ARITHMETIC_OPERATOR_STARTS
+    )
+    operators = ALL_OPERATORS if allow_arithmetic else NON_ARITHMETIC_OPERATORS
     if c in starts:
         data = c + state.peek()
         for pattern, token_type in operators.items():
-            if token_type == "NAMESPACE" and state.get_prev() == "SQUARE_OPEN":
+            if token_type == 'NAMESPACE' and state.get_prev() == 'SQUARE_OPEN':
                 continue
             if data.startswith(pattern):
                 return pattern, token_type
@@ -89,7 +92,6 @@ class CommentNode(DFANode):
             if state.paren_depth == 0:
                 yield Token('SEMICOLON', '')
             state.goto_node(StartNode())
-
 
 
 class IdentifierNode(DFANode):
@@ -135,7 +137,7 @@ class QuotedArgListNode(DFANode):
     def step(self, c: str, state: LexerState) -> Iterator[Token]:
         if self.escaped or c == '\\':
             self.escaped = not self.escaped
-        elif c in ['\'','"']:
+        elif c in ["'", '"']:
             if not self.quoted:
                 self.quoted = True
                 self.quote_type = c
@@ -178,7 +180,7 @@ tokens_before_names = [
     # Closing braces
     'PAREN_CLOSE',
     'SQUARE_CLOSE',
-    # Artithmetic
+    # Arithmetic
     'POWER',
     'INT_DIV',
     'TIMES',
@@ -219,7 +221,10 @@ class UnquotedLiteral(DFANode):
                         yield state.get_token('DOT', source='.')
             state.goto_node(StartNode(), step_back=True)
         elif (
-            space or c in '<>{}[])|;,\n' or c == '.' and state.peek_one() == '.'
+            space
+            or c in '<>{}[])|;,\n'
+            or c == '.'
+            and state.peek_one() == '.'
         ):
             yield state.get_token(predicted_token_type, source=source)
             if c == '\n' and state.paren_depth == 0:
@@ -247,7 +252,7 @@ class NumberNode(DFANode):
 
     def step(self, c: str, state: LexerState) -> Iterator[Token]:
         if c == '.':
-            if state.peek_one() == ".":
+            if state.peek_one() == '.':
                 token_type = self.get_token_type(state)
                 yield state.get_token(token_type, inclusive=False)
                 state.goto_node(StartNode(), step_back=True)

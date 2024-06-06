@@ -551,16 +551,16 @@ def test_math():
 
 
 def test_math_root_level():
-    egg_code = '1 (**) 2 (//) 3 (*) 4 (/) 5'
+    egg_code = '1 ** 2 // 3 * 4 / 5'
     expected_tokens = [
         ('INTEGER', '1'),
-        ('POWER', '(**)'),
+        ('POWER', '**'),
         ('INTEGER', '2'),
-        ('INT_DIV', '(//)'),
+        ('INT_DIV', '//'),
         ('INTEGER', '3'),
-        ('TIMES', '(*)'),
+        ('TIMES', '*'),
         ('INTEGER', '4'),
-        ('DIVIDE', '(/)'),
+        ('DIVIDE', '/'),
         ('INTEGER', '5'),
     ]
     assert get_tokens(egg_code) == expected_tokens

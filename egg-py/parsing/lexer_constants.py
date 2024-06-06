@@ -1,16 +1,11 @@
-# Keep operators sorted by length plz.
-OPERATORS = {
-    # 4-Char Operators
-    '(**)': 'POWER',
-    '(//)': 'INT_DIV',
-    # 3-Char Operators
-    '(*)': 'TIMES',
-    '(/)': 'DIVIDE',
-    '(+)': 'PLUS',
-    '(-)': 'MINUS',
-    '(%)': 'MOD',
+
+def _make_max_munch_safe(d):
+    return dict(sorted(d.items(), reverse=True))
+
+
+# TODO: Add POWER_ASSIGN and INT_DIVIDE_ASSIGN
+NON_ARITHMETIC_OPERATORS = _make_max_munch_safe({
     '...': 'ELLIPSIS',
-    # 2-Char Operators
     ':=': 'DECLARE',
     '+=': 'PLUS_ASSIGN',
     '-=': 'MINUS_ASSIGN',
@@ -30,7 +25,6 @@ OPERATORS = {
     '<=': 'LTE',
     '..': 'RANGE',
     '++': 'CONCAT',
-    # 1-Char Operators
     ':': 'COLON',
     '=': 'ASSIGN',
     '|': 'PIPE',
@@ -47,23 +41,23 @@ OPERATORS = {
     '$': 'CURRY',
     '!': 'NOT',
     '~': 'ASYNC',
-}
+})
 
-BLOCK_OPERATORS = {
+ALL_OPERATORS = _make_max_munch_safe({
+    **NON_ARITHMETIC_OPERATORS,
     '**': 'POWER',
     '//': 'INT_DIV',
-    **OPERATORS,
     '*': 'TIMES',
     '/': 'DIVIDE',
     '+': 'PLUS',
     '-': 'MINUS',
     '%': 'MOD',
-}
+})
 
-OPERATOR_STARTS = {op[0] for op in OPERATORS}
-BLOCK_OPERATOR_STARTS = {op[0] for op in BLOCK_OPERATORS}
+NON_ARITHMETIC_OPERATOR_STARTS = {op[0] for op in NON_ARITHMETIC_OPERATORS}
+ALL_OPERATOR_STARTS = {op[0] for op in ALL_OPERATORS}
 
-KEYWORDS = {
+KEYWORDS = _make_max_munch_safe({
     'fn': 'FN',
     'for': 'FOR',
     'while': 'WHILE',
@@ -91,4 +85,4 @@ KEYWORDS = {
     'const': 'CONST',
     'class': 'CLASS',
     'with': 'WITH',
-}
+})
