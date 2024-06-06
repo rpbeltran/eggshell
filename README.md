@@ -21,7 +21,7 @@ class Item {
     }
 }
 
-fn get_items_from(file: Path) : Status<[Item]> {
+fn get_items_from(file: Path) : Status[[Item]] {
     if !(file.exists) {
         ret Status::Error("Provided file does not exist")
     }
@@ -169,7 +169,7 @@ fn sum(*args) {
 ```
 
 ```
-fn run_with_env(executable: str, **extra_env: map<str,str> ) {
+fn run_with_env(executable: str, **extra_env: map[str,str] ) {
   env.push
   for item in extra_env {
     env.set(item[0], item[1])
@@ -481,9 +481,9 @@ They are in essence heterogeneous hashmaps (the keys need not all be the same
 type, nor the values). Though type constraints may be added as desired!
 
 ```
-valid_map : Map<str, int> = { "apple": 1, "orange": 2 }
+valid_map : Map[str, int] = { "apple": 1, "orange": 2 }
 try {
-  invalid_map : Map<str, int> = { "apple": 1, "orange": false }
+  invalid_map : Map[str, int] = { "apple": 1, "orange": false }
 } catch {
   say "non-int value 'false' throws an error";
 }

@@ -1087,3 +1087,20 @@ def test_kw_args():
         ('PAREN_CLOSE', ')'),
     ]
     assert get_tokens(src) == expected_tokens
+
+
+def test_declare_generic_typed():
+    src = 'a : t[g] = [1]'
+    expected_tokens = [
+        ('NAME', 'a'),
+        ('COLON', ':'),
+        ('NAME', 't'),
+        ('SQUARE_OPEN', '['),
+        ('NAME', 'g'),
+        ('SQUARE_CLOSE', ']'),
+        ('ASSIGN', '='),
+        ('SQUARE_OPEN', '['),
+        ('INTEGER', '1'),
+        ('SQUARE_CLOSE', ']'),
+    ]
+    assert get_tokens(src) == expected_tokens

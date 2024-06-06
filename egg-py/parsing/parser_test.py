@@ -333,7 +333,7 @@ def test_declare_typed():
 
 
 def test_declare_generic_typed():
-    src = 'a : t<@g> = [1]'
+    src = 'a : t[g] = [1]'
     expected_ast = (
         'declare_typed_variable'
         '\n  a'

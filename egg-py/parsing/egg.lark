@@ -71,7 +71,7 @@ function_pointer: id_or_field "ELLIPSIS"
 # -- Type Constraints --
 
 ?type: id_or_field type_generic?
-type_generic: "ANGLE_OPEN" _type_generic_inner "ANGLE_CLOSE"
+type_generic: "SQUARE_OPEN" _type_generic_inner "SQUARE_CLOSE"
 _type_generic_inner: type ("COMMA" type)*
 
 
