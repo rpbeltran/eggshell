@@ -599,8 +599,3 @@ a < b > 3 == 4 != 5
 
 The result will be true iff all adjacent values uphold their connecting
 comparison.
-
-## Planned Language Features Currently Lacking Specification
-1) implicit lambdas
-2) comprehensions
-3) fn foo (*args, **kwargs){}
