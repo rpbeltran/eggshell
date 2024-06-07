@@ -3,6 +3,7 @@ import pathlib
 import lark
 
 from .lexer import EggLexerLark
+from .lowering import LoweringTransformer
 
 
 def get_grammar() -> str:
@@ -12,5 +13,8 @@ def get_grammar() -> str:
     return grammar_file.read_text('utf-8')
 
 
-def get_parser() -> lark.Lark:
-    return lark.Lark(get_grammar(), parser='lalr', lexer=EggLexerLark)
+def get_parser(lowering=True) -> lark.Lark:
+    grammar = get_grammar()
+    transformer = LoweringTransformer if lowering else None
+    return lark.Lark(
+        grammar, parser='lalr', lexer=EggLexerLark, transformer=transformer)
