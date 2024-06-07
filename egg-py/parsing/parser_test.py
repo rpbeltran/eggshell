@@ -1180,3 +1180,44 @@ def test_kw_args():
         '\n      identifier\te'
     )
     assert get_ast(src) == expected_ast
+
+
+def test_implicit_lambda():
+    src = '_'
+    expected_ast = (
+        'implicit_lambda_param'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_implicit_lambda_method():
+    src = '_.hello() + _.world()'
+    expected_ast = (
+        'addition'
+        '\n  function_call'
+        '\n    select_field'
+        '\n      implicit_lambda_param'
+        '\n      hello'
+        '\n    arg_list'
+        '\n  function_call'
+        '\n    select_field'
+        '\n      implicit_lambda_param'
+        '\n      world'
+        '\n    arg_list'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_implicit_lambda_piped():
+    src = 'a | _.sort() | b'
+    expected_ast = (
+        'pipeline'
+        '\n  exec\ta'
+        '\n  function_call'
+        '\n    select_field'
+        '\n      implicit_lambda_param'
+        '\n      sort'
+        '\n    arg_list'
+        '\n  exec\tb'
+    )
+    assert get_ast(src) == expected_ast

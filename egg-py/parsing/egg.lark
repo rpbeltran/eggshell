@@ -53,9 +53,10 @@ literal: QUOTED_STRING
 
 # -- Identifiers and Namespaces --
 
-?id_or_field: identifier | select_field
+?id_or_field: identifier | implicit_lambda_param | select_field
 select_field: selectable_atomic "DOT" NAME
 identifier: (NAME "NAMESPACE")*  NAME
+implicit_lambda_param: "IMPLICIT_LAMBDA_PARAM"
 
 
 # -- Function Pointers --
@@ -193,7 +194,7 @@ or_sequence:  atomic "SEQ_OR" atomic
 define_function : "FN" NAME param_list func_type? block
 
 param_list : "PAREN_OPEN" _param_list_inner "PAREN_CLOSE"
-_param_list_inner: (param ("COMMA" param)*) ("COMMA" star_param)? ("COMMA" kw_param)?
+_param_list_inner: param ("COMMA" param)* ("COMMA" star_param)? ("COMMA" kw_param)?
               | star_param ("COMMA" kw_param)?
               | kw_param?
 

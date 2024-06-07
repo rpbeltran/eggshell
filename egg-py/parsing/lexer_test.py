@@ -1104,3 +1104,43 @@ def test_declare_generic_typed():
         ('SQUARE_CLOSE', ']'),
     ]
     assert get_tokens(src) == expected_tokens
+
+
+def test_implicit_lambda():
+    src = '_'
+    expected_tokens = [
+        ('IMPLICIT_LAMBDA_PARAM', '_'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_implicit_lambda_method():
+    src = '_.hello() + _.world()'
+    expected_tokens = [
+        ('IMPLICIT_LAMBDA_PARAM', '_'),
+        ('DOT', '.'),
+        ('NAME', 'hello'),
+        ('PAREN_OPEN', '('),
+        ('PAREN_CLOSE', ')'),
+        ('PLUS', '+'),
+        ('IMPLICIT_LAMBDA_PARAM', '_'),
+        ('DOT', '.'),
+        ('NAME', 'world'),
+        ('PAREN_OPEN', '('),
+        ('PAREN_CLOSE', ')'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_implicit_lambda_piped():
+    src = 'a | _.sort | b'
+    expected_tokens = [
+        ('EXEC_ARG', 'a'),
+        ('PIPE', '|'),
+        ('IMPLICIT_LAMBDA_PARAM', '_'),
+        ('DOT', '.'),
+        ('NAME', 'sort'),
+        ('PIPE', '|'),
+        ('EXEC_ARG', 'b'),
+    ]
+    assert get_tokens(src) == expected_tokens

@@ -84,5 +84,5 @@ KEYWORDS = _make_max_munch_safe({
     'var': 'VAR',
     'const': 'CONST',
     'class': 'CLASS',
-    'with': 'WITH',
+    'with': 'WITH'
 })

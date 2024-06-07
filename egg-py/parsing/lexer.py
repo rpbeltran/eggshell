@@ -25,7 +25,7 @@ class StartNode(DFANode):
         elif c.isdigit() or (c == '-' and state.peek_one().isdigit()):
             state.token_start = state.head
             state.goto_node(NumberNode(), step_back=True)
-        elif c.isalpha() or c in './*+-%':
+        elif c.isalpha() or c in './*+-%_':
             state.token_start = state.head
             state.goto_node(UnquotedLiteral(), step_back=True)
         elif c == '#':
@@ -204,10 +204,10 @@ class UnquotedLiteral(DFANode):
         if (
             c == '.'
             and state.peek_one() != '.'
-            and predicted_token_type == 'NAME'
+            and predicted_token_type in ['NAME', 'IMPLICIT_LAMBDA_PARAM']
         ):
             if len(source) != 0:
-                yield state.get_token('NAME', source=source)
+                yield state.get_token(predicted_token_type, source=source)
             yield state.get_token('DOT', source='.')
             state.goto_node(StartNode(), step_back=False)
         elif c in '(:=':
@@ -216,7 +216,12 @@ class UnquotedLiteral(DFANode):
             else:
                 for i, name_part in enumerate(name_parts := source.split('.')):
                     if len(name_part) != 0:
-                        yield state.get_token('NAME', source=name_part)
+                        if name_part == '_':
+                            yield state.get_token(
+                                'IMPLICIT_LAMBDA_PARAM', source=name_part
+                            )
+                        else:
+                            yield state.get_token('NAME', source=name_part)
                     if i + 1 < len(name_parts):
                         yield state.get_token('DOT', source='.')
             state.goto_node(StartNode(), step_back=True)
@@ -241,6 +246,8 @@ class UnquotedLiteral(DFANode):
             return 'EXEC_ARG'
         if source in KEYWORDS:
             return KEYWORDS[source]
+        if source == '_' or source.startswith('_.'):
+            return 'IMPLICIT_LAMBDA_PARAM'
         if state.in_block() or state.get_prev() in tokens_before_names:
             return 'NAME'
         return 'EXEC_ARG'
