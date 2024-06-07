@@ -42,13 +42,17 @@
                   | async_expr
                   | literal
 
-literal: QUOTED_STRING
-       | INTEGER
-       | FLOAT
-       | TRUE
-       | FALSE
-
 ?paren_expr: "PAREN_OPEN" non_atomic "PAREN_CLOSE"
+
+?literal: string_literal
+       | integer_literal
+       | float_literal
+       | boolean_literal
+
+string_literal: QUOTED_STRING
+integer_literal: INTEGER
+float_literal: FLOAT
+boolean_literal: TRUE | FALSE
 
 
 # -- Identifiers and Namespaces --

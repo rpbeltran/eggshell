@@ -82,19 +82,19 @@ def test_comparison():
     src = '1 < 2 <= 3 == 3 != 4 >= 4 > 0'
     expected_ast = (
         'comparison_chain'
-        '\n  literal\t1'
+        '\n  integer_literal\t1'
         '\n  less_than'
-        '\n  literal\t2'
+        '\n  integer_literal\t2'
         '\n  less_than_or_equal_to'
-        '\n  literal\t3'
+        '\n  integer_literal\t3'
         '\n  equal_to'
-        '\n  literal\t3'
+        '\n  integer_literal\t3'
         '\n  not_equal_to'
-        '\n  literal\t4'
+        '\n  integer_literal\t4'
         '\n  greater_than_or_equal_to'
-        '\n  literal\t4'
+        '\n  integer_literal\t4'
         '\n  greater_than'
-        '\n  literal\t0'
+        '\n  integer_literal\t0'
     )
     assert get_ast(src) == expected_ast
 
@@ -106,12 +106,12 @@ def test_boolean_algebra():
         '\n  or_expr'
         '\n    or_expr'
         '\n      unary_not'
-        '\n        literal\ttrue'
+        '\n        boolean_literal\ttrue'
         '\n      and_expr'
-        '\n        literal\tfalse'
-        '\n        literal\ttrue'
-        '\n    literal\tfalse'
-        '\n  literal\ttrue'
+        '\n        boolean_literal\tfalse'
+        '\n        boolean_literal\ttrue'
+        '\n    boolean_literal\tfalse'
+        '\n  boolean_literal\ttrue'
     )
     assert get_ast(src) == expected_ast
 
@@ -124,19 +124,19 @@ def test_math_in_block():
         '\n    subtraction'
         '\n      addition'
         '\n        raise_power'
-        '\n          literal\t1'
+        '\n          integer_literal\t1'
         '\n          unary_negate'
-        '\n            literal\t3'
+        '\n            integer_literal\t3'
         '\n        multiply'
-        '\n          literal\t4'
-        '\n          literal\t5'
+        '\n          integer_literal\t4'
+        '\n          integer_literal\t5'
         '\n      modulus'
         '\n        divide'
         '\n          int_divide'
-        '\n            literal\t6'
-        '\n            literal\t7'
-        '\n          literal\t8'
-        '\n        literal\t9'
+        '\n            integer_literal\t6'
+        '\n            integer_literal\t7'
+        '\n          integer_literal\t8'
+        '\n        integer_literal\t9'
     )
     assert get_ast(src) == expected_ast
 
@@ -148,20 +148,20 @@ def test_math_top_level():
         '\n  subtraction'
         '\n    addition'
         '\n      raise_power'
-        '\n        literal\t1'
-        '\n        literal\t3'
+        '\n        integer_literal\t1'
+        '\n        integer_literal\t3'
         '\n      multiply'
-        '\n        literal\t4'
-        '\n        literal\t5'
+        '\n        integer_literal\t4'
+        '\n        integer_literal\t5'
         '\n    modulus'
         '\n      divide'
         '\n        int_divide'
-        '\n          literal\t6'
-        '\n          literal\t7'
-        '\n        literal\t8'
-        '\n      literal\t9'
+        '\n          integer_literal\t6'
+        '\n          integer_literal\t7'
+        '\n        integer_literal\t8'
+        '\n      integer_literal\t9'
         '\n  unary_negate'
-        '\n    literal\t1'
+        '\n    integer_literal\t1'
     )
     assert get_ast(src) == expected_ast
 
@@ -252,7 +252,7 @@ def test_curry():
         '\n    exec\ta'
         '\n    addition'
         '\n      identifier\tb'
-        '\n      literal\t1'
+        '\n      integer_literal\t1'
         '\n  exec\tc'
     )
     assert get_ast(src) == expected_ast
@@ -269,7 +269,7 @@ def test_function():
         '\n      a'
         '\n      identifier\tb'
         '\n    return_expr'
-        '\n      literal\t1'
+        '\n      integer_literal\t1'
     )
     assert get_ast(src) == expected_ast
 
@@ -290,7 +290,7 @@ def test_function_params():
         '\n      param_type'
         '\n        identifier\tint'
         '\n      param_default'
-        '\n        literal\t4'
+        '\n        integer_literal\t4'
         '\n  block'
         '\n    declare_untyped_variable'
         '\n      r'
@@ -317,7 +317,7 @@ def test_declare():
     expected_ast = (
         'declare_untyped_variable'
         '\n  a'
-        '\n  literal\t1'
+        '\n  integer_literal\t1'
     )
     assert get_ast(src) == expected_ast
 
@@ -328,7 +328,7 @@ def test_declare_typed():
         'declare_typed_variable'
         '\n  a'
         '\n  identifier\tint'
-        '\n  literal\t1'
+        '\n  integer_literal\t1'
     )
     assert get_ast(src) == expected_ast
 
@@ -343,7 +343,7 @@ def test_declare_generic_typed():
         '\n    type_generic'
         '\n      identifier\tg'
         '\n  list'
-        '\n    literal\t1'
+        '\n    integer_literal\t1'
     )
     assert get_ast(src) == expected_ast
 
@@ -362,13 +362,13 @@ def test_list():
     src = '[1,2,3+3,4,5]'
     expected_ast = (
         'list'
-        '\n  literal\t1'
-        '\n  literal\t2'
+        '\n  integer_literal\t1'
+        '\n  integer_literal\t2'
         '\n  addition'
-        '\n    literal\t3'
-        '\n    literal\t3'
-        '\n  literal\t4'
-        '\n  literal\t5'
+        '\n    integer_literal\t3'
+        '\n    integer_literal\t3'
+        '\n  integer_literal\t4'
+        '\n  integer_literal\t5'
     )
     assert get_ast(src) == expected_ast
 
@@ -448,7 +448,7 @@ def test_lambda_3_params():
         '\n        param_type'
         '\n          identifier\tint'
         '\n        param_default'
-        '\n          literal\t1'
+        '\n          integer_literal\t1'
         '\n    exec\tx'
     )
     assert get_ast(src) == expected_ast
@@ -575,9 +575,9 @@ def test_for_empty():
         'for'
         '\n  i'
         '\n  list'
-        '\n    literal\t1'
-        '\n    literal\t2'
-        '\n    literal\t3'
+        '\n    integer_literal\t1'
+        '\n    integer_literal\t2'
+        '\n    integer_literal\t3'
         '\n  block'
     )
     assert get_ast(src) == expected_ast
@@ -589,8 +589,8 @@ def test_for_labeled():
         'for'
         '\n  i'
         '\n  range'
-        '\n    literal\t0'
-        '\n    literal\t1'
+        '\n    integer_literal\t0'
+        '\n    integer_literal\t1'
         '\n  label\tx'
         '\n  block'
         '\n    identifier\ty'
@@ -604,10 +604,10 @@ def test_parenthesis():
         'addition'
         '\n  addition'
         '\n    addition'
-        '\n      literal\t1'
-        '\n      literal\t2'
-        '\n    literal\t3'
-        '\n  literal\t4'
+        '\n      integer_literal\t1'
+        '\n      integer_literal\t2'
+        '\n    integer_literal\t3'
+        '\n  integer_literal\t4'
     )
     assert get_ast(src) == expected_ast
 
@@ -622,7 +622,7 @@ def test_methods():
         '\n      a'
         '\n    b'
         '\n  arg_list'
-        '\n    literal\t1'
+        '\n    integer_literal\t1'
     )
     assert get_ast(src) == expected_ast
 
@@ -672,15 +672,15 @@ def test_map():
     expected_ast = (
         'map'
         '\n  map_entry'
-        '\n    literal\t1'
-        '\n    literal\t10'
+        '\n    integer_literal\t1'
+        '\n    integer_literal\t10'
         '\n  map_entry'
-        '\n    literal\tb'
-        '\n    literal\tb0'
+        '\n    string_literal\tb'
+        '\n    string_literal\tb0'
         '\n  map_entry'
         '\n    identifier\tl'
         '\n    list'
-        '\n      literal\t1'
+        '\n      integer_literal\t1'
         '\n  map_entry'
         '\n    identifier\tm'
         '\n    map'
@@ -849,11 +849,11 @@ def test_select_slice():
         'select_slice'
         '\n  identifier\ta'
         '\n  slice_start'
-        '\n    literal\t1'
+        '\n    integer_literal\t1'
         '\n  slice_end'
-        '\n    literal\t2'
+        '\n    integer_literal\t2'
         '\n  slice_jump'
-        '\n    literal\t3'
+        '\n    integer_literal\t3'
     )
     assert get_ast(src) == expected_ast
 
@@ -864,9 +864,9 @@ def test_select_slice2():
         'select_slice'
         '\n  identifier\ta'
         '\n  slice_start'
-        '\n    literal\t1'
+        '\n    integer_literal\t1'
         '\n  slice_end'
-        '\n    literal\t2'
+        '\n    integer_literal\t2'
     )
     assert get_ast(src) == expected_ast
 
@@ -892,7 +892,7 @@ def test_select_slice_rev():
         '\n  slice_end'
         '\n  slice_jump'
         '\n    unary_negate'
-        '\n      literal\t1'
+        '\n      integer_literal\t1'
     )
     assert get_ast(src) == expected_ast
 
@@ -904,7 +904,7 @@ def test_select_slice_end_only():
         '\n  identifier\ta'
         '\n  slice_start'
         '\n  slice_end'
-        '\n    literal\t1'
+        '\n    integer_literal\t1'
     )
     assert get_ast(src) == expected_ast
 
@@ -916,7 +916,7 @@ def test_select_slice_end_only2():
         '\n  identifier\ta'
         '\n  slice_start'
         '\n  slice_end'
-        '\n    literal\t1'
+        '\n    integer_literal\t1'
         '\n  slice_jump'
     )
     assert get_ast(src) == expected_ast
@@ -967,12 +967,12 @@ def test_list_comprehension():
     expected_ast = (
         'list_comprehension'
         '\n  raise_power'
-        '\n    literal\t10'
+        '\n    integer_literal\t10'
         '\n    identifier\tx'
         '\n  x'
         '\n  range'
-        '\n    literal\t0'
-        '\n    literal\t10'
+        '\n    integer_literal\t0'
+        '\n    integer_literal\t10'
     )
     assert get_ast(src) == expected_ast
 
@@ -984,13 +984,13 @@ def test_map_comprehension():
         '\n  unary_negate'
         '\n    identifier\tx'
         '\n  raise_power'
-        '\n    literal\t10'
+        '\n    integer_literal\t10'
         '\n    unary_negate'
         '\n      identifier\tx'
         '\n  x'
         '\n  range'
-        '\n    literal\t0'
-        '\n    literal\t10'
+        '\n    integer_literal\t0'
+        '\n    integer_literal\t10'
     )
     assert get_ast(src) == expected_ast
 

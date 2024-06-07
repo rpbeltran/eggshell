@@ -32,3 +32,34 @@ def test_always_loop_to_while():
         '\n  block'
     )
     assert get_ast(src) == expected_ast
+
+
+def test_integer_literal_to_int():
+    src = '1 + 2'
+    expected_ast = (
+        'addition'
+        '\n  1'
+        '\n  2'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_float_literal_to_float():
+    src = 'a := 3.14159'
+    expected_ast = (
+        'declare_untyped_variable'
+        '\n  a'
+        '\n  3.14159'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_boolean_literal_to():
+    src = 'true == false'
+    expected_ast = (
+        'comparison_chain'
+        '\n  True'
+        '\n  equal_to'
+        '\n  False'
+    )
+    assert get_ast(src) == expected_ast
