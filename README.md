@@ -107,23 +107,26 @@ charecters such as spaces, you will need to surround it in quotes
 `"hello world.py" a b c`
 ```
 
-Unlike in Bash however, implicit execution is not permitted within code blocks
-surrounded by curly braces, parenthesis, or square brackets. So inside of a
-function for example, we must use backticks. In these cases, `a := b` will
-assume b is the name of another variable, not a target to execute.
+Unlike in Bash however, implicit execution is not permitted:
+1. within code blocks surrounded by `{ ... }`
+2. between square brackets `[ ... ]`
+3. within parenthetical expressions `( ... )`
+4. following a numerical-arithmetic operator `+`, `-`, `*`, `/`, `//`, `**`, or `%`
+
+So within a function for example, we must use backticks.
+In these cases, `a := b` will  assume b is the name of another variable, not a
+target to execute.
 
 ```
 fn a() {
   hello := `echo hello`
-  print(hello)
+  say $ hello
 }
 ```
 
-When implicit execution is allowed at the top level, the following things are not allowed:
-1. implicit variable names in rhs, instead use `a := @b`
-2. arithmetic operators, unless surrounded in parentheses as in: `a (+) b (*) c`
+When implicit execution is allowed at the top level, variable names must be
+prefixed with a `@` symbol, as in: `a := @b`.
 
-These requirements are there in order to avoid ambiguities.
 
 **User defined functions and lambdas**
 
@@ -182,7 +185,7 @@ fn run_with_env(executable: str, **extra_env: map[str,str] ) {
 Functions can also receive arguments via "currying" syntax:
 
 ```
-add3 : Fn = \(a, b, c) -> @a (+) @b (+) @c
+add3 : Fn = \(a, b, c) -> @a + b + c
 
 plus_15 := add3 $ 10 $ 5
 
