@@ -15,7 +15,9 @@ INSTRUCTIONS: To add new test cases:
 
 
 # Maps new test cases from test-name to test-code
-new_test_cases: Dict[str, str] = {}
+new_test_cases: Dict[str, str] = {
+    "selection_lambda_shorthand": "a | ...b"
+}
 
 parser = get_parser()
 
@@ -61,5 +63,19 @@ def test_boolean_literal_to():
         '\n  True'
         '\n  equal_to'
         '\n  False'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_selection_lambda_shorthand():
+    src = 'a | ...b'
+    expected_ast = (
+        'pipeline'
+        '\n  exec\ta'
+        '\n  lambda_func'
+        '\n    _'
+        '\n    select_field'
+        '\n      identifier\t_'
+        '\n      b'
     )
     assert get_ast(src) == expected_ast
