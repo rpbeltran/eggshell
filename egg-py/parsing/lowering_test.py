@@ -108,3 +108,19 @@ def test_pipeline_to_implicit_lambda2():
         '\n  exec\tc'
     )
     assert get_ast(src) == expected_ast
+
+
+def test_unit_literals():
+    src = '10gb + 1.5mb'
+    expected_ast = (
+        'addition'
+        '\n  unit_literal'
+        '\n    unit_type\tsize'
+        '\n    unit\tgb'
+        '\n    10'
+        '\n  unit_literal'
+        '\n    unit_type\tsize'
+        '\n    unit\tmb'
+        '\n    1.5'
+    )
+    assert get_ast(src) == expected_ast

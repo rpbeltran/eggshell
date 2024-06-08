@@ -1,28 +1,64 @@
 from lark import Transformer, Tree
 
+from .lexer_constants import UNITS
+
 
 class LoweringTransformer(Transformer):
+    @staticmethod
     def boolean_literal(items):
         (literal,) = items
         return literal == 'true'
 
+    @staticmethod
     def integer_literal(items):
         (literal,) = items
         return int(literal)
 
+    @staticmethod
     def float_literal(items):
         (literal,) = items
         return float(literal)
 
+    @staticmethod
+    def unit_integer_literal(items):
+        (literal,) = items
+        (value, unit) = literal.split(':')
+        unit_type = UNITS[unit]
+        return Tree(
+            'unit_literal',
+            [
+                Tree('unit_type', [unit_type]),
+                Tree('unit', [unit]),
+                int(value),
+            ],
+        )
+
+    @staticmethod
+    def unit_float_literal(items):
+        (literal,) = items
+        (value, unit) = literal.split(':')
+        unit_type = UNITS[unit]
+        return Tree(
+            'unit_literal',
+            [
+                Tree('unit_type', [unit_type]),
+                Tree('unit', [unit]),
+                float(value),
+            ],
+        )
+
+    @staticmethod
     def always_loop(items):
         return Tree('while', [True, *items])
 
+    @staticmethod
     def selection_lambda_shorthand(items):
         (field,) = items
         identifier = Tree('identifier', ['@@shorthand_select@@'])
         selection = Tree('select_field', [identifier, field])
         return Tree('lambda_func', ['@@shorthand_select@@', selection])
 
+    @staticmethod
     def implicit_lambda_param(items):
         arg = '@@implicit_lambda@@'
         identifier = Tree('identifier', [arg])
