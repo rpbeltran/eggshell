@@ -5,7 +5,7 @@ Egg is a shell programming that tries to have some cake and eat some too.
 It tries to be terse and productive for use in a shell:
 ```
 # Sum the second column of a csv
-$ total := read my_file.csv | _.split.ea $ _.split(',')[1].int | _.map.sum
+$ total := cat my_file.csv | _.split.ea $ _.split(',')[1].int | _.map.sum
 ```
 
 While being sane and extendable for use in scripts:
@@ -198,6 +198,18 @@ take one argument.
 ```
 lines := cat my_file.csv | _.split()
 ```
+
+The scope of an implicit lambda is bounded by pipe `|` and curry `$` operators.
+This means that `a | foo(_.bar)` is equivalent to `a | \x -> foo(x.bar)`. If you
+need a lambda to be defined more narrowly you will need to define the lambda
+explicitly or restructure your expression. For example, if in the previous
+example you wanted the `_.a` to be a lambda argument to foo, you could rewrite
+the expression as `a | foo $ _.bar`.
+
+There is also a shorthand for just these sorts of lambdas which are used to
+access fields of an object as `...field_name`. Take for example the expression:
+`items.sort(key=\x -> x.date)`. We could also write this
+`items.sort(key=...date)`.
 
 Lambda functions can also have multiple lines using curly braces as below:
 

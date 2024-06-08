@@ -1144,3 +1144,16 @@ def test_implicit_lambda_piped():
         ('EXEC_ARG', 'b'),
     ]
     assert get_tokens(src) == expected_tokens
+
+
+def test_selection_lambda_shorthand():
+    src = 'utils::list_files | ...date'
+    expected_tokens = [
+        ('NAME', 'utils'),
+        ('NAMESPACE', '::'),
+        ('NAME', 'list_files'),
+        ('PIPE', '|'),
+        ('ELLIPSIS', '...'),
+        ('NAME', 'date'),
+    ]
+    assert get_tokens(src) == expected_tokens

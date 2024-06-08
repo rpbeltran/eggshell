@@ -1221,3 +1221,13 @@ def test_implicit_lambda_piped():
         '\n  exec\tb'
     )
     assert get_ast(src) == expected_ast
+
+
+def test_selection_lambda_shorthand():
+    src = 'get_files | ...date'
+    expected_ast = (
+        'pipeline'
+        '\n  exec\tget_files'
+        '\n  selection_lambda_shorthand\tdate'
+    )
+    assert get_ast(src) == expected_ast

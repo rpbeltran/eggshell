@@ -30,6 +30,7 @@
        | logical_sequence
        | do_block
        | selectable_atomic
+       | selection_lambda_shorthand
 
 ?selectable_atomic: id_or_field
                   | paren_expr
@@ -71,6 +72,11 @@ import: "IMPORT" QUOTED_STRING
 # -- Function Pointers --
 
 function_pointer: id_or_field "ELLIPSIS"
+
+
+# -- Selection Shorthand Lambdas --
+
+selection_lambda_shorthand: "ELLIPSIS" NAME ("DOT" NAME)*
 
 
 # -- Type Constraints --

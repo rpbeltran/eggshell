@@ -172,6 +172,7 @@ tokens_before_names = [
     'COLON',
     'CONTINUE',
     'DOT',
+    'ELLIPSIS',
     'FOR',
     'FN',
     'USE',
