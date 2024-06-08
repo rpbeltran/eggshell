@@ -162,8 +162,8 @@ append_to_file: pipeline "APPEND_FILE" expression
 
 # -- If / Else --
 
-if: "IF" atomic block elif* else?
-elif: "ELSE" "IF" atomic block | "ELIF" atomic block
+if: "IF" expression block elif* else?
+elif: "ELSE" "IF" expression block | "ELIF" atomic block
 else: "ELSE" block
 
 
