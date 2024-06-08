@@ -34,3 +34,6 @@ Changelog = "https://github.com/rpbeltran/eggshell/commits/main/"
 
 [project.scripts]
 egg-py = "egg:main"
+
+[tool.blue]
+force-exclude = ".+_test.py"
