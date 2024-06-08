@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 import argparse
 import pathlib
+import readline
+import sys
+
+import lark.exceptions
 
 import parsing
 from parsing.lexer import EggLexer
+from parsing.lexer_util import LexerError
 
 
 def get_args() -> argparse.Namespace:
@@ -62,10 +67,15 @@ def main():
                 continue
             if expression == 'exit':
                 break
-            if args.lex:
-                show_lex(expression)
-            else:
-                show_ast(expression)
+            try:
+                if args.lex:
+                    show_lex(expression)
+                else:
+                    show_ast(expression)
+            except LexerError as e:
+                print(e, file=sys.stderr)
+            except lark.exceptions.LarkError as e:
+                print(e, file=sys.stderr)
 
 
 if __name__ == '__main__':
