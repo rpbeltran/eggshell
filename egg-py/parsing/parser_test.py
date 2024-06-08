@@ -17,6 +17,12 @@ INSTRUCTIONS: To add new test cases:
 # Maps new test cases from test-name to test-code
 new_test_cases: Dict[str, str] = {}
 
+
+# Prevents accidentally committing data in new_test_cases
+def test_no_new_test_cases():
+    assert len(new_test_cases) == 0
+
+
 parser = get_parser(lowering=False)
 
 
