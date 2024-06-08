@@ -15,9 +15,7 @@ INSTRUCTIONS: To add new test cases:
 
 
 # Maps new test cases from test-name to test-code
-new_test_cases: Dict[str, str] = {
-    "selection_lambda_shorthand": "a | ...b"
-}
+new_test_cases: Dict[str, str] = {}
 
 parser = get_parser()
 
@@ -73,9 +71,40 @@ def test_selection_lambda_shorthand():
         'pipeline'
         '\n  exec\ta'
         '\n  lambda_func'
-        '\n    _'
+        '\n    @@shorthand_select@@'
         '\n    select_field'
-        '\n      identifier\t_'
+        '\n      identifier\t@@shorthand_select@@'
         '\n      b'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_pipeline_to_implicit_lambda():
+    src = 'a | _ | c'
+    expected_ast = (
+        'pipeline'
+        '\n  exec\ta'
+        '\n  poisonous_lambda_func'
+        '\n    @@implicit_lambda@@'
+        '\n    identifier\t@@implicit_lambda@@'
+        '\n  exec\tc'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_pipeline_to_implicit_lambda2():
+    src = 'a | _ | _ + _ | c'
+    expected_ast = (
+        'pipeline'
+        '\n  exec\ta'
+        '\n  poisonous_lambda_func'
+        '\n    @@implicit_lambda@@'
+        '\n    identifier\t@@implicit_lambda@@'
+        '\n  poisonous_lambda_func'
+        '\n    @@implicit_lambda_arg@@'
+        '\n    addition'
+        '\n      identifier\t@@implicit_lambda@@'
+        '\n      identifier\t@@implicit_lambda@@'
+        '\n  exec\tc'
     )
     assert get_ast(src) == expected_ast

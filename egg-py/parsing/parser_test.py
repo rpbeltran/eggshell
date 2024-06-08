@@ -1231,3 +1231,28 @@ def test_selection_lambda_shorthand():
         '\n  selection_lambda_shorthand\tdate'
     )
     assert get_ast(src) == expected_ast
+
+
+def test_pipeline_to_implicit_lambda():
+    src = 'a | _ | c'
+    expected_ast = (
+        'pipeline'
+        '\n  exec\ta'
+        '\n  implicit_lambda_param'
+        '\n  exec\tc'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_pipeline_to_implicit_lambda2():
+    src = 'a | _ | _ + _ | c'
+    expected_ast = (
+        'pipeline'
+        '\n  exec\ta'
+        '\n  implicit_lambda_param'
+        '\n  addition'
+        '\n    implicit_lambda_param'
+        '\n    implicit_lambda_param'
+        '\n  exec\tc'
+    )
+    assert get_ast(src) == expected_ast

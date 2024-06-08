@@ -170,7 +170,7 @@ else: "ELSE" block
 # -- Pipelines --
 
 exec: EXEC_ARG+
-?pipeline: atomic ("PIPE" atomic)+
+?pipeline: expression ("PIPE" expression)+
 
 
 # -- Code Blocks --
