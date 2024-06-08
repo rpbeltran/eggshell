@@ -592,17 +592,18 @@ These things should probably go somewhere other than the README at some point.
 
 From highest to lowest priority (higher priorities evaluate first):
 
-1. selection: `my_list[i]`
+1. selection: `my_list[i]`, `...field_name`, `func_name...`
 2. negation: `not`, `!`, `-` (unary)
-3. exponentiation: `^`
+3. exponentiation: `**`
 4. multiplication/division: `*`, `/`, `//`, `%`
 5. comparison: `!=`, `==`, `>`, `>=`, `<`, `<=`
 6. conjunction: `and` 
 7. disjunction: `or`, `xor`
-8. currying: `$`
-9. pipelining: `|`
-10. assignment: `:=`
-11. semicolon: `;`
+8. implicit lambda: `_`
+9. currying: `$`
+10. pipelining: `|`
+11. assignment: `:=`
+12. semicolon: `;`
 
 ### Chaining Comparisons
 
