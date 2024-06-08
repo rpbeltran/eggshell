@@ -2,7 +2,6 @@ def _make_max_munch_safe(d):
     return dict(sorted(d.items(), reverse=True))
 
 
-# TODO: Add POWER_ASSIGN and INT_DIVIDE_ASSIGN
 NON_ARITHMETIC_OPERATORS = _make_max_munch_safe(
     {
         '...': 'ELLIPSIS',
@@ -12,7 +11,12 @@ NON_ARITHMETIC_OPERATORS = _make_max_munch_safe(
         '*=': 'TIMES_ASSIGN',
         '/=': 'DIVIDE_ASSIGN',
         '%=': 'MOD_ASSIGN',
+        '**=': 'POWER_ASSIGN',
+        '//=': 'INT_DIV_ASSIGN',
+        '++=': 'CONCAT_ASSIGN',
         '|=': 'PIPE_ASSIGN',
+        '&&=': 'SEQ_AND_ASSIGN',
+        '||=': 'SEQ_OR_ASSIGN',
         '>>': 'APPEND_FILE',
         '\\': 'LAMBDA',
         '->': 'ARROW',
@@ -106,5 +110,13 @@ UNITS = _make_max_munch_safe(
         'gib': 'size',
         'tib': 'size',
         'pib': 'size',
+        'ns': 'time',
+        'us': 'time',
+        'ms': 'time',
+        'sec': 'time',
+        'min': 'time',
+        'hr': 'time',
+        'day': 'time',
+        'wk': 'time',
     }
 )

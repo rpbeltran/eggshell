@@ -110,6 +110,11 @@ declare_untyped_constant: "CONST" NAME "DECLARE" expression
              | divide_assign
              | mod_assign
              | pipe_assign
+             | power_assign
+             | int_div_assign
+             | concat_assign
+             | seq_and_assign
+             | seq_or_assign
 reassign: id_or_field "ASSIGN" expression
 plus_assign: id_or_field "PLUS_ASSIGN" expression
 minus_assign: id_or_field "MINUS_ASSIGN" expression
@@ -117,6 +122,11 @@ times_assign: id_or_field "TIMES_ASSIGN" expression
 divide_assign: id_or_field "DIVIDE_ASSIGN" expression
 mod_assign: id_or_field "MOD_ASSIGN" expression
 pipe_assign: id_or_field "PIPE_ASSIGN" expression
+power_assign: id_or_field "POWER_ASSIGN" expression
+int_div_assign: id_or_field "INT_DIV_ASSIGN" expression
+concat_assign: id_or_field "CONCAT_ASSIGN" expression
+seq_and_assign: id_or_field "SEQ_AND_ASSIGN" expression
+seq_or_assign: id_or_field "SEQ_OR_ASSIGN" expression
 
 
 # -- Classes --

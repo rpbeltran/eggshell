@@ -1314,3 +1314,113 @@ def test_unit_pib():
         ('UNIT_FLOAT', '4.5:pib'),
     ]
     assert get_tokens(src) == expected_tokens
+
+
+def test_plus_assignment():
+    src = '@a += @b'
+    expected_tokens = [
+        ('NAME', 'a'),
+        ('PLUS_ASSIGN', '+='),
+        ('NAME', 'b'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_minus_assignment():
+    src = '@a -= @b'
+    expected_tokens = [
+        ('NAME', 'a'),
+        ('MINUS_ASSIGN', '-='),
+        ('NAME', 'b'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_times_assignment():
+    src = '@a *= @b'
+    expected_tokens = [
+        ('NAME', 'a'),
+        ('TIMES_ASSIGN', '*='),
+        ('NAME', 'b'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_divide_assignment():
+    src = '@a /= @b'
+    expected_tokens = [
+        ('NAME', 'a'),
+        ('DIVIDE_ASSIGN', '/='),
+        ('NAME', 'b'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_mod_assignment():
+    src = '@a %= @b'
+    expected_tokens = [
+        ('NAME', 'a'),
+        ('MOD_ASSIGN', '%='),
+        ('NAME', 'b'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_power_assignment():
+    src = '@a **= @b'
+    expected_tokens = [
+        ('NAME', 'a'),
+        ('POWER_ASSIGN', '**='),
+        ('NAME', 'b'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_int_div_assignment():
+    src = '@a //= @b'
+    expected_tokens = [
+        ('NAME', 'a'),
+        ('INT_DIV_ASSIGN', '//='),
+        ('NAME', 'b'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_concat_assignment():
+    src = '@a ++= @b'
+    expected_tokens = [
+        ('NAME', 'a'),
+        ('CONCAT_ASSIGN', '++='),
+        ('NAME', 'b'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_seq_and_assignment():
+    src = '@a &&= @b'
+    expected_tokens = [
+        ('NAME', 'a'),
+        ('SEQ_AND_ASSIGN', '&&='),
+        ('NAME', 'b'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_seq_or_assignment():
+    src = '@a ||= @b'
+    expected_tokens = [
+        ('NAME', 'a'),
+        ('SEQ_OR_ASSIGN', '||='),
+        ('NAME', 'b'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_pipe_assignment():
+    src = '@a |= @b'
+    expected_tokens = [
+        ('NAME', 'a'),
+        ('PIPE_ASSIGN', '|='),
+        ('NAME', 'b'),
+    ]
+    assert get_tokens(src) == expected_tokens

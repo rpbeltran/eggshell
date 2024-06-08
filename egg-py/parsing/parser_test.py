@@ -1385,3 +1385,113 @@ def test_unit_pib():
         '\n  unit_float_literal\t4.5:pib'
     )
     assert get_ast(src) == expected_ast
+
+
+def test_plus_assignment():
+    src = '@a += @b'
+    expected_ast = (
+        'plus_assign'
+        '\n  identifier\ta'
+        '\n  identifier\tb'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_minus_assignment():
+    src = '@a -= @b'
+    expected_ast = (
+        'minus_assign'
+        '\n  identifier\ta'
+        '\n  identifier\tb'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_times_assignment():
+    src = '@a *= @b'
+    expected_ast = (
+        'times_assign'
+        '\n  identifier\ta'
+        '\n  identifier\tb'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_divide_assignment():
+    src = '@a /= @b'
+    expected_ast = (
+        'divide_assign'
+        '\n  identifier\ta'
+        '\n  identifier\tb'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_mod_assignment():
+    src = '@a %= @b'
+    expected_ast = (
+        'mod_assign'
+        '\n  identifier\ta'
+        '\n  identifier\tb'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_power_assignment():
+    src = '@a **= @b'
+    expected_ast = (
+        'power_assign'
+        '\n  identifier\ta'
+        '\n  identifier\tb'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_int_div_assignment():
+    src = '@a //= @b'
+    expected_ast = (
+        'int_div_assign'
+        '\n  identifier\ta'
+        '\n  identifier\tb'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_concat_assignment():
+    src = '@a ++= @b'
+    expected_ast = (
+        'concat_assign'
+        '\n  identifier\ta'
+        '\n  identifier\tb'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_seq_and_assignment():
+    src = '@a &&= @b'
+    expected_ast = (
+        'seq_and_assign'
+        '\n  identifier\ta'
+        '\n  identifier\tb'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_seq_or_assignment():
+    src = '@a ||= @b'
+    expected_ast = (
+        'seq_or_assign'
+        '\n  identifier\ta'
+        '\n  identifier\tb'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_pipe_assignment():
+    src = '@a |= @b'
+    expected_ast = (
+        'pipe_assign'
+        '\n  identifier\ta'
+        '\n  identifier\tb'
+    )
+    assert get_ast(src) == expected_ast
