@@ -48,11 +48,15 @@
 ?literal: string_literal
        | integer_literal
        | float_literal
+       | unit_integer_literal
+       | unit_float_literal
        | boolean_literal
 
 string_literal: QUOTED_STRING
 integer_literal: INTEGER
 float_literal: FLOAT
+unit_integer_literal: UNIT_INTEGER
+unit_float_literal: UNIT_FLOAT
 boolean_literal: TRUE | FALSE
 
 
@@ -336,9 +340,11 @@ slice_jump: expression?
 # -- Lexer Declarations --
 
 %declare EXEC_ARG
-%declare FLOAT
 %declare NAME
 %declare INTEGER
+%declare FLOAT
+%declare UNIT_INTEGER
+%declare UNIT_FLOAT
 %declare QUOTED_STRING
 %declare TRUE
 %declare FALSE

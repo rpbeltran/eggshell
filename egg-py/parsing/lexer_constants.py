@@ -86,3 +86,18 @@ KEYWORDS = _make_max_munch_safe({
     'class': 'CLASS',
     'with': 'WITH'
 })
+
+UNITS = _make_max_munch_safe({
+    'b': "size",
+    'kb': "size",
+    'mb': "size",
+    'gb': "size",
+    'tb': "size",
+    'pb': "size",
+    'kib': "size",
+    'Kib': "size",
+    'mib': "size",
+    'gib': "size",
+    'tib': "size",
+    'pib': "size",
+})

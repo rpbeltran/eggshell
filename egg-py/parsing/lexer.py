@@ -7,6 +7,7 @@ from .lexer_constants import (
     ALL_OPERATOR_STARTS,
     NON_ARITHMETIC_OPERATORS,
     NON_ARITHMETIC_OPERATOR_STARTS,
+    UNITS,
 )
 from .lexer_util import DFANode, LexerError, LexerState, Token
 
@@ -257,6 +258,7 @@ class UnquotedLiteral(DFANode):
 class NumberNode(DFANode):
     def __init__(self):
         self.has_decimal = False
+        self.first_char = True
 
     def step(self, c: str, state: LexerState) -> Iterator[Token]:
         if c == '.':
@@ -268,10 +270,35 @@ class NumberNode(DFANode):
                 raise LexerError('Read unexpected char', state)
             else:
                 self.has_decimal = True
-        elif not (c.isdigit() or c == '-'):
+        elif not (c.isdigit() or self.first_char and c == '-'):
             token_type = self.get_token_type(state)
-            yield state.get_token(token_type, inclusive=False)
+            if (
+                token_type != 'EXEC_ARG'
+                and (unit := self.get_units(c, state)) is not None
+            ):
+                token_type = f'UNIT_{token_type}'
+                source = state.get_token_source(inclusive=False)
+                yield Token(token_type, f'{source}:{unit}')
+                state.head += len(unit)
+            else:
+                yield state.get_token(token_type, inclusive=False)
             state.goto_node(StartNode(), step_back=True)
+        self.first_char = False
+
+    def get_units(self, c: str, state: LexerState) -> Optional[str]:
+        if not c.isalpha():
+            return None
+        unit = c.lower()
+        for c_next in state.peek():
+            if not c_next.isalpha():
+                break
+            unit += c_next.lower()
+        if len(unit):
+            if unit not in UNITS:
+                raise LexerError(
+                    f'Number literal has unknown unit: {unit}', state
+                )
+            return unit
 
     def get_token_type(self, state: LexerState) -> str:
         if state.get_prev() == 'EXEC_ARG':

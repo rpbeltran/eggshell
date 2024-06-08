@@ -1158,3 +1158,153 @@ def test_selection_lambda_shorthand():
         ('NAME', 'date'),
     ]
     assert get_tokens(src) == expected_tokens
+
+
+def test_unit_b():
+    src = '45b + 4.5b'
+    expected_tokens = [
+        ('UNIT_INTEGER', '45:b'),
+        ('PLUS', '+'),
+        ('UNIT_FLOAT', '4.5:b'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_unit_B():
+    src = '45B + 4.5B'
+    expected_tokens = [
+        ('UNIT_INTEGER', '45:b'),
+        ('PLUS', '+'),
+        ('UNIT_FLOAT', '4.5:b'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_unit_kb():
+    src = '45kb + 4.5kb'
+    expected_tokens = [
+        ('UNIT_INTEGER', '45:kb'),
+        ('PLUS', '+'),
+        ('UNIT_FLOAT', '4.5:kb'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_unit_Kb():
+    src = '45Kb + 4.5Kb'
+    expected_tokens = [
+        ('UNIT_INTEGER', '45:kb'),
+        ('PLUS', '+'),
+        ('UNIT_FLOAT', '4.5:kb'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_unit_KB():
+    src = '45Kb + 4.5Kb'
+    expected_tokens = [
+        ('UNIT_INTEGER', '45:kb'),
+        ('PLUS', '+'),
+        ('UNIT_FLOAT', '4.5:kb'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_unit_kB():
+    src = '45Kb + 4.5Kb'
+    expected_tokens = [
+        ('UNIT_INTEGER', '45:kb'),
+        ('PLUS', '+'),
+        ('UNIT_FLOAT', '4.5:kb'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_unit_mb():
+    src = '45mb + 4.5mb'
+    expected_tokens = [
+        ('UNIT_INTEGER', '45:mb'),
+        ('PLUS', '+'),
+        ('UNIT_FLOAT', '4.5:mb'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_unit_gb():
+    src = '45gb + 4.5gb'
+    expected_tokens = [
+        ('UNIT_INTEGER', '45:gb'),
+        ('PLUS', '+'),
+        ('UNIT_FLOAT', '4.5:gb'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_unit_tb():
+    src = '45tb + 4.5tb'
+    expected_tokens = [
+        ('UNIT_INTEGER', '45:tb'),
+        ('PLUS', '+'),
+        ('UNIT_FLOAT', '4.5:tb'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_unit_pb():
+    src = '45pb + 4.5pb'
+    expected_tokens = [
+        ('UNIT_INTEGER', '45:pb'),
+        ('PLUS', '+'),
+        ('UNIT_FLOAT', '4.5:pb'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_unit_kib():
+    src = '45kib + 4.5kib'
+    expected_tokens = [
+        ('UNIT_INTEGER', '45:kib'),
+        ('PLUS', '+'),
+        ('UNIT_FLOAT', '4.5:kib'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_unit_mib():
+    src = '45mib + 4.5mib'
+    expected_tokens = [
+        ('UNIT_INTEGER', '45:mib'),
+        ('PLUS', '+'),
+        ('UNIT_FLOAT', '4.5:mib'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_unit_gib():
+    src = '45gib + 4.5gib'
+    expected_tokens = [
+        ('UNIT_INTEGER', '45:gib'),
+        ('PLUS', '+'),
+        ('UNIT_FLOAT', '4.5:gib'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_unit_tib():
+    src = '45tib + 4.5tib'
+    expected_tokens = [
+        ('UNIT_INTEGER', '45:tib'),
+        ('PLUS', '+'),
+        ('UNIT_FLOAT', '4.5:tib'),
+    ]
+    assert get_tokens(src) == expected_tokens
+
+
+def test_unit_pib():
+    src = '45pib + 4.5pib'
+    expected_tokens = [
+        ('UNIT_INTEGER', '45:pib'),
+        ('PLUS', '+'),
+        ('UNIT_FLOAT', '4.5:pib'),
+    ]
+    assert get_tokens(src) == expected_tokens

@@ -1269,3 +1269,113 @@ def test_if_no_paren():
         '\n  block'
     )
     assert get_ast(src) == expected_ast
+
+
+def test_unit_b():
+    src = '45b + 4.5b'
+    expected_ast = (
+        'addition'
+        '\n  unit_integer_literal\t45:b'
+        '\n  unit_float_literal\t4.5:b'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_unit_kb():
+    src = '45kb + 4.5kb'
+    expected_ast = (
+        'addition'
+        '\n  unit_integer_literal\t45:kb'
+        '\n  unit_float_literal\t4.5:kb'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_unit_mb():
+    src = '45mb + 4.5mb'
+    expected_ast = (
+        'addition'
+        '\n  unit_integer_literal\t45:mb'
+        '\n  unit_float_literal\t4.5:mb'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_unit_gb():
+    src = '45gb + 4.5gb'
+    expected_ast = (
+        'addition'
+        '\n  unit_integer_literal\t45:gb'
+        '\n  unit_float_literal\t4.5:gb'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_unit_tb():
+    src = '45tb + 4.5tb'
+    expected_ast = (
+        'addition'
+        '\n  unit_integer_literal\t45:tb'
+        '\n  unit_float_literal\t4.5:tb'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_unit_pb():
+    src = '45pb + 4.5pb'
+    expected_ast = (
+        'addition'
+        '\n  unit_integer_literal\t45:pb'
+        '\n  unit_float_literal\t4.5:pb'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_unit_kib():
+    src = '45kib + 4.5kib'
+    expected_ast = (
+        'addition'
+        '\n  unit_integer_literal\t45:kib'
+        '\n  unit_float_literal\t4.5:kib'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_unit_mib():
+    src = '45mib + 4.5mib'
+    expected_ast = (
+        'addition'
+        '\n  unit_integer_literal\t45:mib'
+        '\n  unit_float_literal\t4.5:mib'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_unit_gib():
+    src = '45gib + 4.5gib'
+    expected_ast = (
+        'addition'
+        '\n  unit_integer_literal\t45:gib'
+        '\n  unit_float_literal\t4.5:gib'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_unit_tib():
+    src = '45tib + 4.5tib'
+    expected_ast = (
+        'addition'
+        '\n  unit_integer_literal\t45:tib'
+        '\n  unit_float_literal\t4.5:tib'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_unit_pib():
+    src = '45pib + 4.5pib'
+    expected_ast = (
+        'addition'
+        '\n  unit_integer_literal\t45:pib'
+        '\n  unit_float_literal\t4.5:pib'
+    )
+    assert get_ast(src) == expected_ast
