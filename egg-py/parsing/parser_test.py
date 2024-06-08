@@ -636,7 +636,7 @@ def test_import():
 
 
 def test_class():
-    src = 'class thing {a: b, c, d\nfn my_method(){}}'
+    src = 'class thing {a: b\n c; d\nfn my_method(){}}'
     expected_ast = (
         'define_class'
         '\n  thing'

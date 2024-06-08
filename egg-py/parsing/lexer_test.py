@@ -467,7 +467,7 @@ def test_import():
 
 
 def test_class():
-    egg_code = 'class Thing {a: Int = 1, b: Int = 2 fn c(){}}'
+    egg_code = 'class Thing {a: Int = 1\n b: Int = 2; fn c(){}}'
     expected_tokens = [
         ('CLASS', 'class'),
         ('NAME', 'Thing'),
@@ -477,12 +477,13 @@ def test_class():
         ('NAME', 'Int'),
         ('ASSIGN', '='),
         ('INTEGER', '1'),
-        ('COMMA', ','),
+        ('SEMICOLON', ''),
         ('NAME', 'b'),
         ('COLON', ':'),
         ('NAME', 'Int'),
         ('ASSIGN', '='),
         ('INTEGER', '2'),
+        ('SEMICOLON', ';'),
         ('FN', 'fn'),
         ('NAME', 'c'),
         ('PAREN_OPEN', '('),

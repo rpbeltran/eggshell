@@ -120,7 +120,7 @@ pipe_assign: id_or_field "PIPE_ASSIGN" expression
 define_class: "CLASS" NAME "CURLY_OPEN" _class_inner "CURLY_CLOSE"
 define_derived_class: "CLASS" NAME "COLON" id_or_field "CURLY_OPEN" _class_inner "CURLY_CLOSE"
 _class_inner: "SEMICOLON"* class_fields "SEMICOLON"* class_methods
-class_fields: ((class_field "COMMA" "SEMICOLON"*)*  class_field)?
+class_fields: (class_field "SEMICOLON"+)*
 ?class_field: class_field_typed | class_field_untyped
 class_field_typed: NAME "COLON" type ("ASSIGN" expression)?
 class_field_untyped: NAME ("DECLARE" expression)?

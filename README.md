@@ -12,8 +12,8 @@ While being sane and extendable for use in scripts:
 
 ```
 class Item {
-    name: Str,
-    price: Float,
+    name: Str
+    price: Float
     quantity: Int
 
     fn total (): Float {
@@ -421,8 +421,8 @@ todo: write more here
 
 ```
 class Item {
-  name: Str,
-  price: Float,
+  name: Str
+  price: Float
   quantity: Int = 1
 
   fn total(): Float {
