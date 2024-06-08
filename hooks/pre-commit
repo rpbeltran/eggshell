@@ -1,0 +1,41 @@
+#!/bin/sh
+
+# Install this hook in git/hooks to run before each git commit call
+# I suggest doing this as a symlink to keep changes synced via git.
+
+set -eu
+exec < /dev/tty
+
+
+offer_death() {
+  read -r -p "Commit changes anyways? [y/N] " response
+  case "$response" in
+      [yY][eE][sS]|[yY])
+        echo "Ok lolz sure."
+        ;;
+      *)
+        echo "No shame."
+        exit 1
+        ;;
+  esac
+}
+
+
+offer_reformatting() {
+  blue --diff egg-py/**.py
+  read -r -p "Apply reformatting? [y/N] " response
+  case "$response" in
+      [yY][eE][sS]|[yY])
+        blue egg-py
+        echo "Fixed formatting automatically. Now try again!"
+        exit 1
+        ;;
+      *)
+        offer_death
+        ;;
+  esac
+}
+
+
+pytest egg-py || offer_death
+blue --check egg-py || offer_reformatting
