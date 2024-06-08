@@ -583,6 +583,42 @@ block only.
 1. Lists
 2. Hashmaps
 
+**Types with Units**
+
+In egg, integers and floats can be given units. Supported unit types include:
+1. `size`: for memory and files sizes
+2. `time`: for elapsed or wall clock time
+
+The syntax for this looks like:
+```
+memory_used: size = 1.5Gb + 2.7mb + 4b
+time_elapsed: time = 1.5h + 30m + 12s. 
+```
+
+Note that units are parsed case-insensitive.
+
+Supported `size` units:
+* b
+* kb
+* mb
+* gb
+* tb
+* pb
+* kib
+* mib
+* gib
+* tib
+* pib
+
+supported `time` units:
+* ns
+* us
+* ms
+* sec
+* min
+* hr
+* day
+* wk
 
 ## Random Details
 

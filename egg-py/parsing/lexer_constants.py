@@ -105,7 +105,6 @@ UNITS = _make_max_munch_safe(
         'tb': 'size',
         'pb': 'size',
         'kib': 'size',
-        'Kib': 'size',
         'mib': 'size',
         'gib': 'size',
         'tib': 'size',
