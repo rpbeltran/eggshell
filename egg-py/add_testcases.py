@@ -15,7 +15,8 @@ lowering_test_path = f'{here}/parsing/lowering_test.py'
 
 def make_lexer_test_code(test_name, src) -> str:
     token_string = '\n'.join(
-        f'        {tok},' for tok in lexer_test.get_tokens(src))
+        f'        {tok},' for tok in lexer_test.get_tokens(src)
+    )
     return f"""\n
 def test_{test_name}():
     src = {repr(src)}
@@ -26,10 +27,9 @@ def test_{test_name}():
 def make_parser_test_code(test_name, src, ast) -> str:
     ast_lines = ast.split('\n')
     expected_ast_inner = '\n'.join(
-        ' '*8 + repr(f'\n{line}' if i != 0 else line)
+        ' ' * 8 + repr(f'\n{line}' if i != 0 else line)
         for i, line in enumerate(ast_lines)
     )
-
     return f"""\n
 def test_{test_name}():
     src = {repr(src)}
@@ -53,4 +53,5 @@ def main():
             test_file.write(make_parser_test_code(name, code, ast))
 
 
-main()
+if __name__ == '__main__':
+    main()
