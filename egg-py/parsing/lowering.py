@@ -48,6 +48,71 @@ class LoweringTransformer(Transformer):
         )
 
     @staticmethod
+    def plus_assign(items):
+        return LoweringTransformer.lower_assignment_operator('addition', items)
+
+    @staticmethod
+    def minus_assign(items):
+        return LoweringTransformer.lower_assignment_operator(
+            'subtraction', items
+        )
+
+    @staticmethod
+    def times_assign(items):
+        return LoweringTransformer.lower_assignment_operator('multiply', items)
+
+    @staticmethod
+    def divide_assign(items):
+        return LoweringTransformer.lower_assignment_operator('divide', items)
+
+    @staticmethod
+    def int_div_assign(items):
+        return LoweringTransformer.lower_assignment_operator(
+            'int_divide', items
+        )
+
+    @staticmethod
+    def mod_assign(items):
+        return LoweringTransformer.lower_assignment_operator('modulus', items)
+
+    @staticmethod
+    def power_assign(items):
+        return LoweringTransformer.lower_assignment_operator(
+            'raise_power', items
+        )
+
+    @staticmethod
+    def pipe_assign(items):
+        return LoweringTransformer.lower_assignment_operator('pipeline', items)
+
+    @staticmethod
+    def concat_assign(items):
+        return LoweringTransformer.lower_assignment_operator(
+            'concatenate', items
+        )
+
+    @staticmethod
+    def seq_and_assign(items):
+        (a, b) = items
+        return Tree(
+            'reassign',
+            [a, Tree('logical_sequence', [Tree('and_sequence', [a, b])])],
+        )
+
+    @staticmethod
+    def seq_or_assign(items):
+        (a, b) = items
+        return Tree(
+            'reassign',
+            [a, Tree('logical_sequence', [Tree('or_sequence', [a, b])])],
+        )
+
+    @staticmethod
+    def lower_assignment_operator(operator, items):
+        (a, b) = items
+        return Tree('reassign', [a, Tree(operator, [a, b])])
+
+    @staticmethod
     def always_loop(items):
         return Tree('while', [True, *items])
 

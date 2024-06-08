@@ -130,3 +130,69 @@ def test_unit_literals():
         '\n    1.5'
     )
     assert get_ast(src) == expected_ast
+
+
+def test_plus_assignment():
+    src = '@a += @b'
+    equivalent_src = '@a = @a + @b'
+    assert get_ast(src) == get_ast(equivalent_src)
+
+
+def test_minus_assignment():
+    src = '@a -= @b'
+    equivalent_src = '@a = @a - @b'
+    assert get_ast(src) == get_ast(equivalent_src)
+
+
+def test_times_assignment():
+    src = '@a *= @b'
+    equivalent_src = '@a = @a * @b'
+    assert get_ast(src) == get_ast(equivalent_src)
+
+
+def test_divide_assignment():
+    src = '@a /= @b'
+    equivalent_src = '@a = @a / @b'
+    assert get_ast(src) == get_ast(equivalent_src)
+
+
+def test_mod_assignment():
+    src = '@a %= @b'
+    equivalent_src = '@a = @a % @b'
+    assert get_ast(src) == get_ast(equivalent_src)
+
+
+def test_power_assignment():
+    src = '@a **= @b'
+    equivalent_src ='@a = @a ** @b'
+    assert get_ast(src) == get_ast(equivalent_src)
+
+
+def test_int_div_assignment():
+    src = '@a //= @b'
+    equivalent_src ='@a = @a // @b'
+    assert get_ast(src) == get_ast(equivalent_src)
+
+
+def test_concat_assignment():
+    src = '@a ++= @b'
+    equivalent_src ='@a = @a ++ @b'
+    assert get_ast(src) == get_ast(equivalent_src)
+
+
+def test_seq_and_assignment():
+    src = '@a &&= @b'
+    equivalent_src ='@a = @a && @b'
+    assert get_ast(src) == get_ast(equivalent_src)
+
+
+def test_seq_or_assignment():
+    src = '@a ||= @b'
+    equivalent_src ='@a = @a || @b'
+    assert get_ast(src) == get_ast(equivalent_src)
+
+
+def test_pipe_assignment():
+    src = '@a |= @b'
+    equivalent_src = '@a = (@a | @b)'
+    assert get_ast(src) == get_ast(equivalent_src)
