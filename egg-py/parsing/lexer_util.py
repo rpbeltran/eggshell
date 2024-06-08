@@ -24,8 +24,9 @@ class LexerError(Exception):
 
     def __str__(self):
         return (
-            f"{self.problem} '{self.head}' in position {self.position}.\n"
-            f'\tDFA State: {self.dfa_state}.\n'
+            f"On character '{self.head}' in position {self.position}:\n"
+            f'\t{self.problem}\n'
+            f'\tCurrent DFA State: {self.dfa_state}.\n'
         )
 
 
