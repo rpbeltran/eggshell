@@ -279,6 +279,17 @@ try {
 }
 ```
 
+
+**Assert**
+
+We can also add assertions which will raise an error if the expression is not
+truthy.
+
+```
+assert 1 == 7 # This will create an error
+```
+
+
 **Do Blocks**
 
 Consider the bash code `(a && b && c) || (x; y; z)` and

@@ -66,6 +66,7 @@ ALL_OPERATOR_STARTS = {op[0] for op in ALL_OPERATORS}
 
 KEYWORDS = _make_max_munch_safe(
     {
+        'assert': 'ASSERT',
         'fn': 'FN',
         'for': 'FOR',
         'while': 'WHILE',

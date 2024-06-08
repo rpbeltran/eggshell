@@ -18,6 +18,7 @@
                      | break_expr
                      | return_expr
                      | import
+                     | assertion
 
 ?non_atomic: pipeline | expression | declaration | reassignment
 
@@ -212,6 +213,7 @@ logical_sequence: and_sequence | or_sequence
 and_sequence: atomic "SEQ_AND" atomic
 or_sequence:  atomic "SEQ_OR" atomic
 
+assertion: "ASSERT" expression
 
 # -- Functions --
 

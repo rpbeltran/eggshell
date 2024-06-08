@@ -1424,3 +1424,16 @@ def test_pipe_assignment():
         ('NAME', 'b'),
     ]
     assert get_tokens(src) == expected_tokens
+
+
+def test_assertion():
+    src = 'assert 1 == one()'
+    expected_tokens = [
+        ('ASSERT', 'assert'),
+        ('INTEGER', '1'),
+        ('EQUALS', '=='),
+        ('NAME', 'one'),
+        ('PAREN_OPEN', '('),
+        ('PAREN_CLOSE', ')'),
+    ]
+    assert get_tokens(src) == expected_tokens

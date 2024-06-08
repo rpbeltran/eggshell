@@ -1495,3 +1495,17 @@ def test_pipe_assignment():
         '\n  identifier\tb'
     )
     assert get_ast(src) == expected_ast
+
+
+def test_assertion():
+    src = 'assert 1 == one()'
+    expected_ast = (
+        'assertion'
+        '\n  comparison_chain'
+        '\n    integer_literal\t1'
+        '\n    equal_to'
+        '\n    function_call'
+        '\n      identifier\tone'
+        '\n      arg_list'
+    )
+    assert get_ast(src) == expected_ast
