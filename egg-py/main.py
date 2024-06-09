@@ -10,16 +10,19 @@ import parsing
 from parsing.lexer import EggLexer
 from parsing.lexer_util import LexerError
 
+import backend
+from backend.py_generator import PythonGenerator
+
 
 def get_args() -> argparse.Namespace:
     arg_parser = argparse.ArgumentParser('egg-py')
 
-    """
     arg_parser.add_argument(
-        "-a", "--ast",
-        help="Construct an ast from input instead of executing.",
-        action="store_true")
-    """  # todo: enable once something else is even supported
+        '-a',
+        '--ast',
+        help='Construct an ast from input instead of executing.',
+        action='store_true',
+    )
 
     arg_parser.add_argument(
         '-l',
@@ -37,6 +40,13 @@ def get_args() -> argparse.Namespace:
     )
 
     return arg_parser.parse_args()
+
+
+def show_python(egg_code: str):
+    pygen = PythonGenerator()   # todo: don't reinitialize this every time
+    ast = parsing.EggParser.parse(egg_code)
+    py = pygen.transform(ast)
+    print(py)
 
 
 def show_ast(egg_code: str):
@@ -68,10 +78,12 @@ def main():
             if expression == 'exit':
                 break
             try:
-                if args.lex:
+                if args.ast:
+                    show_ast(expression)
+                elif args.lex:
                     show_lex(expression)
                 else:
-                    show_ast(expression)
+                    show_python(expression)
             except LexerError as e:
                 print(e, file=sys.stderr)
             except lark.exceptions.LarkError as e:

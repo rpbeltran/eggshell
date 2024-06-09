@@ -5,7 +5,7 @@ Egg is a shell programming that tries to have some cake and eat some too.
 It tries to be terse and productive for use in a shell:
 ```
 # Sum the second column of a csv
-$ total := cat my_file.csv | _.split.ea $ _.split(',')[1].int | _.map.sum
+$ total := cat my_file.csv | _.split.map $ _.split(',')[1].int | _.sum
 ```
 
 While being sane and extendable for use in scripts:
