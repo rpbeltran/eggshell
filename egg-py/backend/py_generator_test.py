@@ -1,6 +1,6 @@
 from typing import Dict
 
-from parsing.parser import get_parser
+from frontend.parser import get_parser
 from .py_generator import *
 
 """

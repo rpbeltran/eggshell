@@ -2,9 +2,9 @@
 
 import os
 
-import parsing.lexer_test as lexer_test
-import parsing.parser_test as parser_test
-import parsing.lowering_test as lowering_test
+import frontend.lexer_test as lexer_test
+import frontend.parser_test as parser_test
+import frontend.lowering_test as lowering_test
 import backend.py_generator_test as pygen_test
 
 

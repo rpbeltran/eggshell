@@ -5,9 +5,9 @@ import sys
 
 import lark
 
-from parsing.lexer import EggLexer
-from parsing.lexer_util import LexerError
-from parsing.parser import get_parser
+from frontend.lexer import EggLexer
+from frontend.lexer_util import LexerError
+from frontend.parser import get_parser
 from backend.py_generator import PythonGenerator
 from runtime import egg_lib
 
