@@ -7,29 +7,29 @@ import cli.cli as cli
 def get_args() -> argparse.Namespace:
     arg_parser = argparse.ArgumentParser('egg-py')
 
-    arg_parser.add_argument(
-        '-l',
+    mode_group = arg_parser.add_mutually_exclusive_group()
+    mode_group.add_argument(
         '--lex',
+        '-l',
         help='Run just the lexer instead of executing.',
         action='store_true',
     )
-
-    arg_parser.add_argument(
-        '-a',
+    mode_group.add_argument(
         '--ast',
+        '-a',
         help='Construct an ast from input instead of executing.',
         action='store_true',
     )
-
-    arg_parser.add_argument(
+    mode_group.add_argument(
         '--pygen',
+        '-p',
         help='Get the output from pygen instead of executing it.',
         action='store_true',
     )
 
     arg_parser.add_argument(
-        '-r',
-        '--run',
+        '-s',
+        '--script',
         help='Path of script to be executed.'
         'If omitted, interactive mode will be enabled.',
         required=False,
@@ -52,8 +52,8 @@ def main():
 
     egg_cli = cli.EggCLI(mode)
 
-    if args.run:
-        egg_cli.consume_script(args.run)
+    if args.script:
+        egg_cli.consume_script(args.script)
     else:
         egg_cli.interactive_mode()
 
