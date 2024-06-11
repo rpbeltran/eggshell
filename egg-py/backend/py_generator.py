@@ -36,6 +36,7 @@ class PythonGenerator(Transformer):
 
     # External Commands
     exec = combine_with_function('make_external_command', quote_args=True)
+    pipeline = combine_with_function('make_pipeline')
 
     @staticmethod
     def __default__(data, children, meta):

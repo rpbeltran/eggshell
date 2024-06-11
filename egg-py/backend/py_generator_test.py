@@ -84,3 +84,15 @@ def test_explicit_exec():
     src = '`"foo bar" -o hello`'
     expected_gen_code = "egg_lib.make_external_command('foo bar','-o','hello')"
     assert get_gen_code(src) == expected_gen_code
+
+
+def test_pipeline():
+    src = 'a b | c d'
+    expected_gen_code = "egg_lib.make_pipeline(egg_lib.make_external_command('a','b'),egg_lib.make_external_command('c','d'))"
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_pipeline_data():
+    src = '1 | a'
+    expected_gen_code = "egg_lib.make_pipeline(1,egg_lib.make_external_command('a'))"
+    assert get_gen_code(src) == expected_gen_code

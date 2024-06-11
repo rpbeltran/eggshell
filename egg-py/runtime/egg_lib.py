@@ -1,4 +1,4 @@
-from runtime import external_command
+from runtime import external_commands
 
 
 def add(a, b):
@@ -30,4 +30,8 @@ def raise_power(a, b):
 
 
 def make_external_command(*args):
-    return external_command.ExternalCommand(args)
+    return external_commands.ExternalCommand(args)
+
+
+def make_pipeline(*args):
+    return external_commands.Pipeline(args)
