@@ -5,6 +5,10 @@ from .lexer_constants import UNITS
 
 class LoweringTransformer(Transformer):
     @staticmethod
+    def exec(items):
+        return Tree('exec', [str(item) for item in items])
+
+    @staticmethod
     def boolean_literal(items):
         (literal,) = items
         return literal == 'true'

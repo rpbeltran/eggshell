@@ -196,3 +196,33 @@ def test_pipe_assignment():
     src = '@a |= @b'
     equivalent_src = '@a = (@a | @b)'
     assert get_ast(src) == get_ast(equivalent_src)
+
+
+def test_exec():
+    src = 'foo'
+    expected_ast = (
+        'exec\tfoo'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_exec_multiple_args():
+    src = 'foo -o bar'
+    expected_ast = (
+        'exec'
+        '\n  foo'
+        '\n  -o'
+        '\n  bar'
+    )
+    assert get_ast(src) == expected_ast
+
+
+def test_explicit_exec():
+    src = '`"foo bar" -o hello`'
+    expected_ast = (
+        'exec'
+        '\n  foo bar'
+        '\n  -o'
+        '\n  hello'
+    )
+    assert get_ast(src) == expected_ast

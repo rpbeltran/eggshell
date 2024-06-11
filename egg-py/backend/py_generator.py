@@ -14,14 +14,18 @@ class PythonGenerator(Transformer):
     backend_library = 'egg_lib'
 
     @staticmethod
-    def combine_with_function(func_name):
+    def combine_with_function(func_name, quote_args=False):
         @staticmethod
         def action(items):
-            (a, b) = items
-            return f'{PythonGenerator.backend_library}.{func_name}({a},{b})'
+            if quote_args:
+                arg_list = ','.join(repr(item) for item in items)
+            else:
+                arg_list = ','.join(str(item) for item in items)
+            return f'{PythonGenerator.backend_library}.{func_name}({arg_list})'
 
         return action
 
+    # Arithmetic
     addition = combine_with_function('add')
     subtraction = combine_with_function('subtract')
     multiply = combine_with_function('multiply')
@@ -29,6 +33,9 @@ class PythonGenerator(Transformer):
     int_divide = combine_with_function('int_divide')
     modulus = combine_with_function('modulus')
     raise_power = combine_with_function('raise_power')
+
+    # External Commands
+    exec = combine_with_function('make_external_command', quote_args=True)
 
     @staticmethod
     def __default__(data, children, meta):

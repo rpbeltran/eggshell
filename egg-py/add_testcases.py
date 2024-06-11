@@ -9,9 +9,9 @@ import backend.py_generator_test as pygen_test
 
 
 here = os.path.dirname(__file__)
-lexer_test_path = f'{here}/parsing/lexer_test.py'
-parser_test_path = f'{here}/parsing/parser_test.py'
-lowering_test_path = f'{here}/parsing/lowering_test.py'
+lexer_test_path = f'{here}/frontend/lexer_test.py'
+parser_test_path = f'{here}/frontend/parser_test.py'
+lowering_test_path = f'{here}/frontend/lowering_test.py'
 pygen_test_path = f'{here}/backend/py_generator_test.py'
 
 

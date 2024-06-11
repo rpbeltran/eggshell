@@ -72,3 +72,15 @@ def test_raise_power():
     src = '1 ** 2'
     expected_gen_code = 'egg_lib.raise_power(1,2)'
     assert get_gen_code(src) == expected_gen_code
+
+
+def test_external_command():
+    src = 'foo -o bar'
+    expected_gen_code = "egg_lib.make_external_command('foo','-o','bar')"
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_explicit_exec():
+    src = '`"foo bar" -o hello`'
+    expected_gen_code = "egg_lib.make_external_command('foo bar','-o','hello')"
+    assert get_gen_code(src) == expected_gen_code
