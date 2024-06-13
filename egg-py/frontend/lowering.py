@@ -14,16 +14,6 @@ class LoweringTransformer(Transformer):
         return literal == 'true'
 
     @staticmethod
-    def integer_literal(items):
-        (literal,) = items
-        return int(literal)
-
-    @staticmethod
-    def float_literal(items):
-        (literal,) = items
-        return float(literal)
-
-    @staticmethod
     def unit_integer_literal(items):
         (literal,) = items
         (value, unit) = literal.split(':')

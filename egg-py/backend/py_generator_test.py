@@ -34,43 +34,43 @@ def get_gen_code(src):
 
 def test_add():
     src = '1 + 2'
-    expected_gen_code = 'egg_lib.add(1,2)'
+    expected_gen_code = 'egg_lib.make_integer(1).add(egg_lib.make_integer(2))'
     assert get_gen_code(src) == expected_gen_code
 
 
 def test_subtract():
     src = '1 - 2'
-    expected_gen_code = 'egg_lib.subtract(1,2)'
+    expected_gen_code = 'egg_lib.make_integer(1).subtract(egg_lib.make_integer(2))'
     assert get_gen_code(src) == expected_gen_code
 
 
 def test_multiply():
     src = '1 * 2'
-    expected_gen_code = 'egg_lib.multiply(1,2)'
+    expected_gen_code = 'egg_lib.make_integer(1).multiply(egg_lib.make_integer(2))'
     assert get_gen_code(src) == expected_gen_code
 
 
 def test_divide():
     src = '1 / 2'
-    expected_gen_code = 'egg_lib.divide(1,2)'
+    expected_gen_code = 'egg_lib.make_integer(1).divide(egg_lib.make_integer(2))'
     assert get_gen_code(src) == expected_gen_code
 
 
 def test_int_divide():
     src = '1 // 2'
-    expected_gen_code = 'egg_lib.int_divide(1,2)'
+    expected_gen_code = 'egg_lib.make_integer(1).int_divide(egg_lib.make_integer(2))'
     assert get_gen_code(src) == expected_gen_code
 
 
 def test_modulus():
     src = '1 % 2'
-    expected_gen_code = 'egg_lib.modulus(1,2)'
+    expected_gen_code = 'egg_lib.make_integer(1).modulus(egg_lib.make_integer(2))'
     assert get_gen_code(src) == expected_gen_code
 
 
 def test_raise_power():
     src = '1 ** 2'
-    expected_gen_code = 'egg_lib.raise_power(1,2)'
+    expected_gen_code = 'egg_lib.make_integer(1).raise_power(egg_lib.make_integer(2))'
     assert get_gen_code(src) == expected_gen_code
 
 
@@ -94,17 +94,19 @@ def test_pipeline():
 
 def test_pipeline_data():
     src = '1 | a'
-    expected_gen_code = "egg_lib.make_pipeline(1,egg_lib.make_external_command('a'))"
+    expected_gen_code = "egg_lib.make_pipeline(egg_lib.make_integer(1),egg_lib.make_external_command('a'))"
     assert get_gen_code(src) == expected_gen_code
 
 
 def test_comparison_chain():
     src = '1 < 2 <= 3 == 3 != 20 >= 18 > 1'
     expected_gen_code = (
-        'egg_lib.do_comparisons(1,egg_lib.ComparisonType.LESS,'
-        '2,egg_lib.ComparisonType.LTE,3,egg_lib.ComparisonType.EQUAL,'
-        '3,egg_lib.ComparisonType.UNEQUAL,20,egg_lib.ComparisonType.GTE,'
-        '18,egg_lib.ComparisonType.GREATER,1)'
+        'egg_lib.do_comparisons(egg_lib.make_integer(1),egg_lib.ComparisonType.LESS,'
+        'egg_lib.make_integer(2),egg_lib.ComparisonType.LTE,'
+        'egg_lib.make_integer(3),egg_lib.ComparisonType.EQUAL,'
+        'egg_lib.make_integer(3),egg_lib.ComparisonType.UNEQUAL,'
+        'egg_lib.make_integer(20),egg_lib.ComparisonType.GTE,'
+        'egg_lib.make_integer(18),egg_lib.ComparisonType.GREATER,egg_lib.make_integer(1))'
     )
     assert get_gen_code(src) == expected_gen_code
 
@@ -112,4 +114,10 @@ def test_comparison_chain():
 def test_unit_values():
     src = '10gb'
     expected_gen_code = "egg_lib.UnitValue('size', 'gb', 10)"
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_floats_and_ints():
+    src = '1 + 1.0 - 2 * 3.0'
+    expected_gen_code = 'egg_lib.make_integer(1).add(egg_lib.make_float(1.0)).subtract(egg_lib.make_integer(2).multiply(egg_lib.make_float(3.0)))'
     assert get_gen_code(src) == expected_gen_code

@@ -2,34 +2,7 @@ from enum import Enum
 from typing import NamedTuple
 
 from runtime import external_commands
-
-
-def add(a, b):
-    return a + b
-
-
-def subtract(a, b):
-    return a + b
-
-
-def multiply(a, b):
-    return a + b
-
-
-def divide(a, b):
-    return a + b
-
-
-def int_divide(a, b):
-    return a + b
-
-
-def modulus(a, b):
-    return a + b
-
-
-def raise_power(a, b):
-    return a + b
+from runtime import types
 
 
 def make_external_command(*args):
@@ -38,6 +11,14 @@ def make_external_command(*args):
 
 def make_pipeline(*args):
     return external_commands.Pipeline(args)
+
+
+def make_integer(value: int) -> types.Integer:
+    return types.Integer(value)
+
+
+def make_float(value: float) -> types.Float:
+    return types.Float(value)
 
 
 class ComparisonType(Enum):
