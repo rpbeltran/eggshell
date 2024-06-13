@@ -35,7 +35,7 @@ class EggCLI:
 
     def interactive_mode(self):
         while True:
-            expression = input('egg(py)> ').strip()
+            expression = input('egg> ').strip()
             if not expression:
                 continue
             if expression == 'exit':
