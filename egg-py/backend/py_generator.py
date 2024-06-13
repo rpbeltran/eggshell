@@ -14,6 +14,13 @@ class PythonGenerator(Transformer):
     backend_library = 'egg_lib'
 
     @staticmethod
+    def map_to_constant(value):
+        @staticmethod
+        def action(_):
+            return f'{PythonGenerator.backend_library}.{value}'
+
+        return action
+
     def combine_with_function(func_name, quote_args=False):
         @staticmethod
         def action(items):
@@ -33,6 +40,16 @@ class PythonGenerator(Transformer):
     int_divide = combine_with_function('int_divide')
     modulus = combine_with_function('modulus')
     raise_power = combine_with_function('raise_power')
+
+    # Boolean Arithmetic
+    comparison_chain = combine_with_function('do_comparisons')
+
+    equal_to = map_to_constant('ComparisonType.EQUAL')
+    not_equal_to = map_to_constant('ComparisonType.UNEQUAL')
+    less_than_or_equal_to = map_to_constant('ComparisonType.LTE')
+    less_than = map_to_constant('ComparisonType.LESS')
+    greater_than = map_to_constant('ComparisonType.GREATER')
+    greater_than_or_equal_to = map_to_constant('ComparisonType.GTE')
 
     # External Commands
     exec = combine_with_function('make_external_command', quote_args=True)

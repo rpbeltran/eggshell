@@ -96,3 +96,14 @@ def test_pipeline_data():
     src = '1 | a'
     expected_gen_code = "egg_lib.make_pipeline(1,egg_lib.make_external_command('a'))"
     assert get_gen_code(src) == expected_gen_code
+
+
+def test_comparison_chain():
+    src = '1 < 2 <= 3 == 3 != 20 >= 18 > 1'
+    expected_gen_code = (
+        'egg_lib.do_comparisons(1,egg_lib.ComparisonType.LESS,'
+        '2,egg_lib.ComparisonType.LTE,3,egg_lib.ComparisonType.EQUAL,'
+        '3,egg_lib.ComparisonType.UNEQUAL,20,egg_lib.ComparisonType.GTE,'
+        '18,egg_lib.ComparisonType.GREATER,1)'
+    )
+    assert get_gen_code(src) == expected_gen_code
