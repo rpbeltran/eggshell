@@ -75,6 +75,18 @@ def do_comparisons(*args):
     return True
 
 
+def logical_or(a, b):
+    return a or b
+
+
+def logical_xor(a, b):
+    return bool(a) != bool(b)
+
+
+def logical_and(a, b):
+    return a and b
+
+
 class UnitValue(NamedTuple):
     unit_type: str
     unit: str

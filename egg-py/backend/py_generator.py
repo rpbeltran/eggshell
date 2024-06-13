@@ -52,6 +52,10 @@ class PythonGenerator(Transformer):
     greater_than = map_to_constant('ComparisonType.GREATER')
     greater_than_or_equal_to = map_to_constant('ComparisonType.GTE')
 
+    or_expr = combine_with_function('logical_or')
+    xor_expr = combine_with_function('logical_xor')
+    and_expr = combine_with_function('logical_and')
+
     # External Commands
     exec = combine_with_function('make_external_command', quote_args=True)
     pipeline = combine_with_function('make_pipeline')
