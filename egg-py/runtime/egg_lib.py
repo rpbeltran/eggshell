@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import NamedTuple
 
 from runtime import external_commands
 
@@ -72,3 +73,9 @@ def do_comparisons(*args):
             if not (a >= b):
                 return False
     return True
+
+
+class UnitValue(NamedTuple):
+    unit_type: str
+    unit: str
+    value: int | float

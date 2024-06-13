@@ -107,3 +107,9 @@ def test_comparison_chain():
         '18,egg_lib.ComparisonType.GREATER,1)'
     )
     assert get_gen_code(src) == expected_gen_code
+
+
+def test_unit_values():
+    src = '10gb'
+    expected_gen_code = "egg_lib.UnitValue('size', 'gb', 10)"
+    assert get_gen_code(src) == expected_gen_code

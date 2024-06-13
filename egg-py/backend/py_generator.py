@@ -21,6 +21,7 @@ class PythonGenerator(Transformer):
 
         return action
 
+    @staticmethod
     def combine_with_function(func_name, quote_args=False):
         @staticmethod
         def action(items):
@@ -55,6 +56,22 @@ class PythonGenerator(Transformer):
     exec = combine_with_function('make_external_command', quote_args=True)
     pipeline = combine_with_function('make_pipeline')
 
+    # Nodes not to modify
+    pass_through = {'unit_type', 'unit'}
+
+    @staticmethod
+    def unit_literal(items):
+        (unit_type_tree, unit_tree, quantity) = items
+        unit_type = unit_type_tree.children[0]
+        unit = unit_tree.children[0]
+        return (
+            f'{PythonGenerator.backend_library}.UnitValue'
+            f'({repr(unit_type)}, {repr(unit)}, {quantity})'
+        )
+
     @staticmethod
     def __default__(data, children, meta):
-        raise FeatureUnimplemented(Tree(data, children, meta))
+        as_tree = Tree(data, children, meta)
+        if data in PythonGenerator.pass_through:
+            return as_tree
+        raise FeatureUnimplemented(as_tree)
