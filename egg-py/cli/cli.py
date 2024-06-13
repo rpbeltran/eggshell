@@ -78,10 +78,13 @@ class EggCLI:
         print(py)
 
     def execute(self, src: str):
-        ast = self.parser.parse(src)
-        py_code = self.pygen.transform(ast)
-        try:
-            if (output := eval(py_code)) is not None:
-                print(output)
-        except SyntaxError:
-            exec(py_code)
+        ast_or_value = self.parser.parse(src)
+        if type(ast_or_value) == lark.tree.Tree:
+            py_code = self.pygen.transform(ast_or_value)
+            try:
+                if (output := eval(py_code)) is not None:
+                    print(output)
+            except SyntaxError:
+                exec(py_code)
+        else:
+            print(ast_or_value)
