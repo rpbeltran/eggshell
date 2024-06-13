@@ -11,7 +11,7 @@ class FeatureUnimplemented(Exception):
 
 class PythonGenerator(Transformer):
 
-    backend_library = 'egg_lib'
+    backend_library = '_e'
 
     @staticmethod
     def map_to_constant(value):

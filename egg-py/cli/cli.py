@@ -11,7 +11,7 @@ from frontend.parser import get_parser
 from backend.py_generator import PythonGenerator
 
 
-from runtime import egg_lib
+from runtime import egg_lib as _e
 
 
 class CLIMode(Enum):
