@@ -21,6 +21,10 @@ def make_float(value: float) -> types.Float:
     return types.Float(value)
 
 
+def make_boolean(value: bool) -> types.Boolean:
+    return types.Boolean(value)
+
+
 class ComparisonType(Enum):
     EQUAL = 1
     UNEQUAL = 2
@@ -54,18 +58,6 @@ def do_comparisons(*args):
             if not (a >= b):
                 return False
     return True
-
-
-def logical_or(a, b):
-    return a or b
-
-
-def logical_xor(a, b):
-    return bool(a) != bool(b)
-
-
-def logical_and(a, b):
-    return a and b
 
 
 class UnitValue(NamedTuple):

@@ -40,17 +40,6 @@ def test_always_loop_to_while():
     assert get_ast(src) == expected_ast
 
 
-def test_boolean_literal_to():
-    src = 'true == false'
-    expected_ast = (
-        'comparison_chain'
-        '\n  True'
-        '\n  equal_to'
-        '\n  False'
-    )
-    assert get_ast(src) == expected_ast
-
-
 def test_selection_lambda_shorthand():
     src = 'a | ...b'
     expected_ast = (

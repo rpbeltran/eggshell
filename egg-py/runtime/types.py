@@ -59,3 +59,29 @@ class Float(Number):
 
     def val(self) -> float:
         return self.__value
+
+
+class Boolean:
+    __slots__ = ('__value',)
+
+    def __init__(self, value: bool):
+        assert isinstance(value, bool)
+        self.__value = value
+
+    def val(self) -> bool:
+        return self.__value
+
+    def logical_and(self, other: 'Boolean') -> 'Boolean':
+        return Boolean(self.val() and other.val())
+
+    def logical_or(self, other: 'Boolean') -> 'Boolean':
+        return Boolean(self.val() or other.val())
+
+    def logical_xor(self, other: 'Boolean') -> 'Boolean':
+        return Boolean(self.val() != other.val())
+
+    def __bool__(self):
+        return self.__value
+
+    def __str__(self):
+        return 'true' if self.__value else 'false'

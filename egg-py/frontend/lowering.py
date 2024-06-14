@@ -9,11 +9,6 @@ class LoweringTransformer(Transformer):
         return Tree('exec', [str(item) for item in items])
 
     @staticmethod
-    def boolean_literal(items):
-        (literal,) = items
-        return literal == 'true'
-
-    @staticmethod
     def unit_integer_literal(items):
         (literal,) = items
         (value, unit) = literal.split(':')
