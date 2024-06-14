@@ -87,7 +87,7 @@ class PythonGenerator(Transformer):
         unit_type = unit_type_tree.children[0]
         unit = unit_tree.children[0]
         return (
-            f'{PythonGenerator.backend_library}.UnitValue'
+            f'{PythonGenerator.backend_library}.make_unit_value'
             f'({repr(unit_type)}, {repr(unit)}, {quantity})'
         )
 

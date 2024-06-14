@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import NamedTuple
 
 from runtime import external_commands
 from runtime import types
@@ -23,6 +22,12 @@ def make_float(value: float) -> types.Float:
 
 def make_boolean(value: bool) -> types.Boolean:
     return types.Boolean(value)
+
+
+def make_unit_value(
+    unit_type: str, unit: str, quantity: int | float
+) -> types.UnitValue:
+    return types.UnitValue(unit_type, unit, quantity)
 
 
 class ComparisonType(Enum):
@@ -58,9 +63,3 @@ def do_comparisons(*args):
             if not (a >= b):
                 return False
     return True
-
-
-class UnitValue(NamedTuple):
-    unit_type: str
-    unit: str
-    value: int | float

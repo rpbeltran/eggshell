@@ -113,7 +113,7 @@ def test_comparison_chain():
 
 def test_unit_values():
     src = '10gb'
-    expected_gen_code = "_e.UnitValue('size', 'gb', 10)"
+    expected_gen_code = "_e.make_unit_value('size', 'gb', 10)"
     assert get_gen_code(src) == expected_gen_code
 
 

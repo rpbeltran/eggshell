@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import NamedTuple
 
 
 class Number(ABC):
@@ -85,3 +86,12 @@ class Boolean:
 
     def __str__(self):
         return 'true' if self.__value else 'false'
+
+
+class UnitValue(NamedTuple):
+    unit_type: str
+    unit: str
+    value: int | float
+
+    def __str__(self):
+        return f'{self.value}{self.unit}'
