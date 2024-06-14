@@ -88,13 +88,18 @@ def test_explicit_exec():
 
 def test_pipeline():
     src = 'a b | c d'
-    expected_gen_code = "_e.make_pipeline(_e.make_external_command('a','b'),_e.make_external_command('c','d'))"
+    expected_gen_code = (
+        "_e.make_pipeline(_e.make_external_command('a','b')"
+        ",_e.make_external_command('c','d'))"
+    )
     assert get_gen_code(src) == expected_gen_code
 
 
 def test_pipeline_data():
     src = '1 | a'
-    expected_gen_code = "_e.make_pipeline(_e.make_integer(1),_e.make_external_command('a'))"
+    expected_gen_code = (
+        "_e.make_pipeline(_e.make_integer(1),_e.make_external_command('a'))"
+    )
     assert get_gen_code(src) == expected_gen_code
 
 
@@ -119,23 +124,35 @@ def test_unit_values():
 
 def test_floats_and_ints():
     src = '1 + 1.0 - 2 * 3.0'
-    expected_gen_code = '_e.make_integer(1).add(_e.make_float(1.0)).subtract(_e.make_integer(2).multiply(_e.make_float(3.0)))'
+    expected_gen_code = (
+        '_e.make_integer(1).add(_e.make_float(1.0))'
+        '.subtract(_e.make_integer(2).multiply(_e.make_float(3.0)))'
+    )
     assert get_gen_code(src) == expected_gen_code
 
 
 def test_and():
     src = 'true and false and true'
-    expected_gen_code = '_e.make_boolean(True).logical_and(_e.make_boolean(False)).logical_and(_e.make_boolean(True))'
+    expected_gen_code = (
+        '_e.make_boolean(True).logical_and(_e.make_boolean(False))'
+        '.logical_and(_e.make_boolean(True))'
+    )
     assert get_gen_code(src) == expected_gen_code
 
 
 def test_or():
     src = 'true or false or true'
-    expected_gen_code = '_e.make_boolean(True).logical_or(_e.make_boolean(False)).logical_or(_e.make_boolean(True))'
+    expected_gen_code = (
+        '_e.make_boolean(True).logical_or(_e.make_boolean(False))'
+        '.logical_or(_e.make_boolean(True))'
+    )
     assert get_gen_code(src) == expected_gen_code
 
 
 def test_xor():
     src = 'true xor false xor true'
-    expected_gen_code = '_e.make_boolean(True).logical_xor(_e.make_boolean(False)).logical_xor(_e.make_boolean(True))'
+    expected_gen_code = (
+        '_e.make_boolean(True).logical_xor(_e.make_boolean(False))'
+        '.logical_xor(_e.make_boolean(True))'
+    )
     assert get_gen_code(src) == expected_gen_code
