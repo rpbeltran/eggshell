@@ -27,6 +27,9 @@ class Number(ABC):
     def raise_power(self, other):
         return self.wrap(value=self.val() ** other.val())
 
+    def __str__(self):
+        return str(self.val())
+
     @staticmethod
     def wrap(value: int | float):
         if isinstance(value, int):
