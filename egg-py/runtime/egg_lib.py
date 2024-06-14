@@ -63,3 +63,7 @@ def do_comparisons(*args):
             if not (a >= b):
                 return False
     return True
+
+
+def assertion(condition: types.Boolean):
+    assert condition

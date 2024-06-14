@@ -156,3 +156,9 @@ def test_xor():
         '.logical_xor(_e.make_boolean(True))'
     )
     assert get_gen_code(src) == expected_gen_code
+
+
+def test_assertions():
+    src = 'assert true'
+    expected_gen_code = '_e.assertion(_e.make_boolean(True))'
+    assert get_gen_code(src) == expected_gen_code

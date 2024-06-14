@@ -50,7 +50,6 @@ class PythonGenerator(Transformer):
     # Arithmetic
     integer_literal = combine_with_function('make_integer')
     float_literal = combine_with_function('make_float')
-
     addition = combine_with_method_left('add')
     subtraction = combine_with_method_left('subtract')
     multiply = combine_with_method_left('multiply')
@@ -60,26 +59,25 @@ class PythonGenerator(Transformer):
     raise_power = combine_with_method_left('raise_power')
 
     # Boolean Arithmetic
-    boolean_literal = combine_with_function(
-        'make_boolean', map_items=lambda item: item == 'true'
-    )
-
     comparison_chain = combine_with_function('do_comparisons')
-
     equal_to = map_to_constant('ComparisonType.EQUAL')
     not_equal_to = map_to_constant('ComparisonType.UNEQUAL')
     less_than_or_equal_to = map_to_constant('ComparisonType.LTE')
     less_than = map_to_constant('ComparisonType.LESS')
     greater_than = map_to_constant('ComparisonType.GREATER')
     greater_than_or_equal_to = map_to_constant('ComparisonType.GTE')
-
     or_expr = combine_with_method_left('logical_or')
     xor_expr = combine_with_method_left('logical_xor')
     and_expr = combine_with_method_left('logical_and')
+    boolean_literal = combine_with_function(
+        'make_boolean', map_items=lambda item: item == 'true'
+    )
 
     # External Commands
     exec = combine_with_function('make_external_command', quote_args=True)
     pipeline = combine_with_function('make_pipeline')
+
+    assertion = combine_with_function('assertion')
 
     @staticmethod
     def unit_literal(items):
