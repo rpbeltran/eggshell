@@ -12,6 +12,10 @@ def make_pipeline(*args):
     return external_commands.Pipeline(args)
 
 
+def make_string(data: str) -> types.String:
+    return types.String(data)
+
+
 def make_integer(value: int) -> types.Integer:
     return types.Integer(value)
 

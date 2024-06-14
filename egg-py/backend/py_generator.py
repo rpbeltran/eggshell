@@ -47,6 +47,12 @@ class PythonGenerator(Transformer):
 
         return action
 
+    # Strings
+    string_literal = combine_with_function(
+        'make_string', map_items=lambda item: repr(item.value)
+    )
+    concatenate = combine_with_method_left('concatenate')
+
     # Arithmetic
     integer_literal = combine_with_function('make_integer')
     float_literal = combine_with_function('make_float')

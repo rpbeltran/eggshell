@@ -95,3 +95,20 @@ class UnitValue(NamedTuple):
 
     def __str__(self):
         return f'{self.value}{self.unit}'
+
+
+class String:
+    __slots__ = ('__data',)
+
+    def __init__(self, data: str):
+        assert isinstance(data, str)
+        self.__data = data
+
+    def concatenate(self, other: 'String') -> 'String':
+        return String(self.data() + other.data())
+
+    def data(self) -> str:
+        return self.__data
+
+    def __str__(self):
+        return self.__data

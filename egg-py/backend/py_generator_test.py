@@ -162,3 +162,18 @@ def test_assertions():
     src = 'assert true'
     expected_gen_code = '_e.assertion(_e.make_boolean(True))'
     assert get_gen_code(src) == expected_gen_code
+
+
+def test_string():
+    src = '"hello world"'
+    expected_gen_code = "_e.make_string('hello world')"
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_concatenate():
+    src = '"hello " ++ "world" ++ "!!!"'
+    expected_gen_code = (
+        "_e.make_string('hello ').concatenate(_e.make_string('world'))"
+        ".concatenate(_e.make_string('!!!'))"
+    )
+    assert get_gen_code(src) == expected_gen_code
