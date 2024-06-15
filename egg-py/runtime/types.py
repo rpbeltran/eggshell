@@ -109,7 +109,7 @@ class Collection(ABC):
         ...
 
     def concatenate(self, other: 'Collection') -> 'Collection':
-        assert type(self) is type(other)
+        assert (type(self) is String) == (type(other) is String)
         return self.wrap(self.data() + other.data())
 
     def size(self) -> int:
@@ -125,7 +125,7 @@ class Collection(ABC):
             end = end.val()
         if jump is not None:
             jump = jump.val()
-        return self.data()[start:end:jump]
+        return self.wrap(self.data()[start:end:jump])
 
     def __str__(self):
         return repr(self.data())
@@ -178,7 +178,7 @@ class Range(Collection):
         self.__jump: int = jump.val()
 
     def data(self) -> typing.List:
-        return list(range(self.__start, self.__end))
+        return list(range(self.__start, self.__end, self.__jump))
 
     def size(self) -> int:
         return (self.__end - self.__start) // self.__jump
@@ -191,14 +191,17 @@ class Range(Collection):
             f'which has length {self.size()}.'
         )
 
-    def select_slice(self, start: Number, end: Number, jump: Number):
+    def constrain(self, index):
+        return min(max(index, self.__start), self.__end)
+
+    def select_slice(self, start: Number, end: Number, jump: Number) -> 'Range':
         if start:
-            start = min(self.__end, start.val() + self.__start)
+            start = min(max(start.val() + self.__start, self.__start), self.__end-1)
         else:
             start = self.__start
 
         if end:
-            end = min(self.__end, end.val() + self.__start)
+            end = min(max(end.val() + self.__start, self.__start), self.__end)
         else:
             end = self.__end
 
@@ -210,4 +213,6 @@ class Range(Collection):
         return Range(Integer(start), Integer(end), Integer(jump))
 
     def __str__(self):
-        return f'({self.__start}..{self.__end})'
+        if self.__jump == 1:
+            return f'({self.__start}..{self.__end})'
+        return f'({self.__start}..{self.__end} by {self.__jump})'
