@@ -117,6 +117,19 @@ class Collection(ABC):
         print('Concat: ', self.wrap(self.data() + other.data()))
         return self.wrap(self.data() + other.data())
 
+    def select_element(self, index):
+        return self.data()[index.val()]
+
+    def select_slice(self, start, end, jump):
+        if start is not None:
+            start = start.val()
+        if end is not None:
+            end = end.val()
+        if jump is not None:
+            jump = jump.val()
+        print('jump', jump)
+        return self.data()[start:end:jump]
+
     def __str__(self):
         return repr(self.data())
 

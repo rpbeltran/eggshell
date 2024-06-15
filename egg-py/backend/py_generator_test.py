@@ -215,3 +215,57 @@ def test_make_list_one_elem():
     src = '[1]'
     expected_gen_code = '_e.make_list(_e.make_integer(1))'
     assert get_gen_code(src) == expected_gen_code
+
+
+def test_select_element():
+    src = '[1,2,3][1]'
+    expected_gen_code = (
+        '_e.make_list(_e.make_integer(1),_e.make_integer(2),_e.make_integer(3))'
+        '.select_element(_e.make_integer(1))'
+    )
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_select_element_str():
+    src = '"hello world"[1]'
+    expected_gen_code = (
+        "_e.make_string('hello world')"
+        ".select_element(_e.make_integer(1))"
+    )
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_select_slice():
+    src = '[1,2,3][1:3]'
+    expected_gen_code = (
+        '_e.make_list(_e.make_integer(1),_e.make_integer(2),_e.make_integer(3))'
+        '.select_slice(_e.make_integer(1),_e.make_integer(3),None)'
+    )
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_select_slice_str():
+    src = '"hello world"[1:3]'
+    expected_gen_code = (
+        "_e.make_string('hello world')"
+        ".select_slice(_e.make_integer(1),_e.make_integer(3),None)"
+    )
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_select_slice_jump():
+    src = '[1,2,3][1:2:3]'
+    expected_gen_code =(
+        '_e.make_list(_e.make_integer(1),_e.make_integer(2),_e.make_integer(3))'
+        '.select_slice(_e.make_integer(1),_e.make_integer(2),_e.make_integer(3))'
+    )
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_select_slice_str_jump():
+    src = '"hello world"[:3:-1]'
+    expected_gen_code = (
+        "_e.make_string('hello world')"
+        ".select_slice(None,_e.make_integer(3),_e.make_integer(1).negate())"
+    )
+    assert get_gen_code(src) == expected_gen_code

@@ -1,3 +1,4 @@
+import lark
 from lark import Transformer, Tree
 
 
@@ -54,6 +55,25 @@ class PythonGenerator(Transformer):
     list = combine_with_function('make_list')
 
     concatenate = combine_with_method_left('concatenate')
+    select_element = combine_with_method_left('select_element')
+
+    @staticmethod
+    def select_slice(items):
+        start = None
+        end = None
+        jump = None
+        for item in items[1:]:
+            if not item.children:
+                continue
+            if item.data == 'slice_start':
+                start = item.children[0]
+            elif item.data == 'slice_end':
+                end = item.children[0]
+            elif item.data == 'slice_jump':
+                jump = item.children[0]
+            else:
+                raise ValueError(f'select_slize has unexpected child {item}')
+        return f'{items[0]}.select_slice({start},{end},{jump})'
 
     # Arithmetic
     integer_literal = combine_with_function('make_integer')
@@ -100,7 +120,13 @@ class PythonGenerator(Transformer):
         )
 
     # Nodes not to modify
-    pass_through = {'unit_type', 'unit'}
+    pass_through = {
+        'unit_type',
+        'unit',
+        'slice_start',
+        'slice_end',
+        'slice_jump',
+    }
 
     @staticmethod
     def __default__(data, children, meta):
