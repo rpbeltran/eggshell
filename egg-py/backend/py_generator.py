@@ -47,10 +47,12 @@ class PythonGenerator(Transformer):
 
         return action
 
-    # Strings
+    # Collections
     string_literal = combine_with_function(
         'make_string', map_items=lambda item: repr(item.value)
     )
+    list = combine_with_function('make_list')
+
     concatenate = combine_with_method_left('concatenate')
 
     # Arithmetic

@@ -195,3 +195,23 @@ def test_unary_negate():
     src = '-(10)'
     expected_gen_code = '_e.make_integer(10).negate()'
     assert get_gen_code(src) == expected_gen_code
+
+
+def test_make_list():
+    src = '[1,`a`]'
+    expected_gen_code = (
+        "_e.make_list(_e.make_integer(1),_e.make_external_command('a'))"
+    )
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_make_empty_list():
+    src = '[]'
+    expected_gen_code = '_e.make_list()'
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_make_list_one_elem():
+    src = '[1]'
+    expected_gen_code = '_e.make_list(_e.make_integer(1))'
+    assert get_gen_code(src) == expected_gen_code

@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import NamedTuple
+import typing
 
 
 class Number(ABC):
@@ -94,7 +94,7 @@ class Boolean:
         return 'true' if self.__value else 'false'
 
 
-class UnitValue(NamedTuple):
+class UnitValue(typing.NamedTuple):
     unit_type: str
     unit: str
     value: int | float
@@ -117,4 +117,20 @@ class String:
         return self.__data
 
     def __str__(self):
+        return self.__data
+
+
+class List:
+    __slots__ = ('__data',)
+
+    def __init__(self, data: typing.List):
+        self.__data: typing.List = data
+
+    def concatenate(self, other: 'List') -> 'List':
+        return List(self.data() + other.data())
+
+    def append(self, item):
+        self.__data.append(item)
+
+    def data(self) -> typing.List:
         return self.__data

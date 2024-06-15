@@ -1,4 +1,5 @@
 from enum import Enum
+import typing
 
 from runtime import external_commands
 from runtime import types
@@ -32,6 +33,10 @@ def make_unit_value(
     unit_type: str, unit: str, quantity: int | float
 ) -> types.UnitValue:
     return types.UnitValue(unit_type, unit, quantity)
+
+
+def make_list(*data: typing.List) -> types.List:
+    return types.List(data)
 
 
 class ComparisonType(Enum):
