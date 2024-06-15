@@ -7,32 +7,35 @@ class Number(ABC):
     def val(self) -> int | float:
         pass
 
-    def add(self, other):
+    def add(self, other) -> 'Number':
         return self.wrap(value=self.val() + other.val())
 
-    def subtract(self, other):
-        return self.wrap(value=self.val() - other.val())
+    def subtract(self, other) -> 'Number':
+        return self.wrap(self.val() - other.val())
 
-    def multiply(self, other):
-        return self.wrap(value=self.val() * other.val())
+    def multiply(self, other) -> 'Number':
+        return self.wrap(self.val() * other.val())
 
-    def divide(self, other):
-        return self.wrap(value=self.val() / other.val())
+    def divide(self, other) -> 'Number':
+        return self.wrap(self.val() / other.val())
 
-    def int_divide(self, other):
-        return self.wrap(value=self.val() // other.val())
+    def int_divide(self, other) -> 'Number':
+        return self.wrap(self.val() // other.val())
 
-    def modulus(self, other):
-        return self.wrap(value=self.val() % other.val())
+    def modulus(self, other) -> 'Number':
+        return self.wrap(self.val() % other.val())
 
-    def raise_power(self, other):
-        return self.wrap(value=self.val() ** other.val())
+    def raise_power(self, other) -> 'Number':
+        return self.wrap(self.val() ** other.val())
+
+    def negate(self) -> 'Number':
+        return self.wrap(-self.val())
 
     def __str__(self):
         return str(self.val())
 
     @staticmethod
-    def wrap(value: int | float):
+    def wrap(value: int | float) -> 'Number':
         if isinstance(value, int):
             return Integer(value)
         elif isinstance(value, float):
@@ -80,6 +83,9 @@ class Boolean:
 
     def logical_xor(self, other: 'Boolean') -> 'Boolean':
         return Boolean(self.val() != other.val())
+
+    def logical_not(self) -> 'Boolean':
+        return Boolean(not self.val())
 
     def __bool__(self):
         return self.__value

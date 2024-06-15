@@ -177,3 +177,21 @@ def test_concatenate():
         ".concatenate(_e.make_string('!!!'))"
     )
     assert get_gen_code(src) == expected_gen_code
+
+
+def test_unary_not():
+    src = '! true'
+    expected_gen_code = '_e.make_boolean(True).logical_not()'
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_unary_not2():
+    src = 'not true'
+    expected_gen_code = '_e.make_boolean(True).logical_not()'
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_unary_negate():
+    src = '-(10)'
+    expected_gen_code = '_e.make_integer(10).negate()'
+    assert get_gen_code(src) == expected_gen_code

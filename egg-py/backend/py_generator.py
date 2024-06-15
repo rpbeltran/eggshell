@@ -63,6 +63,7 @@ class PythonGenerator(Transformer):
     int_divide = combine_with_method_left('int_divide')
     modulus = combine_with_method_left('modulus')
     raise_power = combine_with_method_left('raise_power')
+    unary_negate = combine_with_method_left('negate')
 
     # Boolean Arithmetic
     comparison_chain = combine_with_function('do_comparisons')
@@ -75,6 +76,7 @@ class PythonGenerator(Transformer):
     or_expr = combine_with_method_left('logical_or')
     xor_expr = combine_with_method_left('logical_xor')
     and_expr = combine_with_method_left('logical_and')
+    unary_not = combine_with_method_left('logical_not')
     boolean_literal = combine_with_function(
         'make_boolean', map_items=lambda item: item == 'true'
     )
