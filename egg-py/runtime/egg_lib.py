@@ -39,6 +39,10 @@ def make_list(*data: typing.List) -> types.List:
     return types.List(data)
 
 
+def make_range(start: types.Integer, end: types.Integer) -> types.List:
+    return types.Range(start, end, types.Integer(1))
+
+
 class ComparisonType(Enum):
     EQUAL = 1
     UNEQUAL = 2

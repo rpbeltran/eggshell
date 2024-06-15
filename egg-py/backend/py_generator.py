@@ -53,7 +53,7 @@ class PythonGenerator(Transformer):
         'make_string', map_items=lambda item: repr(item.value)
     )
     list = combine_with_function('make_list')
-
+    range = combine_with_function('make_range')
     concatenate = combine_with_method_left('concatenate')
     select_element = combine_with_method_left('select_element')
 

@@ -110,12 +110,10 @@ class Collection(ABC):
 
     def concatenate(self, other: 'Collection') -> 'Collection':
         assert type(self) is type(other)
-        print('Concat: ', type(self), 'and', type(other))
-        print(
-            'Concat: ', self.data(), other.data(), self.data() + other.data()
-        )
-        print('Concat: ', self.wrap(self.data() + other.data()))
         return self.wrap(self.data() + other.data())
+
+    def size(self) -> int:
+        return len(self.data())
 
     def select_element(self, index):
         return self.data()[index.val()]
@@ -127,7 +125,6 @@ class Collection(ABC):
             end = end.val()
         if jump is not None:
             jump = jump.val()
-        print('jump', jump)
         return self.data()[start:end:jump]
 
     def __str__(self):
@@ -158,7 +155,7 @@ class String(Collection):
 class List(Collection):
     __slots__ = ('__data',)
 
-    def __init__(self, data: typing.Tuple):
+    def __init__(self, data: tuple | list):
         self.__data: typing.List = list(data)
 
     def data(self) -> typing.List:
@@ -170,3 +167,47 @@ class List(Collection):
     def __str__(self):
         inner = ','.join(str(i) for i in self.data())
         return f'[{inner}]'
+
+
+class Range(Collection):
+    __slots__ = ('__start', '__end', '__jump')
+
+    def __init__(self, start: Number, end: Number, jump: Number):
+        self.__start: int = start.val()
+        self.__end: int = end.val()
+        self.__jump: int = jump.val()
+
+    def data(self) -> typing.List:
+        return list(range(self.__start, self.__end))
+
+    def size(self) -> int:
+        return (self.__end - self.__start) // self.__jump
+
+    def select_element(self, index: Number):
+        if (element := self.__start + index.val()) < self.__end:
+            return element
+        raise (
+            f'Cannot read index {index} from {self.__start} '
+            f'which has length {self.size()}.'
+        )
+
+    def select_slice(self, start: Number, end: Number, jump: Number):
+        if start:
+            start = min(self.__end, start.val() + self.__start)
+        else:
+            start = self.__start
+
+        if end:
+            end = min(self.__end, end.val() + self.__start)
+        else:
+            end = self.__end
+
+        if jump:
+            jump = jump.val() * self.__jump
+        else:
+            jump = self.__jump
+
+        return Range(Integer(start), Integer(end), Integer(jump))
+
+    def __str__(self):
+        return f'({self.__start}..{self.__end})'
