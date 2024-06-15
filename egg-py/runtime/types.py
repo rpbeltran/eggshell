@@ -5,7 +5,7 @@ import typing
 class Number(ABC):
     @abstractmethod
     def val(self) -> int | float:
-        pass
+        ...
 
     def add(self, other) -> 'Number':
         return self.wrap(value=self.val() + other.val())
@@ -103,34 +103,57 @@ class UnitValue(typing.NamedTuple):
         return f'{self.value}{self.unit}'
 
 
-class String:
+class Collection(ABC):
+    @abstractmethod
+    def data(self) -> str | list:
+        ...
+
+    def concatenate(self, other: 'Collection') -> 'Collection':
+        assert type(self) is type(other)
+        print('Concat: ', type(self), 'and', type(other))
+        print(
+            'Concat: ', self.data(), other.data(), self.data() + other.data()
+        )
+        print('Concat: ', self.wrap(self.data() + other.data()))
+        return self.wrap(self.data() + other.data())
+
+    def __str__(self):
+        return repr(self.data())
+
+    @staticmethod
+    def wrap(data) -> 'Collection':
+        if isinstance(data, str):
+            return String(data)
+        if isinstance(data, list):
+            return List(data)
+        raise TypeError(
+            f'Collection cannot be made from {type(data)} data: {data}'
+        )
+
+
+class String(Collection):
     __slots__ = ('__data',)
 
     def __init__(self, data: str):
         assert isinstance(data, str)
         self.__data = data
 
-    def concatenate(self, other: 'String') -> 'String':
-        return String(self.data() + other.data())
-
     def data(self) -> str:
         return self.__data
 
-    def __str__(self):
-        return self.__data
 
-
-class List:
+class List(Collection):
     __slots__ = ('__data',)
 
-    def __init__(self, data: typing.List):
-        self.__data: typing.List = data
+    def __init__(self, data: typing.Tuple):
+        self.__data: typing.List = list(data)
 
-    def concatenate(self, other: 'List') -> 'List':
-        return List(self.data() + other.data())
+    def data(self) -> typing.List:
+        return self.__data
 
     def append(self, item):
         self.__data.append(item)
 
-    def data(self) -> typing.List:
-        return self.__data
+    def __str__(self):
+        inner = ','.join(str(i) for i in self.data())
+        return f'[{inner}]'
