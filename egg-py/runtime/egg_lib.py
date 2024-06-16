@@ -57,23 +57,25 @@ def do_comparisons(*args):
     assert len(args) % 2 == 1
     for i in range(0, len(args) - 2, 2):
         a, op, b = args[i : i + 3]
+        assert isinstance(a, types.Object)
+        assert isinstance(b, types.Object)
         if op == ComparisonType.EQUAL:
-            if not (a == b):
+            if not (a.equals(b)):
                 return False
         elif op == ComparisonType.UNEQUAL:
-            if not (a != b):
-                return False
-        elif op == ComparisonType.LTE:
-            if not (a <= b):
+            if not (not a.equals(b)):
                 return False
         elif op == ComparisonType.LESS:
-            if not (a < b):
+            if not (a.compare(b) == types.ComparisonResult.LESS):
+                return False
+        elif op == ComparisonType.LTE:
+            if not (a.compare(b) != types.ComparisonResult.GREATER):
                 return False
         elif op == ComparisonType.GREATER:
-            if not (a > b):
+            if not (a.compare(b) == types.ComparisonResult.GREATER):
                 return False
         elif op == ComparisonType.GTE:
-            if not (a >= b):
+            if not (a.compare(b) != types.ComparisonResult.LESS):
                 return False
     return True
 

@@ -46,7 +46,76 @@ def execute_src(src: str) -> str:
         return string_io.getvalue()
 
 
-def test_add():
-    src = '1 + 2'
-    expected_output = '3'
+def test_arithmetic():
+    src = '10 // 3 + 17 - 7 * 4 / -5**2 + 1.12 + 10*(9863200 + 48) % 100'
+    expected_output = '100.0'
+    assert execute_src(src) == expected_output
+
+
+def test_concat_strings():
+    src = '"hello " ++ "world" ++ "!!!"'
+    expected_output = "'hello world!!!'"
+    assert execute_src(src) == expected_output
+
+
+def test_concat_lists():
+    src = '[1,2,3] ++ [] ++ [10,20,30]'
+    expected_output = '[1,2,3,10,20,30]'
+    assert execute_src(src) == expected_output
+
+
+def test_concat_ranges():
+    src = '(0..5) ++ (100..105) ++ [9,8]'
+    expected_output = '[0,1,2,3,4,100,101,102,103,104,9,8]'
+    assert execute_src(src) == expected_output
+
+
+def test_select_element():
+    src = '[ [0,1,2,3][2], (0..4)[1], "0123"[0], [0..4][3] ]'
+    expected_output = '[2,1,0,3]'
+    assert execute_src(src) == expected_output
+
+
+def test_select_slice():
+    src = (
+        '([0,1,2,3][2:] ++ (0..4)[1:3] ++ (0..4)[:2])'
+        '++ ([0..4][4:0:-1] ++ [0,1,2,3][:1:-1])'
+    )
+    expected_output = '[2,3,1,2,0,1,3,2,1,3,2]'
+    assert execute_src(src) == expected_output
+
+
+def test_select_slice_range():
+    src = '(0..100)[70:30:-1]'
+    expected_output = '(70..30 by -1)'
+    assert execute_src(src) == expected_output
+
+
+def test_logic_and():
+    src = '[false and false, false and true, true and false, true and true]'
+    expected_output = '[false,false,false,true]'
+    assert execute_src(src) == expected_output
+
+
+def test_logic_or():
+    src = '[false or false, false or true, true or false, true or true]'
+    expected_output = '[false,true,true,true]'
+    assert execute_src(src) == expected_output
+
+
+def test_logic_xor():
+    src = '[false xor false, false xor true, true xor false, true xor true]'
+    expected_output = '[false,true,true,false]'
+    assert execute_src(src) == expected_output
+
+
+def test_logic_not():
+    src = '[not false, not true, !false, !true]'
+    expected_output = '[true,false,true,false]'
+    assert execute_src(src) == expected_output
+
+
+def test_comparisons():
+    src = '[1 < 3, 3 > 5, 4 <= 5]'
+    expected_output = '[True,False,True]'
     assert execute_src(src) == expected_output

@@ -1,8 +1,25 @@
 from abc import ABC, abstractmethod
+from enum import Enum
 import typing
 
 
-class Number(ABC):
+class ComparisonResult(Enum):
+    EQUAL = (0,)
+    LESS = (1,)
+    GREATER = 2
+
+
+class Object(ABC):
+    @abstractmethod
+    def equals(self, other: 'Object'):
+        ...
+
+    @abstractmethod
+    def compare(self, other: 'Object') -> ComparisonResult:
+        ...
+
+
+class Number(Object):
     @abstractmethod
     def val(self) -> int | float:
         ...
@@ -30,6 +47,20 @@ class Number(ABC):
 
     def negate(self) -> 'Number':
         return self.wrap(-self.val())
+
+    def equals(self, other: 'Object'):
+        assert isinstance(other, Number)
+        return self.val() == other.val()
+
+    def compare(self, other: 'Object') -> ComparisonResult:
+        assert isinstance(other, Number)
+        a = self.val()
+        b = other.val()
+        if a == b:
+            return ComparisonResult.EQUAL
+        elif a < b:
+            return ComparisonResult.LESS
+        return ComparisonResult.GREATER
 
     def __str__(self):
         return str(self.val())
@@ -65,7 +96,7 @@ class Float(Number):
         return self.__value
 
 
-class Boolean:
+class Boolean(Object):
     __slots__ = ('__value',)
 
     def __init__(self, value: bool):
@@ -87,6 +118,20 @@ class Boolean:
     def logical_not(self) -> 'Boolean':
         return Boolean(not self.val())
 
+    def equals(self, other: 'Object'):
+        assert isinstance(other, Boolean)
+        return self.val() == other.val()
+
+    def compare(self, other: 'Object') -> ComparisonResult:
+        assert isinstance(other, Boolean)
+        a = self.val()
+        b = other.val()
+        if a == b:
+            return ComparisonResult.EQUAL
+        elif a < b:
+            return ComparisonResult.LESS
+        return ComparisonResult.GREATER
+
     def __bool__(self):
         return self.__value
 
@@ -94,16 +139,43 @@ class Boolean:
         return 'true' if self.__value else 'false'
 
 
-class UnitValue(typing.NamedTuple):
-    unit_type: str
-    unit: str
-    value: int | float
+class UnitValue(Object):
+    __slots__ = (
+        '__unit_type',
+        '__unit',
+        '__value',
+    )
+
+    def __init__(self, unit_type: str, unit: str, value: int | float):
+        self.__unit_type = unit_type
+        self.__unit = unit
+        self.__value = value
 
     def __str__(self):
-        return f'{self.value}{self.unit}'
+        return f'{self.__value}{self.__unit}'
+
+    def base_val(self) -> int | float:
+        # todo: implement getting value in base unit quantity
+        return self.__value
+
+    def equals(self, other: 'Object'):
+        assert isinstance(other, UnitValue)
+        assert self.__unit_type == other.__unit_type
+        return self.base_val() == other.base_val()
+
+    def compare(self, other: 'Object') -> ComparisonResult:
+        assert isinstance(other, UnitValue)
+        assert self.__unit_type == other.__unit_type
+        a = self.base_val()
+        b = other.base_val()
+        if a == b:
+            return ComparisonResult.EQUAL
+        elif a < b:
+            return ComparisonResult.LESS
+        return ComparisonResult.GREATER
 
 
-class Collection(ABC):
+class Collection(Object):
     @abstractmethod
     def data(self) -> str | list:
         ...
@@ -151,6 +223,20 @@ class String(Collection):
     def data(self) -> str:
         return self.__data
 
+    def equals(self, other: 'Object'):
+        assert isinstance(other, String)
+        return self.data() == other.data()
+
+    def compare(self, other: 'Object') -> ComparisonResult:
+        assert isinstance(other, String)
+        a = self.data()
+        b = other.data()
+        if a == b:
+            return ComparisonResult.EQUAL
+        elif a < b:
+            return ComparisonResult.LESS
+        return ComparisonResult.GREATER
+
 
 class List(Collection):
     __slots__ = ('__data',)
@@ -163,6 +249,13 @@ class List(Collection):
 
     def append(self, item):
         self.__data.append(item)
+
+    def equals(self, other: 'Object'):
+        assert isinstance(other, List) or isinstance(other, Range)
+        return self.data() == other.data()
+
+    def compare(self, other: 'Object') -> ComparisonResult:
+        raise NotImplementedError('Comparing lists is not yet implemented')
 
     def __str__(self):
         inner = ','.join(str(i) for i in self.data())
@@ -194,9 +287,13 @@ class Range(Collection):
     def constrain(self, index):
         return min(max(index, self.__start), self.__end)
 
-    def select_slice(self, start: Number, end: Number, jump: Number) -> 'Range':
+    def select_slice(
+        self, start: Number, end: Number, jump: Number
+    ) -> 'Range':
         if start:
-            start = min(max(start.val() + self.__start, self.__start), self.__end-1)
+            start = min(
+                max(start.val() + self.__start, self.__start), self.__end - 1
+            )
         else:
             start = self.__start
 
@@ -211,6 +308,19 @@ class Range(Collection):
             jump = self.__jump
 
         return Range(Integer(start), Integer(end), Integer(jump))
+
+    def equals(self, other: 'Object'):
+        assert isinstance(other, Range) or isinstance(other, List)
+        if isinstance(other, Range):
+            return (
+                self.size() == other.size()
+                and self.__start == other.__start
+                and self.__jump == other.__jump
+            )
+        return self.data() == other.data()
+
+    def compare(self, other: 'Object') -> ComparisonResult:
+        raise NotImplementedError('Comparing ranges is not yet implemented')
 
     def __str__(self):
         if self.__jump == 1:
