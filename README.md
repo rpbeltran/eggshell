@@ -5,7 +5,13 @@ Egg is a shell programming that tries to have some cake and eat some too.
 It tries to be terse and productive for use in a shell:
 ```
 # Sum the second column of a csv
-$ total := cat my_file.csv | _.split.map $ _.split(',')[1].int | _.sum
+$ cat my_file.csv | _.cols(',')[1].reduce @+
+
+# Get files greater than 10mb and sort them by last modified 
+$ uti::ls.filt(_.size > 10mb).sort ..modified
+
+# Send stdout to one file and stderror to another
+$ ./foo | do { _.out >> 'out.txt'; _.err >> 'errors.txt' }   
 ```
 
 While being sane and extendable for use in scripts:
