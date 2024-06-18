@@ -9,6 +9,7 @@ from frontend.lexer import EggLexer
 from frontend.lexer_util import LexerError
 from frontend.parser import get_parser
 from backend.py_generator import PythonGenerator
+from .profilers import maybe_profile, ProfilerConfig
 
 
 from runtime import egg_lib as _e
@@ -22,14 +23,19 @@ class CLIMode(Enum):
 
 
 class EggCLI:
-    def __init__(self, mode: CLIMode):
+    def __init__(self, mode: CLIMode, use_profiler: bool = False):
         self.mode = mode
+        self.profiler_config = ProfilerConfig(use_profiler)
+        self.interactive_counter = 0
+        self.initialize_transformers()
 
-        if mode == CLIMode.lex:
+    @maybe_profile(lambda self: 'initialization')
+    def initialize_transformers(self):
+        if self.mode == CLIMode.lex:
             self.lexer = EggLexer()
-        elif mode == CLIMode.ast:
+        elif self.mode == CLIMode.ast:
             self.parser = get_parser(lowering=False)
-        elif mode in [CLIMode.pygen, CLIMode.execute]:
+        elif self.mode in [CLIMode.pygen, CLIMode.execute]:
             self.parser = get_parser()
             self.pygen = PythonGenerator()
 
@@ -41,15 +47,21 @@ class EggCLI:
             if expression == 'exit':
                 break
             try:
-                self.consume_source(expression)
+                self.consume_interactive(expression)
             except LexerError as e:
                 print(e, file=sys.stderr)
             except lark.exceptions.LarkError as e:
                 print(e, file=sys.stderr)
 
+    @maybe_profile(lambda self, path: 'script_' + pathlib.Path(path).name)
     def consume_script(self, file_path):
         script = pathlib.Path(file_path).read_text('utf-8')
         self.consume_source(script)
+
+    @maybe_profile(lambda self, src: f'interactive_{self.interactive_counter}')
+    def consume_interactive(self, src):
+        self.consume_source(src)
+        self.interactive_counter += 1
 
     def consume_source(self, src: str):
         if not src:

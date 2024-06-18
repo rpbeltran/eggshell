@@ -28,6 +28,12 @@ def get_args() -> argparse.Namespace:
     )
 
     arg_parser.add_argument(
+        '--profiler',
+        help='Run a profiler to analyze performance bottlenecks.',
+        action='store_true',
+    )
+
+    arg_parser.add_argument(
         '-s',
         '--script',
         help='Path of script to be executed.'
@@ -50,7 +56,7 @@ def main():
     else:
         mode = cli.CLIMode.execute
 
-    egg_cli = cli.EggCLI(mode)
+    egg_cli = cli.EggCLI(mode, use_profiler=args.profiler)
 
     if args.script:
         egg_cli.consume_script(args.script)
