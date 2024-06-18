@@ -71,15 +71,14 @@ class LexerState:
     def step_forward(self, steps=1):
         self.head += steps
 
-    def peek(self, strip=False) -> str:
-        tail = self.data[self.head + 1 :]
-        if strip:
-            return tail.lstrip()
-        return tail
+    def next_char(self) -> str:
+        return self.data[self.head + 1]
 
-    def peek_one(self, strip=False) -> str:
-        if peek := self.peek(strip):
-            return peek[0]
+    def next_nonwhitespace(self) -> str:
+        for i in range(len(self.data) - self.head - 1):
+            c = self.data[self.head + 1 + i]
+            if not c.isspace():
+                return c
         return ''
 
     def clear_prev(self):

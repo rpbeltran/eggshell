@@ -26,11 +26,13 @@ class TrieNode:
 class MaxMunchTrie:
     def __init__(self, named_patterns: Dict[str, str]):
         self.root_node = TrieNode(0, named_patterns)
+        self.first_chars: Set[str] = set(self.root_node.children.keys())
 
-    def largest_prefix(self, s) -> Optional[TrieResult]:
+    def largest_prefix(self, data, data_start_from) -> Optional[TrieResult]:
         node = self.root_node
-        for i in range(len(s)):
-            if s[i] not in node.children:
+        for i in range(len(data) - data_start_from):
+            c = data[data_start_from + i]
+            if c not in node.children:
                 return node.value
-            node = node.children[s[i]]
+            node = node.children[c]
         return node.value

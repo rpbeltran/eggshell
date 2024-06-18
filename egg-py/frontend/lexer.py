@@ -18,10 +18,13 @@ class StartNode(DFANode):
             state.clear_prev()
         elif c.isspace():
             pass
-        elif (match := match_operator(c, state)) != None:
+        elif (
+            c in all_operators_trie.first_chars
+            and (match := match_operator(state)) is not None
+        ):
             state.token_start = state.head
             state.goto_node(OperatorsNode(match[0], match[1]), step_back=True)
-        elif c.isdigit() or (c == '-' and state.peek_one().isdigit()):
+        elif c.isdigit() or (c == '-' and state.next_char().isdigit()):
             state.token_start = state.head
             state.goto_node(NumberNode(), step_back=True)
         elif c.isalpha() or c in './*+-%_':
@@ -44,11 +47,11 @@ class StartNode(DFANode):
         yield from ()
 
 
-def match_operator(c: str, state: LexerState) -> Optional[Tuple[str, str]]:
+def match_operator(state: LexerState) -> Optional[Tuple[str, str]]:
     allow_arithmetic = state.in_block() or state.get_prev() != 'EXEC_ARG'
     trie = all_operators_trie if allow_arithmetic else non_arithmetic_ps_trie
-    if (match := trie.largest_prefix(c + state.peek())) is not None:
-        return c + state.peek()[: match.length - 1], match.token
+    if (match := trie.largest_prefix(state.data, state.head)) is not None:
+        return state.data[state.head : state.head + match.length], match.token
     return None
 
 
@@ -85,7 +88,7 @@ class CommentNode(DFANode):
 
 class IdentifierNode(DFANode):
     def step(self, c: str, state: LexerState) -> Iterator[Token]:
-        if c == '.' and state.peek_one() != '.':
+        if c == '.' and state.next_char() != '.':
             if state.token_start == state.head:
                 raise LexerError('Identifier is empty', state)
             yield state.get_token('NAME', inclusive=False)
@@ -185,7 +188,7 @@ class UnquotedLiteral(DFANode):
     def step(self, c: str, state: LexerState) -> Iterator[Token]:
         space = False
         if c.isspace() and c != '\n':
-            c = state.peek_one(strip=True)
+            c = state.next_nonwhitespace()
             space = True
 
         source = state.get_token_source(inclusive=False)
@@ -193,7 +196,7 @@ class UnquotedLiteral(DFANode):
 
         if (
             c == '.'
-            and state.peek_one() != '.'
+            and state.next_char() != '.'
             and predicted_token_type in ['NAME', 'IMPLICIT_LAMBDA_PARAM']
         ):
             if len(source) != 0:
@@ -219,7 +222,7 @@ class UnquotedLiteral(DFANode):
             space
             or c in '<>{}[])|;,\n'
             or c == '.'
-            and state.peek_one() == '.'
+            and state.next_char() == '.'
         ):
             yield state.get_token(predicted_token_type, source=source)
             if c == '\n' and state.paren_depth == 0:
@@ -250,7 +253,7 @@ class NumberNode(DFANode):
 
     def step(self, c: str, state: LexerState) -> Iterator[Token]:
         if c == '.':
-            if state.peek_one() == '.':
+            if state.next_char() == '.':
                 token_type = self.get_token_type(state)
                 yield state.get_token(token_type, inclusive=False)
                 state.goto_node(StartNode(), step_back=True)
@@ -277,7 +280,8 @@ class NumberNode(DFANode):
         if not c.isalpha():
             return None
         unit = c.lower()
-        for c_next in state.peek():
+        for i in range(len(state.data) - state.head - 1):
+            c_next = state.data[state.head + 1 + i]
             if not c_next.isalpha():
                 break
             unit += c_next.lower()
