@@ -1,54 +1,56 @@
+from .mm_trie import MaxMunchTrie
+
+
 def _make_max_munch_safe(d):
     return dict(sorted(d.items(), reverse=True))
 
 
-NON_ARITHMETIC_OPERATORS = _make_max_munch_safe(
-    {
-        '...': 'ELLIPSIS',
-        ':=': 'DECLARE',
-        '+=': 'PLUS_ASSIGN',
-        '-=': 'MINUS_ASSIGN',
-        '*=': 'TIMES_ASSIGN',
-        '/=': 'DIVIDE_ASSIGN',
-        '%=': 'MOD_ASSIGN',
-        '**=': 'POWER_ASSIGN',
-        '//=': 'INT_DIV_ASSIGN',
-        '++=': 'CONCAT_ASSIGN',
-        '|=': 'PIPE_ASSIGN',
-        '&&=': 'SEQ_AND_ASSIGN',
-        '||=': 'SEQ_OR_ASSIGN',
-        '>>': 'APPEND_FILE',
-        '\\': 'LAMBDA',
-        '->': 'ARROW',
-        '&&': 'SEQ_AND',
-        '||': 'SEQ_OR',
-        '::': 'NAMESPACE',
-        '==': 'EQUALS',
-        '!=': 'NOT_EQUALS',
-        '>=': 'GTE',
-        '<=': 'LTE',
-        '..': 'RANGE',
-        '++': 'CONCAT',
-        ':': 'COLON',
-        '=': 'ASSIGN',
-        '|': 'PIPE',
-        ',': 'COMMA',
-        '(': 'PAREN_OPEN',
-        ')': 'PAREN_CLOSE',
-        '{': 'CURLY_OPEN',
-        '}': 'CURLY_CLOSE',
-        '<': 'ANGLE_OPEN',
-        '>': 'ANGLE_CLOSE',
-        '[': 'SQUARE_OPEN',
-        ']': 'SQUARE_CLOSE',
-        ';': 'SEMICOLON',
-        '$': 'CURRY',
-        '!': 'NOT',
-        '~': 'ASYNC',
-    }
-)
+NON_ARITHMETIC_OPERATORS = {
+    '...': 'ELLIPSIS',
+    ':=': 'DECLARE',
+    '+=': 'PLUS_ASSIGN',
+    '-=': 'MINUS_ASSIGN',
+    '*=': 'TIMES_ASSIGN',
+    '/=': 'DIVIDE_ASSIGN',
+    '%=': 'MOD_ASSIGN',
+    '**=': 'POWER_ASSIGN',
+    '//=': 'INT_DIV_ASSIGN',
+    '++=': 'CONCAT_ASSIGN',
+    '|=': 'PIPE_ASSIGN',
+    '&&=': 'SEQ_AND_ASSIGN',
+    '||=': 'SEQ_OR_ASSIGN',
+    '>>': 'APPEND_FILE',
+    '\\': 'LAMBDA',
+    '->': 'ARROW',
+    '&&': 'SEQ_AND',
+    '||': 'SEQ_OR',
+    '::': 'NAMESPACE',
+    '==': 'EQUALS',
+    '!=': 'NOT_EQUALS',
+    '>=': 'GTE',
+    '<=': 'LTE',
+    '..': 'RANGE',
+    '++': 'CONCAT',
+    ':': 'COLON',
+    '=': 'ASSIGN',
+    '|': 'PIPE',
+    ',': 'COMMA',
+    '(': 'PAREN_OPEN',
+    ')': 'PAREN_CLOSE',
+    '{': 'CURLY_OPEN',
+    '}': 'CURLY_CLOSE',
+    '<': 'ANGLE_OPEN',
+    '>': 'ANGLE_CLOSE',
+    '[': 'SQUARE_OPEN',
+    ']': 'SQUARE_CLOSE',
+    ';': 'SEMICOLON',
+    '$': 'CURRY',
+    '!': 'NOT',
+    '~': 'ASYNC',
+}
+non_arithmetic_ps_trie = MaxMunchTrie(NON_ARITHMETIC_OPERATORS)
 
-ALL_OPERATORS = _make_max_munch_safe(
+all_operators_trie = MaxMunchTrie(
     {
         **NON_ARITHMETIC_OPERATORS,
         '**': 'POWER',
@@ -60,9 +62,6 @@ ALL_OPERATORS = _make_max_munch_safe(
         '%': 'MOD',
     }
 )
-
-NON_ARITHMETIC_OPERATOR_STARTS = {op[0] for op in NON_ARITHMETIC_OPERATORS}
-ALL_OPERATOR_STARTS = {op[0] for op in ALL_OPERATORS}
 
 KEYWORDS = _make_max_munch_safe(
     {

@@ -3,10 +3,8 @@ from typing import Iterator, Optional, Tuple
 
 from .lexer_constants import (
     KEYWORDS,
-    ALL_OPERATORS,
-    ALL_OPERATOR_STARTS,
-    NON_ARITHMETIC_OPERATORS,
-    NON_ARITHMETIC_OPERATOR_STARTS,
+    non_arithmetic_ps_trie,
+    all_operators_trie,
     UNITS,
 )
 from .lexer_util import DFANode, LexerError, LexerState, Token
@@ -48,19 +46,9 @@ class StartNode(DFANode):
 
 def match_operator(c: str, state: LexerState) -> Optional[Tuple[str, str]]:
     allow_arithmetic = state.in_block() or state.get_prev() != 'EXEC_ARG'
-    starts = (
-        ALL_OPERATOR_STARTS
-        if allow_arithmetic
-        else NON_ARITHMETIC_OPERATOR_STARTS
-    )
-    operators = ALL_OPERATORS if allow_arithmetic else NON_ARITHMETIC_OPERATORS
-    if c in starts:
-        data = c + state.peek()
-        for pattern, token_type in operators.items():
-            if token_type == 'NAMESPACE' and state.get_prev() == 'SQUARE_OPEN':
-                continue
-            if data.startswith(pattern):
-                return pattern, token_type
+    trie = all_operators_trie if allow_arithmetic else non_arithmetic_ps_trie
+    if (match := trie.largest_prefix(c + state.peek())) is not None:
+        return c + state.peek()[: match.length - 1], match.token
     return None
 
 
