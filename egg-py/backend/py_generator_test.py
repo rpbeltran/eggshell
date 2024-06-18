@@ -254,7 +254,7 @@ def test_select_slice_str():
 
 
 def test_select_slice_jump():
-    src = '[1,2,3][1:2:3]'
+    src = '[1,2,3][1:2 by 3]'
     expected_gen_code =(
         '_e.make_list(_e.make_integer(1),_e.make_integer(2),_e.make_integer(3))'
         '.select_slice(_e.make_integer(1),_e.make_integer(2),_e.make_integer(3))'
@@ -263,7 +263,7 @@ def test_select_slice_jump():
 
 
 def test_select_slice_str_jump():
-    src = '"hello world"[:3:-1]'
+    src = '"hello world"[:3 by -1]'
     expected_gen_code = (
         "_e.make_string('hello world')"
         ".select_slice(None,_e.make_integer(3),_e.make_integer(1).negate())"

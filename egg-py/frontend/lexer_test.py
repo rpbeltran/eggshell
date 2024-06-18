@@ -719,13 +719,14 @@ def test_slice():
     assert get_tokens(src) == expected_tokens
 
 
-def test_slice_empty():
-    src = '@a[::]'
+def test_slice_rev():
+    src = '@a[: by 2]'
     expected_tokens = [
         ('NAME', 'a'),
         ('SQUARE_OPEN', '['),
         ('COLON', ':'),
-        ('COLON', ':'),
+        ('BY', 'by'),
+        ('INTEGER', '2'),
         ('SQUARE_CLOSE', ']'),
     ]
     assert get_tokens(src) == expected_tokens

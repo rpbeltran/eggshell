@@ -79,14 +79,14 @@ def test_select_element():
 def test_select_slice():
     src = (
         '([0,1,2,3][2:] ++ (0..4)[1:3] ++ (0..4)[:2])'
-        '++ ([0..4][4:0:-1] ++ [0,1,2,3][:1:-1])'
+        '++ ([0..4][4:0 by -1] ++ [0,1,2,3][:1 by -1])'
     )
     expected_output = '[2,3,1,2,0,1,3,2,1,3,2]'
     assert execute_src(src) == expected_output
 
 
 def test_select_slice_range():
-    src = '(0..100)[70:30:-1]'
+    src = '(0..100)[70:30 by -1]'
     expected_output = '(70..30 by -1)'
     assert execute_src(src) == expected_output
 

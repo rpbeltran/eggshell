@@ -93,6 +93,7 @@ KEYWORDS = _make_max_munch_safe(
         'const': 'CONST',
         'class': 'CLASS',
         'with': 'WITH',
+        'by': 'BY',
     }
 )
 

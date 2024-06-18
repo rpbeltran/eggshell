@@ -343,10 +343,10 @@ unary_not: "NOT" atomic
 select_element: selectable_atomic "SQUARE_OPEN" expression "SQUARE_CLOSE"
 
 select_slice: selectable_atomic "SQUARE_OPEN" _select_slice_inner "SQUARE_CLOSE"
-_select_slice_inner: slice_start "COLON" slice_end ("COLON" slice_jump)?
+_select_slice_inner: slice_start "COLON" slice_end slice_jump
 slice_start: expression?
 slice_end: expression?
-slice_jump: expression?
+slice_jump: ("BY" expression)?
 
 
 # -- Lexer Declarations --

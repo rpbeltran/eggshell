@@ -850,7 +850,7 @@ def test_select_element():
 
 
 def test_select_slice():
-    src = '@a[1:2:3]'
+    src = '@a[1:2 by 3]'
     expected_ast = (
         'select_slice'
         '\n  identifier\ta'
@@ -873,24 +873,13 @@ def test_select_slice2():
         '\n    integer_literal\t1'
         '\n  slice_end'
         '\n    integer_literal\t2'
-    )
-    assert get_ast(src) == expected_ast
-
-
-def test_select_slice_empty():
-    src = '@a[::]'
-    expected_ast = (
-        'select_slice'
-        '\n  identifier\ta'
-        '\n  slice_start'
-        '\n  slice_end'
         '\n  slice_jump'
     )
     assert get_ast(src) == expected_ast
 
 
 def test_select_slice_rev():
-    src = '@a[::-1]'
+    src = '@a[: by -1]'
     expected_ast = (
         'select_slice'
         '\n  identifier\ta'
@@ -911,12 +900,13 @@ def test_select_slice_end_only():
         '\n  slice_start'
         '\n  slice_end'
         '\n    integer_literal\t1'
+        '\n  slice_jump'
     )
     assert get_ast(src) == expected_ast
 
 
-def test_select_slice_end_only2():
-    src = '@a[:1:]'
+def test_select_slice_end_and_jump():
+    src = '@a[:1 by 2]'
     expected_ast = (
         'select_slice'
         '\n  identifier\ta'
@@ -924,6 +914,7 @@ def test_select_slice_end_only2():
         '\n  slice_end'
         '\n    integer_literal\t1'
         '\n  slice_jump'
+        '\n    integer_literal\t2'
     )
     assert get_ast(src) == expected_ast
 
