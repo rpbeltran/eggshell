@@ -1,12 +1,11 @@
 import lark.lexer
 
-from typing import Callable, Optional
+from typing import Callable, NamedTuple, Optional
 
 
-class Token:
-    def __init__(self, token_type: str, source: str):
-        self.token_type = token_type
-        self.source = source
+class Token(NamedTuple):
+    token_type: str
+    source: str
 
     def to_lark(self):
         return lark.lexer.Token(self.token_type, self.source)
