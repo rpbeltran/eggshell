@@ -11,8 +11,10 @@ from frontend.parser import get_parser
 from backend.py_generator import PythonGenerator
 from .profilers import maybe_profile, ProfilerConfig
 
-
 from runtime import egg_lib as _e
+from runtime import memory
+
+_m = memory.Memory()
 
 
 class CLIMode(Enum):

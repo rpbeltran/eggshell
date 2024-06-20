@@ -6,7 +6,9 @@ import lark
 
 from frontend.parser import get_parser
 from backend.py_generator import PythonGenerator
+
 from . import egg_lib as _e
+from runtime import memory
 
 """
 INSTRUCTIONS: To add new test cases:
@@ -33,6 +35,7 @@ pygen = PythonGenerator()
 
 
 def execute_src(src: str) -> str:
+    _m = memory.Memory()
     ast_or_value = parser.parse(src)
     if type(ast_or_value) != lark.tree.Tree:
         return str(ast_or_value)
@@ -118,4 +121,10 @@ def test_logic_not():
 def test_comparisons():
     src = '[1 < 3, 3 > 5, 4 <= 5]'
     expected_output = '[True,False,True]'
+    assert execute_src(src) == expected_output
+
+
+def test_declare_untyped_variable():
+    src = 'a := 1'
+    expected_output = '0'
     assert execute_src(src) == expected_output

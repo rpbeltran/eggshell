@@ -13,6 +13,7 @@ class FeatureUnimplemented(Exception):
 class PythonGenerator(Transformer):
 
     backend_library = '_e'
+    memory_instance = '_m'
 
     @staticmethod
     def map_to_constant(value):
@@ -102,6 +103,13 @@ class PythonGenerator(Transformer):
     boolean_literal = combine_with_function(
         'make_boolean', map_items=lambda item: item == 'true'
     )
+
+    # Memory
+    @staticmethod
+    def declare_untyped_variable(items):
+        (name, value) = items
+        name = name.value
+        return f'{PythonGenerator.memory_instance}.new({value}, name={repr(name)})'
 
     # External Commands
     exec = combine_with_function('make_external_command', quote_args=True)

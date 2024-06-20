@@ -276,3 +276,9 @@ def test_ranges():
     src_square = '[5..15]'
     expected_gen_code = '_e.make_range(_e.make_integer(5),_e.make_integer(15))'
     assert get_gen_code(src) == get_gen_code(src_square) == expected_gen_code
+
+
+def test_declare_untyped_variable():
+    src = 'a := 1'
+    expected_gen_code = "_m.new(_e.make_integer(1), name='a')"
+    assert get_gen_code(src) == expected_gen_code
