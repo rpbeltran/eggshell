@@ -1,11 +1,12 @@
 import bisect
-from typing import Dict, NamedTuple, Tuple
+from typing import Dict, NamedTuple, Optional, Tuple
 
 
 class SourceLocation(NamedTuple):
     file_path: str
     start_offset: int
     end_offset: int
+    src: Optional[str] = None
 
 
 class Source:
@@ -26,19 +27,24 @@ class Source:
 
 
 class SourceManager:
-    def __init__(self):
-        self.sources: Dict[str, Source] = {}
+    sources: Dict[str, Source] = {}
 
-    def add_source(self, path, src):
-        self.sources[path] = Source(src)
+    @classmethod
+    def add_source(cls, path, src):
+        cls.sources[path] = Source(src)
 
-    def get_source_for_loc(self, loc: SourceLocation) -> str:
-        return self.sources[loc.file_path].source[
-            loc.start_offset : loc.end_offset
-        ]
+    @classmethod
+    def get_source_for_loc(cls, loc: SourceLocation) -> str:
+        if loc.src is None:
+            return cls.sources[loc.file_path].source[
+                loc.start_offset : loc.end_offset
+            ]
+        return loc.src
 
-    def get_start_line_col(self, loc: SourceLocation) -> Tuple[int, int]:
-        return self.sources[loc.file_path].get_line_col(loc.start_offset)
+    @classmethod
+    def get_start_line_col(cls, loc: SourceLocation) -> Tuple[int, int]:
+        return cls.sources[loc.file_path].get_line_col(loc.start_offset)
 
-    def get_end_line_col(self, loc: SourceLocation) -> Tuple[int, int]:
-        return self.sources[loc.file_path].get_line_col(loc.end_offset)
+    @classmethod
+    def get_end_line_col(cls, loc: SourceLocation) -> Tuple[int, int]:
+        return cls.sources[loc.file_path].get_line_col(loc.end_offset)

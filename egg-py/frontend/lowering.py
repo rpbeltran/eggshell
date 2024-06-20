@@ -1,6 +1,7 @@
 from lark import Transformer, Tree
 
 from .lexer_constants import UNITS
+from .source import SourceManager
 
 
 class LoweringTransformer(Transformer):
@@ -9,32 +10,82 @@ class LoweringTransformer(Transformer):
         return Tree('exec', [str(item) for item in items])
 
     @staticmethod
-    def unit_integer_literal(items):
+    def integer_literal(items):
         (literal,) = items
-        (value, unit) = literal.split(':')
-        unit_type = UNITS[unit]
         return Tree(
-            'unit_literal',
+            'integer_literal',
+            [int(SourceManager.get_source_for_loc(literal.value))],
+        )
+
+    @staticmethod
+    def float_literal(items):
+        (literal,) = items
+        return Tree(
+            'float_literal',
+            [float(SourceManager.get_source_for_loc(literal.value))],
+        )
+
+    @staticmethod
+    def string_literal(items):
+        (literal,) = items
+        return Tree(
+            'string_literal', [SourceManager.get_source_for_loc(literal.value)]
+        )
+
+    @staticmethod
+    def exec(items):
+        return Tree(
+            'exec',
             [
-                Tree('unit_type', [unit_type]),
-                Tree('unit', [unit]),
-                int(value),
+                SourceManager.get_source_for_loc(literal.value)
+                for literal in items
             ],
         )
 
     @staticmethod
+    def boolean_literal(items):
+        (literal,) = items
+        return Tree(
+            'boolean_literal',
+            [SourceManager.get_source_for_loc(literal.value)],
+        )
+
+    @staticmethod
+    def unit_integer_literal(items):
+        (literal,) = items
+        literal = SourceManager.get_source_for_loc(literal.value)
+        for i, c in enumerate(literal):
+            if not c.isdigit():
+                value = literal[:i]
+                unit = literal[i:]
+                unit_type = UNITS[unit]
+                return Tree(
+                    'unit_literal',
+                    [
+                        Tree('unit_type', [unit_type]),
+                        Tree('unit', [unit]),
+                        int(value),
+                    ],
+                )
+        raise ValueError(f'Missing unit for unit_literal: {literal}')
+
+    @staticmethod
     def unit_float_literal(items):
         (literal,) = items
-        (value, unit) = literal.split(':')
-        unit_type = UNITS[unit]
-        return Tree(
-            'unit_literal',
-            [
-                Tree('unit_type', [unit_type]),
-                Tree('unit', [unit]),
-                float(value),
-            ],
-        )
+        for i, c in enumerate(literal):
+            if not (c.isdigit() or c == '.'):
+                value = literal[:i]
+                unit = literal[i:]
+                unit_type = UNITS[unit]
+                return Tree(
+                    'unit_literal',
+                    [
+                        Tree('unit_type', [unit_type]),
+                        Tree('unit', [unit]),
+                        float(value),
+                    ],
+                )
+        raise ValueError(f'Missing unit for unit_literal: {literal}')
 
     @staticmethod
     def plus_assign(items):

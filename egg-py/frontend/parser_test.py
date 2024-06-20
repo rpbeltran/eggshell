@@ -1,7 +1,7 @@
 from typing import Dict
 
-from .parser import *
-
+from .parser import Parser
+from .source import SourceManager
 
 """
 INSTRUCTIONS: To add new test cases:
@@ -23,11 +23,12 @@ def test_no_new_test_cases():
     assert len(new_test_cases) == 0
 
 
-parser = get_parser(lowering=False)
+parser = Parser(lowering=False)
 
 
 def get_ast(src) -> str:
-    return parser.parse(src).pretty().strip()
+    SourceManager.add_source('', src)
+    return parser.parse('').pretty().strip()
 
 
 def test_pipe2():
@@ -1272,8 +1273,8 @@ def test_unit_b():
     src = '45b + 4.5b'
     expected_ast = (
         'addition'
-        '\n  unit_integer_literal\t45:b'
-        '\n  unit_float_literal\t4.5:b'
+        '\n  unit_integer_literal\t45b'
+        '\n  unit_float_literal\t4.5b'
     )
     assert get_ast(src) == expected_ast
 
@@ -1282,8 +1283,8 @@ def test_unit_kb():
     src = '45kb + 4.5kb'
     expected_ast = (
         'addition'
-        '\n  unit_integer_literal\t45:kb'
-        '\n  unit_float_literal\t4.5:kb'
+        '\n  unit_integer_literal\t45kb'
+        '\n  unit_float_literal\t4.5kb'
     )
     assert get_ast(src) == expected_ast
 
@@ -1292,8 +1293,8 @@ def test_unit_mb():
     src = '45mb + 4.5mb'
     expected_ast = (
         'addition'
-        '\n  unit_integer_literal\t45:mb'
-        '\n  unit_float_literal\t4.5:mb'
+        '\n  unit_integer_literal\t45mb'
+        '\n  unit_float_literal\t4.5mb'
     )
     assert get_ast(src) == expected_ast
 
@@ -1302,8 +1303,8 @@ def test_unit_gb():
     src = '45gb + 4.5gb'
     expected_ast = (
         'addition'
-        '\n  unit_integer_literal\t45:gb'
-        '\n  unit_float_literal\t4.5:gb'
+        '\n  unit_integer_literal\t45gb'
+        '\n  unit_float_literal\t4.5gb'
     )
     assert get_ast(src) == expected_ast
 
@@ -1312,8 +1313,8 @@ def test_unit_tb():
     src = '45tb + 4.5tb'
     expected_ast = (
         'addition'
-        '\n  unit_integer_literal\t45:tb'
-        '\n  unit_float_literal\t4.5:tb'
+        '\n  unit_integer_literal\t45tb'
+        '\n  unit_float_literal\t4.5tb'
     )
     assert get_ast(src) == expected_ast
 
@@ -1322,8 +1323,8 @@ def test_unit_pb():
     src = '45pb + 4.5pb'
     expected_ast = (
         'addition'
-        '\n  unit_integer_literal\t45:pb'
-        '\n  unit_float_literal\t4.5:pb'
+        '\n  unit_integer_literal\t45pb'
+        '\n  unit_float_literal\t4.5pb'
     )
     assert get_ast(src) == expected_ast
 
@@ -1332,8 +1333,8 @@ def test_unit_kib():
     src = '45kib + 4.5kib'
     expected_ast = (
         'addition'
-        '\n  unit_integer_literal\t45:kib'
-        '\n  unit_float_literal\t4.5:kib'
+        '\n  unit_integer_literal\t45kib'
+        '\n  unit_float_literal\t4.5kib'
     )
     assert get_ast(src) == expected_ast
 
@@ -1342,8 +1343,8 @@ def test_unit_mib():
     src = '45mib + 4.5mib'
     expected_ast = (
         'addition'
-        '\n  unit_integer_literal\t45:mib'
-        '\n  unit_float_literal\t4.5:mib'
+        '\n  unit_integer_literal\t45mib'
+        '\n  unit_float_literal\t4.5mib'
     )
     assert get_ast(src) == expected_ast
 
@@ -1352,8 +1353,8 @@ def test_unit_gib():
     src = '45gib + 4.5gib'
     expected_ast = (
         'addition'
-        '\n  unit_integer_literal\t45:gib'
-        '\n  unit_float_literal\t4.5:gib'
+        '\n  unit_integer_literal\t45gib'
+        '\n  unit_float_literal\t4.5gib'
     )
     assert get_ast(src) == expected_ast
 
@@ -1362,8 +1363,8 @@ def test_unit_tib():
     src = '45tib + 4.5tib'
     expected_ast = (
         'addition'
-        '\n  unit_integer_literal\t45:tib'
-        '\n  unit_float_literal\t4.5:tib'
+        '\n  unit_integer_literal\t45tib'
+        '\n  unit_float_literal\t4.5tib'
     )
     assert get_ast(src) == expected_ast
 
@@ -1372,8 +1373,8 @@ def test_unit_pib():
     src = '45pib + 4.5pib'
     expected_ast = (
         'addition'
-        '\n  unit_integer_literal\t45:pib'
-        '\n  unit_float_literal\t4.5:pib'
+        '\n  unit_integer_literal\t45pib'
+        '\n  unit_float_literal\t4.5pib'
     )
     assert get_ast(src) == expected_ast
 

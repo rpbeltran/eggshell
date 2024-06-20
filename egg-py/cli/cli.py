@@ -7,7 +7,8 @@ import lark
 
 from frontend.lexer import EggLexer
 from frontend.lexer_util import LexerError
-from frontend.parser import get_parser
+from frontend.parser import Parser
+from frontend.source import SourceManager
 from backend.py_generator import PythonGenerator
 from .profilers import maybe_profile, ProfilerConfig
 
@@ -34,9 +35,9 @@ class EggCLI:
         if self.mode == CLIMode.lex:
             self.lexer = EggLexer()
         elif self.mode == CLIMode.ast:
-            self.parser = get_parser(lowering=False)
+            self.parser = Parser(lowering=False)
         elif self.mode in [CLIMode.pygen, CLIMode.execute]:
-            self.parser = get_parser()
+            self.parser = Parser()
             self.pygen = PythonGenerator()
 
     def interactive_mode(self):
@@ -54,43 +55,45 @@ class EggCLI:
                 print(e, file=sys.stderr)
 
     @maybe_profile(lambda self, path: 'script_' + pathlib.Path(path).name)
-    def consume_script(self, file_path):
-        script = pathlib.Path(file_path).read_text('utf-8')
-        self.consume_source(script)
+    def consume_script(self, path):
+        script = pathlib.Path(path).read_text('utf-8')
+        SourceManager.add_source(path, script)
+        self.consume_source(path)
 
     @maybe_profile(lambda self, src: f'interactive_{self.interactive_counter}')
     def consume_interactive(self, src):
-        self.consume_source(src)
+        if src:
+            SourceManager.add_source('', src)
+            self.consume_source('')
         self.interactive_counter += 1
 
-    def consume_source(self, src: str):
-        if not src:
-            return
+    def consume_source(self, path: str):
         if self.mode == CLIMode.lex:
-            self.show_lex(src)
+            self.show_lex(path)
         elif self.mode == CLIMode.ast:
-            self.show_ast(src)
+            self.show_ast(path)
         elif self.mode == CLIMode.pygen:
-            self.show_pygen(src)
+            self.show_pygen(path)
         elif self.mode == CLIMode.execute:
-            self.execute(src)
+            self.execute(path)
 
-    def show_lex(self, src: str):
+    def show_lex(self, path: str):
+        src = SourceManager.sources[path].source
         tokens = self.lexer.lex(src)
         tokens_str = ', '.join([str(token) for token in tokens])
         print(f'[{tokens_str}]')
 
-    def show_ast(self, src: str):
-        ast = self.parser.parse(src)
+    def show_ast(self, path: str):
+        ast = self.parser.parse(path)
         print(ast.pretty(), end='')
 
-    def show_pygen(self, src: str):
-        ast = self.parser.parse(src)
+    def show_pygen(self, path: str):
+        ast = self.parser.parse(path)
         py = self.pygen.transform(ast)
         print(py)
 
-    def execute(self, src: str):
-        ast_or_value = self.parser.parse(src)
+    def execute(self, path: str):
+        ast_or_value = self.parser.parse(path)
         if type(ast_or_value) == lark.tree.Tree:
             py_code = self.pygen.transform(ast_or_value)
             try:

@@ -1,6 +1,7 @@
 from typing import Dict
 
-from .parser import *
+from .parser import Parser
+from .source import SourceManager
 
 
 """
@@ -23,11 +24,12 @@ def test_no_new_test_cases():
     assert len(new_test_cases) == 0
 
 
-parser = get_parser()
+parser = Parser(lowering=False)
 
 
 def get_ast(src) -> str:
-    return parser.parse(src).pretty().strip()
+    SourceManager.add_source('', src)
+    return parser.parse('').pretty().strip()
 
 
 def test_always_loop_to_while():

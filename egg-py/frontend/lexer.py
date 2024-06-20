@@ -1,5 +1,6 @@
-import lark.lexer
 from typing import Iterator, Optional, Tuple
+
+import lark.lexer
 
 from .lexer_constants import (
     KEYWORDS,
@@ -8,13 +9,14 @@ from .lexer_constants import (
     UNITS,
 )
 from .lexer_util import DFANode, LexerError, LexerState, Token
+from .source import SourceLocation, SourceManager
 
 
 class StartNode(DFANode):
     def step(self, c: str, state: LexerState) -> Iterator[Token]:
         if c == '\n':
             if state.paren_depth == 0:
-                yield Token('SEMICOLON', '')
+                yield Token('SEMICOLON', state.head_to_loc())
             state.clear_prev()
         elif c.isspace():
             pass
@@ -82,7 +84,7 @@ class CommentNode(DFANode):
     def step(self, c: str, state: LexerState) -> Iterator[Token]:
         if c == '\n':
             if state.paren_depth == 0:
-                yield Token('SEMICOLON', '')
+                yield Token('SEMICOLON', state.head_to_loc())
             state.goto_node(StartNode())
 
 
@@ -144,7 +146,7 @@ class QuotedArgListNode(DFANode):
         elif c == '|':
             if state.head != state.token_start:
                 yield state.get_token('EXEC_ARG', inclusive=False)
-            yield Token(f'PIPE', '|')
+            yield Token(f'PIPE', state.head_to_loc())
             state.token_start = state.head + 1
         elif c.isspace():
             if state.head != state.token_start:
@@ -191,32 +193,50 @@ class UnquotedLiteral(DFANode):
             c = state.next_nonwhitespace()
             space = True
 
+        loc = state.get_token_loc(inclusive=False)
         source = state.get_token_source(inclusive=False)
         predicted_token_type = self.get_token_type(source, state)
-
         if (
             c == '.'
             and state.next_char() != '.'
             and predicted_token_type in ['NAME', 'IMPLICIT_LAMBDA_PARAM']
         ):
-            if len(source) != 0:
-                yield state.get_token(predicted_token_type, source=source)
-            yield state.get_token('DOT', source='.')
+            if loc.start_offset != loc.end_offset:
+                yield state.get_token(predicted_token_type, loc=loc)
+            yield state.get_token(f'DOT', loc=state.head_to_loc())
             state.goto_node(StartNode(), step_back=False)
         elif c in '(:=':
             if source in KEYWORDS:
-                yield state.get_token(predicted_token_type, source=source)
+                yield state.get_token(predicted_token_type, loc=loc)
             else:
+                part_start = state.token_start
                 for i, name_part in enumerate(name_parts := source.split('.')):
                     if len(name_part) != 0:
                         if name_part == '_':
                             yield state.get_token(
-                                'IMPLICIT_LAMBDA_PARAM', source=name_part
+                                'IMPLICIT_LAMBDA_PARAM',
+                                loc=SourceLocation(
+                                    state.path, part_start, part_start + 1
+                                ),
                             )
                         else:
-                            yield state.get_token('NAME', source=name_part)
+                            yield state.get_token(
+                                'NAME',
+                                loc=SourceLocation(
+                                    state.path,
+                                    part_start,
+                                    part_start + len(name_part),
+                                ),
+                            )
+                        part_start += len(name_part)
                     if i + 1 < len(name_parts):
-                        yield state.get_token('DOT', source='.')
+                        yield state.get_token(
+                            'DOT',
+                            loc=SourceLocation(
+                                state.path, part_start, part_start + 1
+                            ),
+                        )
+                        part_start += 1
             state.goto_node(StartNode(), step_back=True)
         elif (
             space
@@ -224,10 +244,9 @@ class UnquotedLiteral(DFANode):
             or c == '.'
             and state.next_char() == '.'
         ):
-            yield state.get_token(predicted_token_type, source=source)
+            yield state.get_token(predicted_token_type, loc=loc)
             if c == '\n' and state.paren_depth == 0:
-
-                yield Token(f'SEMICOLON', '')
+                yield Token(f'SEMICOLON', state.head_to_loc())
             state.goto_node(StartNode(), step_back=True)
         elif c in '@':
             raise LexerError(
@@ -268,11 +287,26 @@ class NumberNode(DFANode):
                 and (unit := self.get_units(c, state)) is not None
             ):
                 token_type = f'UNIT_{token_type}'
-                source = state.get_token_source(inclusive=False)
-                yield Token(token_type, f'{source}:{unit}')
+                yield Token(
+                    token_type,
+                    SourceLocation(
+                        state.path,
+                        state.token_start,
+                        state.head + len(unit),
+                        state.data[state.token_start : state.head + len(unit)],
+                    ),
+                )
                 state.head += len(unit)
             else:
-                yield state.get_token(token_type, inclusive=False)
+                yield state.get_token(
+                    token_type,
+                    loc=SourceLocation(
+                        state.path,
+                        state.token_start,
+                        state.head,
+                        state.data[state.token_start : state.head],
+                    ),
+                )
             state.goto_node(StartNode(), step_back=True)
         self.first_char = False
 
@@ -301,9 +335,10 @@ class NumberNode(DFANode):
 class EggLexer:
     def __init__(self):
         self.lexer_state = None
+        self.current_path = ''
 
-    def lex(self, data) -> Iterator[Token]:
-        self.lexer_state = LexerState(data + ' #', StartNode)
+    def lex(self, src) -> Iterator[Token]:
+        self.lexer_state = LexerState(self.current_path, src + ' #', StartNode)
         while self.lexer_state.has_data():
             for token in self.step():
                 yield token
@@ -318,12 +353,3 @@ class EggLexer:
 
     def reset(self):
         self.lexer_state = None
-
-
-class EggLexerLark(lark.lexer.Lexer):
-    def __init__(self, _):
-        self.lexer = EggLexer()
-
-    def lex(self, egg_code):
-        for token in self.lexer.lex(egg_code):
-            yield token.to_lark()

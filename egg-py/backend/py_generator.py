@@ -50,7 +50,7 @@ class PythonGenerator(Transformer):
 
     # Collections
     string_literal = combine_with_function(
-        'make_string', map_items=lambda item: repr(item.value)
+        'make_string', map_items=lambda item: repr(item)
     )
     list = combine_with_function('make_list')
     range = combine_with_function('make_range')

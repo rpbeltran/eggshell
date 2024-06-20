@@ -4,7 +4,8 @@ from typing import Dict
 
 import lark
 
-from frontend.parser import get_parser
+from frontend.parser import Parser
+from frontend.source import SourceManager
 from backend.py_generator import PythonGenerator
 from . import egg_lib as _e
 
@@ -28,12 +29,13 @@ def test_no_new_test_cases():
     assert len(new_test_cases) == 0
 
 
-parser = get_parser()
+parser = Parser()
 pygen = PythonGenerator()
 
 
 def execute_src(src: str) -> str:
-    ast_or_value = parser.parse(src)
+    SourceManager.add_source('', src)
+    ast_or_value = parser.parse('')
     if type(ast_or_value) != lark.tree.Tree:
         return str(ast_or_value)
     py_code = pygen.transform(ast_or_value)

@@ -1,6 +1,7 @@
 from typing import Dict
 
-from frontend.parser import get_parser
+from frontend.parser import Parser
+from frontend.source import SourceManager
 from .py_generator import *
 
 """
@@ -23,12 +24,13 @@ def test_no_new_test_cases():
     assert len(new_test_cases) == 0
 
 
-parser = get_parser()
+parser = Parser()
 pygen = PythonGenerator()
 
 
 def get_gen_code(src):
-    ast = parser.parse(src)
+    SourceManager.add_source('', src)
+    ast = parser.parse('')
     return pygen.transform(ast)
 
 

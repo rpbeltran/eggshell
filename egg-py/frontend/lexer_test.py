@@ -1,6 +1,7 @@
 from typing import Dict
 
 from .lexer import *
+from .source import SourceManager
 
 
 """
@@ -26,9 +27,13 @@ def test_no_new_test_cases():
 lexer = EggLexer()
 
 
-def get_tokens(egg: str):
+def get_tokens(src: str):
+    SourceManager.add_source('', src)
     lexer.reset()
-    return [(token.token_type, token.source) for token in lexer.lex(egg)]
+    return [
+        (token.token_type, token.get_src())
+        for token in lexer.lex(src)
+    ]
 
 
 def test_basic_pipe():
@@ -90,10 +95,10 @@ def test_function_return():
         ('COLON', ':'),
         ('NAME', 'int'),
         ('CURLY_OPEN', '{'),
-        ('SEMICOLON', ''),
+        ('SEMICOLON', '\n'),
         ('RETURN', 'ret'),
         ('INTEGER', '2'),
-        ('SEMICOLON', ''),
+        ('SEMICOLON', '\n'),
         ('CURLY_CLOSE', '}'),
     ]
     assert get_tokens(egg_code) == expected_tokens
@@ -333,8 +338,8 @@ def test_comment():
     egg_code = 'a # hello \n #world \n b'
     expected_tokens = [
         ('EXEC_ARG', 'a'),
-        ('SEMICOLON', ''),
-        ('SEMICOLON', ''),
+        ('SEMICOLON', '\n'),
+        ('SEMICOLON', '\n'),
         ('EXEC_ARG', 'b'),
     ]
     assert get_tokens(egg_code) == expected_tokens
@@ -368,7 +373,7 @@ def test_try():
     expected_tokens = [
         ('TRY', 'try'),
         ('CURLY_OPEN', '{'),
-        ('SEMICOLON', ''),
+        ('SEMICOLON', '\n'),
         ('EXEC_ARG', 'a'),
         ('CURLY_CLOSE', '}'),
     ]
@@ -483,7 +488,7 @@ def test_class():
         ('NAME', 'Int'),
         ('ASSIGN', '='),
         ('INTEGER', '1'),
-        ('SEMICOLON', ''),
+        ('SEMICOLON', '\n'),
         ('NAME', 'b'),
         ('COLON', ':'),
         ('NAME', 'Int'),
@@ -1170,19 +1175,9 @@ def test_selection_lambda_shorthand():
 def test_unit_b():
     src = '45b + 4.5b'
     expected_tokens = [
-        ('UNIT_INTEGER', '45:b'),
+        ('UNIT_INTEGER', '45b'),
         ('PLUS', '+'),
-        ('UNIT_FLOAT', '4.5:b'),
-    ]
-    assert get_tokens(src) == expected_tokens
-
-
-def test_unit_B():
-    src = '45B + 4.5B'
-    expected_tokens = [
-        ('UNIT_INTEGER', '45:b'),
-        ('PLUS', '+'),
-        ('UNIT_FLOAT', '4.5:b'),
+        ('UNIT_FLOAT', '4.5b'),
     ]
     assert get_tokens(src) == expected_tokens
 
@@ -1190,9 +1185,9 @@ def test_unit_B():
 def test_unit_kb():
     src = '45kb + 4.5kb'
     expected_tokens = [
-        ('UNIT_INTEGER', '45:kb'),
+        ('UNIT_INTEGER', '45kb'),
         ('PLUS', '+'),
-        ('UNIT_FLOAT', '4.5:kb'),
+        ('UNIT_FLOAT', '4.5kb'),
     ]
     assert get_tokens(src) == expected_tokens
 
@@ -1200,29 +1195,29 @@ def test_unit_kb():
 def test_unit_Kb():
     src = '45Kb + 4.5Kb'
     expected_tokens = [
-        ('UNIT_INTEGER', '45:kb'),
+        ('UNIT_INTEGER', '45Kb'),
         ('PLUS', '+'),
-        ('UNIT_FLOAT', '4.5:kb'),
+        ('UNIT_FLOAT', '4.5Kb'),
     ]
     assert get_tokens(src) == expected_tokens
 
 
 def test_unit_KB():
-    src = '45Kb + 4.5Kb'
+    src = '45KB + 4.5KB'
     expected_tokens = [
-        ('UNIT_INTEGER', '45:kb'),
+        ('UNIT_INTEGER', '45KB'),
         ('PLUS', '+'),
-        ('UNIT_FLOAT', '4.5:kb'),
+        ('UNIT_FLOAT', '4.5KB'),
     ]
     assert get_tokens(src) == expected_tokens
 
 
 def test_unit_kB():
-    src = '45Kb + 4.5Kb'
+    src = '45kB + 4.5kB'
     expected_tokens = [
-        ('UNIT_INTEGER', '45:kb'),
+        ('UNIT_INTEGER', '45kB'),
         ('PLUS', '+'),
-        ('UNIT_FLOAT', '4.5:kb'),
+        ('UNIT_FLOAT', '4.5kB'),
     ]
     assert get_tokens(src) == expected_tokens
 
@@ -1230,9 +1225,9 @@ def test_unit_kB():
 def test_unit_mb():
     src = '45mb + 4.5mb'
     expected_tokens = [
-        ('UNIT_INTEGER', '45:mb'),
+        ('UNIT_INTEGER', '45mb'),
         ('PLUS', '+'),
-        ('UNIT_FLOAT', '4.5:mb'),
+        ('UNIT_FLOAT', '4.5mb'),
     ]
     assert get_tokens(src) == expected_tokens
 
@@ -1240,9 +1235,9 @@ def test_unit_mb():
 def test_unit_gb():
     src = '45gb + 4.5gb'
     expected_tokens = [
-        ('UNIT_INTEGER', '45:gb'),
+        ('UNIT_INTEGER', '45gb'),
         ('PLUS', '+'),
-        ('UNIT_FLOAT', '4.5:gb'),
+        ('UNIT_FLOAT', '4.5gb'),
     ]
     assert get_tokens(src) == expected_tokens
 
@@ -1250,9 +1245,9 @@ def test_unit_gb():
 def test_unit_tb():
     src = '45tb + 4.5tb'
     expected_tokens = [
-        ('UNIT_INTEGER', '45:tb'),
+        ('UNIT_INTEGER', '45tb'),
         ('PLUS', '+'),
-        ('UNIT_FLOAT', '4.5:tb'),
+        ('UNIT_FLOAT', '4.5tb'),
     ]
     assert get_tokens(src) == expected_tokens
 
@@ -1260,9 +1255,9 @@ def test_unit_tb():
 def test_unit_pb():
     src = '45pb + 4.5pb'
     expected_tokens = [
-        ('UNIT_INTEGER', '45:pb'),
+        ('UNIT_INTEGER', '45pb'),
         ('PLUS', '+'),
-        ('UNIT_FLOAT', '4.5:pb'),
+        ('UNIT_FLOAT', '4.5pb'),
     ]
     assert get_tokens(src) == expected_tokens
 
@@ -1270,9 +1265,9 @@ def test_unit_pb():
 def test_unit_kib():
     src = '45kib + 4.5kib'
     expected_tokens = [
-        ('UNIT_INTEGER', '45:kib'),
+        ('UNIT_INTEGER', '45kib'),
         ('PLUS', '+'),
-        ('UNIT_FLOAT', '4.5:kib'),
+        ('UNIT_FLOAT', '4.5kib'),
     ]
     assert get_tokens(src) == expected_tokens
 
@@ -1280,9 +1275,9 @@ def test_unit_kib():
 def test_unit_mib():
     src = '45mib + 4.5mib'
     expected_tokens = [
-        ('UNIT_INTEGER', '45:mib'),
+        ('UNIT_INTEGER', '45mib'),
         ('PLUS', '+'),
-        ('UNIT_FLOAT', '4.5:mib'),
+        ('UNIT_FLOAT', '4.5mib'),
     ]
     assert get_tokens(src) == expected_tokens
 
@@ -1290,9 +1285,9 @@ def test_unit_mib():
 def test_unit_gib():
     src = '45gib + 4.5gib'
     expected_tokens = [
-        ('UNIT_INTEGER', '45:gib'),
+        ('UNIT_INTEGER', '45gib'),
         ('PLUS', '+'),
-        ('UNIT_FLOAT', '4.5:gib'),
+        ('UNIT_FLOAT', '4.5gib'),
     ]
     assert get_tokens(src) == expected_tokens
 
@@ -1300,9 +1295,9 @@ def test_unit_gib():
 def test_unit_tib():
     src = '45tib + 4.5tib'
     expected_tokens = [
-        ('UNIT_INTEGER', '45:tib'),
+        ('UNIT_INTEGER', '45tib'),
         ('PLUS', '+'),
-        ('UNIT_FLOAT', '4.5:tib'),
+        ('UNIT_FLOAT', '4.5tib'),
     ]
     assert get_tokens(src) == expected_tokens
 
@@ -1310,9 +1305,9 @@ def test_unit_tib():
 def test_unit_pib():
     src = '45pib + 4.5pib'
     expected_tokens = [
-        ('UNIT_INTEGER', '45:pib'),
+        ('UNIT_INTEGER', '45pib'),
         ('PLUS', '+'),
-        ('UNIT_FLOAT', '4.5:pib'),
+        ('UNIT_FLOAT', '4.5pib'),
     ]
     assert get_tokens(src) == expected_tokens
 

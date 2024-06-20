@@ -1,17 +1,22 @@
+from typing import Callable, NamedTuple, Optional
+
 import lark.lexer
 
-from typing import Callable, NamedTuple, Optional
+from .source import SourceLocation, SourceManager
 
 
 class Token(NamedTuple):
     token_type: str
-    source: str
+    loc: Optional[SourceLocation]
 
     def to_lark(self):
-        return lark.lexer.Token(self.token_type, self.source)
+        return lark.lexer.Token(self.token_type, self.loc)
+
+    def get_src(self):
+        return SourceManager.get_source_for_loc(self.loc)
 
     def __str__(self):
-        return f"<{self.token_type}: '{self.source}'>"
+        return f"<{self.token_type}: '{self.get_src()}'>"
 
 
 class LexerError(Exception):
@@ -30,11 +35,12 @@ class LexerError(Exception):
 
 
 class LexerState:
-    def __init__(self, data, StartNodeType: Callable):
+    def __init__(self, path: str, data: str, start_node_type: Callable):
+        self.path = path
         self.data = data
         self.token_start = 0
         self.head = 0
-        self.state_node = StartNodeType()
+        self.state_node = start_node_type()
         self.prev_token_type = None
         self.curly_depth = 0
         self.paren_depth = 0
@@ -46,18 +52,27 @@ class LexerState:
     def read(self):
         return self.data[self.head]
 
-    def get_token_source(self, end=None, inclusive=True):
-        if end is None:
-            end = self.head
-        if inclusive:
-            end += 1
-        return self.data[self.token_start : end]
+    def head_to_loc(self):
+        return SourceLocation(self.path, self.head, self.head + 1)
 
-    def get_token(self, token_type, end=None, inclusive=True, source=None):
-        if source is None:
-            source = self.get_token_source(end, inclusive)
+    def get_token_loc(self, inclusive=True):
+        return SourceLocation(
+            self.path,
+            self.token_start,
+            self.head + 1 if inclusive else self.head,
+        )
+
+    def get_token_source(self, inclusive=True):
+        return self.data[
+            self.token_start : self.head + 1 if inclusive else self.head
+        ]
+
+    def get_token(self, token_type, inclusive=True, loc=None):
         self.prev_token_type = token_type
-        return Token(token_type, source)
+        return Token(
+            token_type,
+            loc if loc is not None else self.get_token_loc(inclusive),
+        )
 
     def goto_node(self, state, step_back=False):
         self.state_node = state
