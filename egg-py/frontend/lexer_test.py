@@ -1438,3 +1438,14 @@ def test_assertion():
         ('PAREN_CLOSE', ')'),
     ]
     assert get_tokens(src) == expected_tokens
+
+
+def test_const_declare():
+    src = 'const a := 1'
+    expected_tokens = [
+        ('CONST', 'const'),
+        ('NAME', 'a'),
+        ('DECLARE', ':='),
+        ('INTEGER', '1'),
+    ]
+    assert get_tokens(src) == expected_tokens

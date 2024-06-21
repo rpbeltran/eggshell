@@ -1500,3 +1500,13 @@ def test_assertion():
         '\n      arg_list'
     )
     assert get_ast(src) == expected_ast
+
+
+def test_const_declare():
+    src = 'const a := 1'
+    expected_ast = (
+        'declare_untyped_constant'
+        '\n  a'
+        '\n  integer_literal\t1'
+    )
+    assert get_ast(src) == expected_ast

@@ -5,11 +5,12 @@ from runtime.types import Object
 
 
 class Instance:
-    __slots__ = ('data', 'deps')
+    __slots__ = ('data', 'deps', 'const')
 
-    def __init__(self, data: Object, deps: Set[int]):
+    def __init__(self, data: Object, deps: Set[int], const=False):
         self.data = data
         self.deps = deps
+        self.const = const
 
 
 class Scope:
@@ -39,14 +40,14 @@ class Memory:
         data: Object,
         deps: Optional[Set[int]] = None,
         name: Optional[str] = None,
-    ) -> int:
+        const: bool = False,
+    ):
         ref_id = self.__next_ref_id()
         self.instances[ref_id] = Instance(
-            data, set() if deps is None else deps
+            data, set() if deps is None else deps, const=const
         )
         if name is not None:
             self.store(name, ref_id)
-        return ref_id
 
     def current_scope(self) -> Scope:
         return self.scopes[-1]
@@ -63,6 +64,10 @@ class Memory:
             self.garbage_collect()
 
     def get_object(self, ref_id: int) -> Object:
+        return self.instances[ref_id].data
+
+    def get_object_by_name(self, name: str) -> Object:
+        ref_id = self.get_id(name)
         return self.instances[ref_id].data
 
     def get_id(self, name: str) -> Optional[int]:

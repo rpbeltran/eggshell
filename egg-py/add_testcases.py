@@ -60,7 +60,7 @@ def test_{test_name}():
 
 
 def make_runtime_test_code(test_name, src, output) -> str:
-    output_lines = output.split('\n')
+    output_lines = output.split('\n') if output is not None else [None]
     if len(output_lines) > 1:
         expected_gen_code_inner = '\n'.join(
             ' ' * 8 + repr(f'\n{line}' if i != 0 else line)

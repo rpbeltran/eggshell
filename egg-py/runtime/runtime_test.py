@@ -1,6 +1,6 @@
 from contextlib import redirect_stdout
 from io import StringIO
-from typing import Dict
+from typing import Dict, Optional
 
 import lark
 
@@ -34,13 +34,18 @@ parser = get_parser()
 pygen = PythonGenerator()
 
 
-def execute_src(src: str) -> str:
+def execute_src(src: str) -> Optional[str]:
     _m = memory.Memory()
     ast_or_value = parser.parse(src)
     if type(ast_or_value) != lark.tree.Tree:
+        if ast_or_value is None:
+            return ast_or_value
         return str(ast_or_value)
     py_code = pygen.transform(ast_or_value)
     try:
+        value = eval(py_code)
+        if value is None:
+            return value
         return str(eval(py_code))
     except SyntaxError:
         string_io = StringIO()
@@ -126,5 +131,11 @@ def test_comparisons():
 
 def test_declare_untyped_variable():
     src = 'a := 1'
-    expected_output = '0'
+    expected_output = None
+    assert execute_src(src) == expected_output
+
+
+def test_const_declare():
+    src = 'const a := 1'
+    expected_output = None
     assert execute_src(src) == expected_output

@@ -111,6 +111,28 @@ class PythonGenerator(Transformer):
         name = name.value
         return f'{PythonGenerator.memory_instance}.new({value}, name={repr(name)})'
 
+    @staticmethod
+    def declare_untyped_constant(items):
+        (name, value) = items
+        name = name.value
+        return (
+            f'{PythonGenerator.memory_instance}'
+            f'.new({value}, name={repr(name)}, const=True)'
+        )
+
+    @staticmethod
+    def identifier(items):
+        if len(items) > 1:
+            name = '::'.join(items)
+            raise NotImplementedError(
+                f'Namespaces are not yet supported in {repr(name)}'
+            )
+
+        return (
+            f'{PythonGenerator.memory_instance}'
+            f'.get_object_by_name({repr(items[0].value)})'
+        )
+
     # External Commands
     exec = combine_with_function('make_external_command', quote_args=True)
     pipeline = combine_with_function('make_pipeline')

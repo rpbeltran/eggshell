@@ -282,3 +282,15 @@ def test_declare_untyped_variable():
     src = 'a := 1'
     expected_gen_code = "_m.new(_e.make_integer(1), name='a')"
     assert get_gen_code(src) == expected_gen_code
+
+
+def test_const_declare():
+    src = 'const a := 1'
+    expected_gen_code = "_m.new(_e.make_integer(1), name='a', const=True)"
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_identifier():
+    src = '@foo'
+    expected_gen_code = "_m.get_object_by_name('foo')"
+    assert get_gen_code(src) == expected_gen_code
