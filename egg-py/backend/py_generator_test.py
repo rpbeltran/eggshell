@@ -294,3 +294,9 @@ def test_identifier():
     src = '@foo'
     expected_gen_code = "_m.get_object_by_name('foo')"
     assert get_gen_code(src) == expected_gen_code
+
+
+def test_reassignment():
+    src = 'a = 5'
+    expected_gen_code = "_m.update_var('a', _e.make_integer(5))"
+    assert get_gen_code(src) == expected_gen_code

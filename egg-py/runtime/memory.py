@@ -49,6 +49,13 @@ class Memory:
         if name is not None:
             self.store(name, ref_id)
 
+    def update_var(
+        self, name: str, new_value: Object, deps: Optional[Set[int]] = None
+    ) -> int:
+        old_id = self.get_id(name)
+        assert not self.instances[old_id].const
+        return self.new(new_value, deps=deps, name=name)
+
     def current_scope(self) -> Scope:
         return self.scopes[-1]
 

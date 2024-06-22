@@ -122,6 +122,17 @@ class PythonGenerator(Transformer):
         )
 
     @staticmethod
+    def reassign(items):
+        (lhs, rhs) = items
+        assert isinstance(lhs, Name)
+        if lhs.namespace:
+            raise FeatureUnimplemented('Namespaces are not yet supported')
+        return (
+            f'{PythonGenerator.memory_instance}'
+            f'.update_var({repr(lhs.name)}, {rhs})'
+        )
+
+    @staticmethod
     def identifier(items):
         items = [item.value for item in items]
         if len(items) > 1:

@@ -82,3 +82,7 @@ def do_comparisons(*args):
 
 def assertion(condition: types.Boolean):
     assert condition
+
+
+def say(arg):
+    print(arg)

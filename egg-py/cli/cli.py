@@ -8,7 +8,7 @@ import lark
 from frontend.lexer import EggLexer
 from frontend.lexer_util import LexerError
 from frontend.parser import get_parser
-from backend.py_generator import PythonGenerator
+from backend.py_generator import PythonGenerator, transform_pygen_result
 from .profilers import maybe_profile, ProfilerConfig
 
 from runtime import egg_lib as _e
@@ -94,7 +94,9 @@ class EggCLI:
     def execute(self, src: str):
         ast_or_value = self.parser.parse(src)
         if type(ast_or_value) == lark.tree.Tree:
-            py_code = self.pygen.transform(ast_or_value)
+            py_code = transform_pygen_result(
+                self.pygen.transform(ast_or_value)
+            )
             try:
                 if (output := eval(py_code)) is not None:
                     print(output)
