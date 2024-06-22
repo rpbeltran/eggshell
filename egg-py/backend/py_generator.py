@@ -1,5 +1,6 @@
 import lark
 from lark import Transformer, Tree
+from .temporary_objects import Name
 
 
 class FeatureUnimplemented(Exception):
@@ -122,16 +123,10 @@ class PythonGenerator(Transformer):
 
     @staticmethod
     def identifier(items):
+        items = [item.value for item in items]
         if len(items) > 1:
-            name = '::'.join(items)
-            raise NotImplementedError(
-                f'Namespaces are not yet supported in {repr(name)}'
-            )
-
-        return (
-            f'{PythonGenerator.memory_instance}'
-            f'.get_object_by_name({repr(items[0].value)})'
-        )
+            return Name(items[0], namespace=items[1:])
+        return Name(items[0])
 
     # External Commands
     exec = combine_with_function('make_external_command', quote_args=True)
@@ -164,3 +159,12 @@ class PythonGenerator(Transformer):
         if data in PythonGenerator.pass_through:
             return as_tree
         raise FeatureUnimplemented(as_tree)
+
+
+def transform_pygen_result(result) -> str:
+    if isinstance(result, Name):
+        return (
+            f'{PythonGenerator.memory_instance}'
+            f'.get_object_by_name({repr(result.name)})'
+        )
+    return result

@@ -29,7 +29,7 @@ pygen = PythonGenerator()
 
 def get_gen_code(src):
     ast = parser.parse(src)
-    return pygen.transform(ast)
+    return transform_pygen_result(pygen.transform(ast))
 
 
 def test_add():
