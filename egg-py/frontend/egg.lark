@@ -19,6 +19,7 @@
                      | return_expr
                      | import
                      | assertion
+                     | say
 
 ?non_atomic: pipeline | expression | declaration | reassignment
 
@@ -191,6 +192,11 @@ exec: EXEC_ARG+
 # -- Code Blocks --
 
 block: "CURLY_OPEN" "SEMICOLON"* line* "CURLY_CLOSE"
+
+
+# -- Say --
+
+say: "SAY" expression
 
 
 # -- ASYNC --

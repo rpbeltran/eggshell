@@ -300,3 +300,9 @@ def test_reassignment():
     src = 'a = 5'
     expected_gen_code = "_m.update_var('a', _e.make_integer(5))"
     assert get_gen_code(src) == expected_gen_code
+
+
+def test_say():
+    src = 'say 1 + 10'
+    expected_gen_code = '_e.say(_e.make_integer(1).add(_e.make_integer(10)))'
+    assert get_gen_code(src) == expected_gen_code

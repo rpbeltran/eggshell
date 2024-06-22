@@ -143,6 +143,7 @@ class PythonGenerator(Transformer):
     exec = combine_with_function('make_external_command', quote_args=True)
     pipeline = combine_with_function('make_pipeline')
 
+    say = combine_with_function('say')
     assertion = combine_with_function('assertion')
 
     @staticmethod

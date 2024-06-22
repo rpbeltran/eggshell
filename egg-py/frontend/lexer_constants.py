@@ -94,6 +94,7 @@ KEYWORDS = _make_max_munch_safe(
         'class': 'CLASS',
         'with': 'WITH',
         'by': 'BY',
+        'say': 'SAY',
     }
 )
 

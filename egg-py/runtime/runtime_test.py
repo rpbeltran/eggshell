@@ -139,3 +139,13 @@ def test_const_declare():
     src = 'const a := 1'
     expected_output = None
     assert execute_src(src) == expected_output
+
+
+def test_say():
+    src = 'say 1 + 10'
+    expected_output = None
+    string_io = StringIO()
+    with redirect_stdout(string_io):
+        output = execute_src(src)
+    assert output == expected_output
+    assert string_io.getvalue() == "11\n"

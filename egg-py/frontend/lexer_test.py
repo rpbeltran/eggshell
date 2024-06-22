@@ -1449,3 +1449,14 @@ def test_const_declare():
         ('INTEGER', '1'),
     ]
     assert get_tokens(src) == expected_tokens
+
+
+def test_say():
+    src = 'say a b c'
+    expected_tokens = [
+        ('SAY', 'say'),
+        ('EXEC_ARG', 'a'),
+        ('EXEC_ARG', 'b'),
+        ('EXEC_ARG', 'c'),
+    ]
+    assert get_tokens(src) == expected_tokens

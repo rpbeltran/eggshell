@@ -1510,3 +1510,15 @@ def test_const_declare():
         '\n  integer_literal\t1'
     )
     assert get_ast(src) == expected_ast
+
+
+def test_say():
+    src = 'say a b c'
+    expected_ast = (
+        'say'
+        '\n  exec'
+        '\n    a'
+        '\n    b'
+        '\n    c'
+    )
+    assert get_ast(src) == expected_ast

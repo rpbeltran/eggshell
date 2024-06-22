@@ -88,7 +88,7 @@ class EggCLI:
 
     def show_pygen(self, src: str):
         ast = self.parser.parse(src)
-        py = self.pygen.transform(ast)
+        py = transform_pygen_result(self.pygen.transform(ast))
         print(py)
 
     def execute(self, src: str):
