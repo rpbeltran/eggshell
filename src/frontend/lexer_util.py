@@ -32,6 +32,7 @@ class LexerError(Exception):
 class LexerState:
     def __init__(self, data, StartNodeType: Callable):
         self.data = data
+        self.data_length = len(data)
         self.token_start = 0
         self.head = 0
         self.state_node = StartNodeType()
@@ -41,7 +42,7 @@ class LexerState:
         self.square_depth = 0
 
     def has_data(self):
-        return self.head < len(self.data)
+        return self.head < self.data_length
 
     def read(self):
         return self.data[self.head]
@@ -74,7 +75,7 @@ class LexerState:
         return self.data[self.head + 1]
 
     def next_nonwhitespace(self) -> str:
-        for i in range(len(self.data) - self.head - 1):
+        for i in range(self.data_length - self.head - 1):
             c = self.data[self.head + 1 + i]
             if not c.isspace():
                 return c

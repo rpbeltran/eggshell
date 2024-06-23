@@ -17,5 +17,5 @@ def get_parser(lowering=True) -> lark.Lark:
     grammar = get_grammar()
     transformer = LoweringTransformer if lowering else None
     return lark.Lark(
-        grammar, parser='lalr', lexer=EggLexerLark, transformer=transformer
+        grammar, parser='lalr', lexer=EggLexerLark, transformer=transformer, cache=True
     )

@@ -156,7 +156,7 @@ class QuotedArgListNode(DFANode):
             state.goto_node(StartNode(), step_back=False)
 
 
-tokens_before_names = [
+tokens_before_names = {
     'AS',
     'BREAK',
     'CATCH',
@@ -181,7 +181,7 @@ tokens_before_names = [
     'PLUS',
     'MINUS',
     'MOD',
-]
+}
 
 
 class UnquotedLiteral(DFANode):
@@ -280,7 +280,7 @@ class NumberNode(DFANode):
         if not c.isalpha():
             return None
         unit = c.lower()
-        for i in range(len(state.data) - state.head - 1):
+        for i in range(state.data_length - state.head - 1):
             c_next = state.data[state.head + 1 + i]
             if not c_next.isalpha():
                 break
