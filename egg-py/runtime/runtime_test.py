@@ -5,7 +5,7 @@ from typing import Dict, Optional
 import lark
 
 from frontend.parser import get_parser
-from backend.py_generator import PythonGenerator
+from backend.py_generator import PythonGenerator, transform_pygen_result
 
 from . import egg_lib as _e
 from runtime import memory
@@ -41,7 +41,7 @@ def execute_src(src: str) -> Optional[str]:
         if ast_or_value is None:
             return ast_or_value
         return str(ast_or_value)
-    py_code = pygen.transform(ast_or_value)
+    py_code = transform_pygen_result(pygen.transform(ast_or_value))
     try:
         value = eval(py_code)
         if value is None:

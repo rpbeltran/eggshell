@@ -1,6 +1,6 @@
 import lark
 from lark import Transformer, Tree
-from .temporary_objects import Name
+from .temporary_objects import Block, Name
 
 
 class FeatureUnimplemented(Exception):
@@ -28,7 +28,9 @@ class PythonGenerator(Transformer):
     def combine_with_function(func_name, map_items=None, quote_args=False):
         @staticmethod
         def action(items):
-            items = [PythonGenerator.__resolve_names(item) for item in items]
+            items = [
+                PythonGenerator.__resolve_placeholders(item) for item in items
+            ]
             if map_items:
                 items = [map_items(item) for item in items]
             if quote_args:
@@ -43,7 +45,9 @@ class PythonGenerator(Transformer):
     def combine_with_method_left(func_name, quote_args=False):
         @staticmethod
         def action(items):
-            items = [PythonGenerator.__resolve_names(item) for item in items]
+            items = [
+                PythonGenerator.__resolve_placeholders(item) for item in items
+            ]
             if quote_args:
                 arg_list = ','.join(repr(item) for item in items[1:])
             else:
@@ -55,8 +59,9 @@ class PythonGenerator(Transformer):
     # Blocks
     @staticmethod
     def start(items):
-        items = [PythonGenerator.__resolve_names(item) for item in items]
-        return '\n'.join(items)
+        return Block(
+            [PythonGenerator.__resolve_placeholders(item) for item in items]
+        )
 
     # Collections
     string_literal = combine_with_function(
@@ -183,7 +188,7 @@ class PythonGenerator(Transformer):
     # Utilities
 
     @staticmethod
-    def __resolve_names(result):
+    def __resolve_placeholders(result):
         return transform_pygen_result(result)
 
 
@@ -193,4 +198,6 @@ def transform_pygen_result(result) -> str:
             f'{PythonGenerator.memory_instance}'
             f'.get_object_by_name({repr(result.name)})'
         )
+    if isinstance(result, Block):
+        return result.join()
     return result
