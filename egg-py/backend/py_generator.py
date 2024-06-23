@@ -52,6 +52,12 @@ class PythonGenerator(Transformer):
 
         return action
 
+    # Blocks
+    @staticmethod
+    def start(items):
+        items = [PythonGenerator.__resolve_names(item) for item in items]
+        return '\n'.join(items)
+
     # Collections
     string_literal = combine_with_function(
         'make_string', map_items=lambda item: repr(item.value)

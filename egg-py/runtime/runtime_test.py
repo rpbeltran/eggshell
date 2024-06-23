@@ -149,3 +149,9 @@ def test_say():
         output = execute_src(src)
     assert output == expected_output
     assert string_io.getvalue() == "11\n"
+
+
+def test_multiple_lines():
+    src = 'a := 5; a = 7; say @a ** 2'
+    expected_output = '49\n'
+    assert execute_src(src) == expected_output

@@ -320,3 +320,13 @@ def test_add_resolve_name():
         "_m.get_object_by_name('a').add(_m.get_object_by_name('b'))"
     )
     assert get_gen_code(src) == expected_gen_code
+
+
+def test_multiple_lines():
+    src = 'a := 5; a = 7; say @a ** 2'
+    expected_gen_code = (
+        "_m.new(_e.make_integer(5), name='a')"
+        "\n_m.update_var('a', _e.make_integer(7))"
+        "\n_e.say(_m.get_object_by_name('a').raise_power(_e.make_integer(2)))"
+    )
+    assert get_gen_code(src) == expected_gen_code
