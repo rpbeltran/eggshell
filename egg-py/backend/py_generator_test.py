@@ -306,3 +306,17 @@ def test_say():
     src = 'say 1 + 10'
     expected_gen_code = '_e.say(_e.make_integer(1).add(_e.make_integer(10)))'
     assert get_gen_code(src) == expected_gen_code
+
+
+def test_say_resolve_name():
+    src = 'say @i'
+    expected_gen_code = "_e.say(_m.get_object_by_name('i'))"
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_add_resolve_name():
+    src = '@a + @b'
+    expected_gen_code = (
+        "_m.get_object_by_name('a').add(_m.get_object_by_name('b'))"
+    )
+    assert get_gen_code(src) == expected_gen_code

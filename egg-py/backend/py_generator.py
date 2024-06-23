@@ -28,6 +28,7 @@ class PythonGenerator(Transformer):
     def combine_with_function(func_name, map_items=None, quote_args=False):
         @staticmethod
         def action(items):
+            items = [PythonGenerator.__resolve_names(item) for item in items]
             if map_items:
                 items = [map_items(item) for item in items]
             if quote_args:
@@ -42,6 +43,7 @@ class PythonGenerator(Transformer):
     def combine_with_method_left(func_name, quote_args=False):
         @staticmethod
         def action(items):
+            items = [PythonGenerator.__resolve_names(item) for item in items]
             if quote_args:
                 arg_list = ','.join(repr(item) for item in items[1:])
             else:
@@ -171,6 +173,12 @@ class PythonGenerator(Transformer):
         if data in PythonGenerator.pass_through:
             return as_tree
         raise FeatureUnimplemented(as_tree)
+
+    # Utilities
+
+    @staticmethod
+    def __resolve_names(result):
+        return transform_pygen_result(result)
 
 
 def transform_pygen_result(result) -> str:
