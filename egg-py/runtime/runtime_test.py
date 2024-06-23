@@ -167,3 +167,27 @@ def test_if_false():
     src = 'if false {say "hello world"}'
     expected_output = ''
     assert execute_src(src) == expected_output
+
+
+def test_if_elif_else1():
+    src = 'if true {say 1} elif false {say 2} else if false {say 3} else {say 4}'
+    expected_output = '1\n'
+    assert execute_src(src) == expected_output
+
+
+def test_if_elif_else2():
+    src = 'if false {say 1} elif true {say 2} else if false {say 3} else {say 4}'
+    expected_output = '2\n'
+    assert execute_src(src) == expected_output
+
+
+def test_if_elif_else3():
+    src = 'if false {say 1} elif false {say 2} else if true {say 3} else {say 4}'
+    expected_output = '3\n'
+    assert execute_src(src) == expected_output
+
+
+def test_if_elif_else4():
+    src = 'if false {say 1} elif false {say 2} else if false {say 3} else {say 4}'
+    expected_output = '4\n'
+    assert execute_src(src) == expected_output

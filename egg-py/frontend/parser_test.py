@@ -1535,3 +1535,21 @@ def test_say():
         '\n    c'
     )
     assert get_ast(src) == expected_ast
+
+
+def test_if_elif_else():
+    src = 'if true {} elif false {} else if true {} else {}'
+    expected_ast = (
+        'if_statement'
+        '\n  boolean_literal\ttrue'
+        '\n  block'
+        '\n  elif_statement'
+        '\n    boolean_literal\tfalse'
+        '\n    block'
+        '\n  elif_statement'
+        '\n    boolean_literal\ttrue'
+        '\n    block'
+        '\n  else_statement'
+        '\n    block'
+    )
+    assert get_ast(src) == expected_ast

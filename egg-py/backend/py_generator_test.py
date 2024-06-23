@@ -339,3 +339,18 @@ def test_if_basic():
         "\n\t_e.say(_e.make_string('hello world'))"
     )
     assert get_gen_code(src) == expected_gen_code
+
+
+def test_if_elif_else():
+    src = 'if @x {say 1} elif @y {say 2} else if @z {say 3} else {say 4}'
+    expected_gen_code = (
+        "if Name(name='x', namespace=None):"
+        '\n\t_e.say(_e.make_integer(1))'
+        "\nelif Name(name='y', namespace=None):"
+        '\n\t_e.say(_e.make_integer(2))'
+        "\nelif Name(name='z', namespace=None):"
+        '\n\t_e.say(_e.make_integer(3))'
+        '\nelse:'
+        '\n\t_e.say(_e.make_integer(4))'
+    )
+    assert get_gen_code(src) == expected_gen_code

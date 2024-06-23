@@ -65,8 +65,15 @@ class PythonGenerator(Transformer):
 
     @staticmethod
     def if_statement(items):
-        (condition, block_item) = items
-        return block_item.make_if(condition)
+        condition = items[0]
+        block_item = items[1]
+        if_block = block_item.make_if(condition)
+        for item in items[2:]:
+            if item.data == 'elif_statement':
+                if_block.add_elif(*item.children)
+            else:
+                if_block.add_else(*item.children)
+        return if_block
 
     start = block
 
@@ -178,6 +185,8 @@ class PythonGenerator(Transformer):
 
     # Nodes not to modify
     pass_through = {
+        'elif_statement',
+        'else_statement',
         'unit_type',
         'unit',
         'slice_start',

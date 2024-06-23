@@ -1460,3 +1460,26 @@ def test_say():
         ('EXEC_ARG', 'c'),
     ]
     assert get_tokens(src) == expected_tokens
+
+
+def test_if_elif_else():
+    src = 'if true {} elif false {} else if true {} else {}'
+    expected_tokens = [
+        ('IF', 'if'),
+        ('TRUE', 'true'),
+        ('CURLY_OPEN', '{'),
+        ('CURLY_CLOSE', '}'),
+        ('ELIF', 'elif'),
+        ('FALSE', 'false'),
+        ('CURLY_OPEN', '{'),
+        ('CURLY_CLOSE', '}'),
+        ('ELSE', 'else'),
+        ('IF', 'if'),
+        ('TRUE', 'true'),
+        ('CURLY_OPEN', '{'),
+        ('CURLY_CLOSE', '}'),
+        ('ELSE', 'else'),
+        ('CURLY_OPEN', '{'),
+        ('CURLY_CLOSE', '}'),
+    ]
+    assert get_tokens(src) == expected_tokens
