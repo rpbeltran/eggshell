@@ -22,11 +22,11 @@ offer_death() {
 
 
 offer_reformatting() {
-  blue --diff egg-py/**.py
+  blue --diff src/**.py
   read -r -p "Apply reformatting? [y/N] " response
   case "$response" in
       [yY][eE][sS]|[yY])
-        blue egg-py
+        blue src
         echo "Fixed formatting automatically. Now try again!"
         exit 1
         ;;
@@ -37,5 +37,5 @@ offer_reformatting() {
 }
 
 
-pytest egg-py || offer_death
-blue --check egg-py || offer_reformatting
+pytest src || offer_death
+blue --check src || offer_reformatting

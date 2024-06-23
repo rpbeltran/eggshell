@@ -5,7 +5,7 @@ import cli.cli as cli
 
 
 def get_args() -> argparse.Namespace:
-    arg_parser = argparse.ArgumentParser('egg-py')
+    arg_parser = argparse.ArgumentParser('egg')
 
     mode_group = arg_parser.add_mutually_exclusive_group()
     mode_group.add_argument(

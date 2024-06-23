@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+egg_directory="$( dirname -- "$( readlink -f -- "$0" )" )"
+
+"${egg_directory}/src/main.py" "$@"
