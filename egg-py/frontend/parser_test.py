@@ -1255,10 +1255,23 @@ def test_pipeline_to_implicit_lambda2():
     assert get_ast(src) == expected_ast
 
 
+def test_if_statement():
+    src = 'if (1 == 2) {}'
+    expected_ast = (
+        'if_statement'
+        '\n  comparison_chain'
+        '\n    integer_literal\t1'
+        '\n    equal_to'
+        '\n    integer_literal\t2'
+        '\n  block'
+    )
+    assert get_ast(src) == expected_ast
+
+
 def test_if_no_paren():
     src = 'if 1 == 2 {}'
     expected_ast = (
-        'if'
+        'if_statement'
         '\n  comparison_chain'
         '\n    integer_literal\t1'
         '\n    equal_to'

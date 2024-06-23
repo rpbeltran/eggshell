@@ -155,3 +155,15 @@ def test_multiple_lines():
     src = 'a := 5; a = 7; say @a ** 2'
     expected_output = '49\n'
     assert execute_src(src) == expected_output
+
+
+def test_if_true():
+    src = 'if true {say "hello world"}'
+    expected_output = "'hello world'\n"
+    assert execute_src(src) == expected_output
+
+
+def test_if_false():
+    src = 'if false {say "hello world"}'
+    expected_output = ''
+    assert execute_src(src) == expected_output

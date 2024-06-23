@@ -8,7 +8,7 @@
 ?top_level_expression: append_to_file
                      | non_atomic
                      | try_catch
-                     | if
+                     | if_statement
                      | with_block
                      | loop
                      | define_class
@@ -178,9 +178,9 @@ append_to_file: pipeline "APPEND_FILE" expression
 
 # -- If / Else --
 
-if: "IF" expression block elif* else?
-elif: "ELSE" "IF" expression block | "ELIF" atomic block
-else: "ELSE" block
+if_statement: "IF" expression block elif_statement* else_statement?
+elif_statement: "ELSE" "IF" expression block | "ELIF" atomic block
+else_statement: "ELSE" block
 
 
 # -- Pipelines --

@@ -7,8 +7,16 @@ class Name(NamedTuple):
 
 
 class Block(NamedTuple):
-    expressions: List[str]
+    lines: List[str]
 
     def join(self, indentation=0):
         indent = '\t' * indentation
-        return indent + f'{indent}\n'.join(self.expressions)
+        return indent + f'{indent}\n'.join(self.lines)
+
+    def make_if(self, condition, extra_indentation=0):
+        extra_indent = '\t' * extra_indentation
+        indent = f'{extra_indent}\t'
+        return Block(
+            [f'{extra_indent}if {condition}:']
+            + [f'{indent}{line}' for line in self.lines]
+        )

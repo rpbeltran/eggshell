@@ -58,10 +58,17 @@ class PythonGenerator(Transformer):
 
     # Blocks
     @staticmethod
-    def start(items):
+    def block(items):
         return Block(
             [PythonGenerator.__resolve_placeholders(item) for item in items]
         )
+
+    @staticmethod
+    def if_statement(items):
+        (condition, block_item) = items
+        return block_item.make_if(condition)
+
+    start = block
 
     # Collections
     string_literal = combine_with_function(

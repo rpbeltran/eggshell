@@ -330,3 +330,12 @@ def test_multiple_lines():
         "\n_e.say(_m.get_object_by_name('a').raise_power(_e.make_integer(2)))"
     )
     assert get_gen_code(src) == expected_gen_code
+
+
+def test_if_basic():
+    src = 'if true {say "hello world"}'
+    expected_gen_code = (
+        'if _e.make_boolean(True):'
+        "\n\t_e.say(_e.make_string('hello world'))"
+    )
+    assert get_gen_code(src) == expected_gen_code
