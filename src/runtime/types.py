@@ -11,7 +11,7 @@ class ComparisonResult(Enum):
 
 class Object(ABC):
     @abstractmethod
-    def equals(self, other: 'Object'):
+    def equals(self, other: 'Object') -> bool:
         ...
 
     @abstractmethod
@@ -24,31 +24,31 @@ class Number(Object):
     def val(self) -> int | float:
         ...
 
-    def add(self, other) -> 'Number':
+    def add(self, other: 'Number') -> 'Number':
         return self.wrap(value=self.val() + other.val())
 
-    def subtract(self, other) -> 'Number':
+    def subtract(self, other: 'Number') -> 'Number':
         return self.wrap(self.val() - other.val())
 
-    def multiply(self, other) -> 'Number':
+    def multiply(self, other: 'Number') -> 'Number':
         return self.wrap(self.val() * other.val())
 
-    def divide(self, other) -> 'Number':
+    def divide(self, other: 'Number') -> 'Number':
         return self.wrap(self.val() / other.val())
 
-    def int_divide(self, other) -> 'Number':
+    def int_divide(self, other: 'Number') -> 'Number':
         return self.wrap(self.val() // other.val())
 
-    def modulus(self, other) -> 'Number':
+    def modulus(self, other: 'Number') -> 'Number':
         return self.wrap(self.val() % other.val())
 
-    def raise_power(self, other) -> 'Number':
+    def raise_power(self, other: 'Number') -> 'Number':
         return self.wrap(self.val() ** other.val())
 
     def negate(self) -> 'Number':
         return self.wrap(-self.val())
 
-    def equals(self, other: 'Object'):
+    def equals(self, other: 'Object') -> bool:
         assert isinstance(other, Number)
         return self.val() == other.val()
 
@@ -62,7 +62,7 @@ class Number(Object):
             return ComparisonResult.LESS
         return ComparisonResult.GREATER
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.val())
 
     @staticmethod
@@ -118,7 +118,7 @@ class Boolean(Object):
     def logical_not(self) -> 'Boolean':
         return Boolean(not self.val())
 
-    def equals(self, other: 'Object'):
+    def equals(self, other: 'Object') -> bool:
         assert isinstance(other, Boolean)
         return self.val() == other.val()
 
@@ -132,10 +132,10 @@ class Boolean(Object):
             return ComparisonResult.LESS
         return ComparisonResult.GREATER
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         return self.__value
 
-    def __str__(self):
+    def __str__(self) -> str:
         return 'true' if self.__value else 'false'
 
 
@@ -151,14 +151,14 @@ class UnitValue(Object):
         self.__unit = unit
         self.__value = value
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{self.__value}{self.__unit}'
 
     def base_val(self) -> int | float:
         # todo: implement getting value in base unit quantity
         return self.__value
 
-    def equals(self, other: 'Object'):
+    def equals(self, other: 'Object') -> bool:
         assert isinstance(other, UnitValue)
         assert self.__unit_type == other.__unit_type
         return self.base_val() == other.base_val()
@@ -177,33 +177,47 @@ class UnitValue(Object):
 
 class Collection(Object):
     @abstractmethod
-    def data(self) -> str | list:
+    def data(self) -> str | typing.List[Object]:
         ...
 
     def concatenate(self, other: 'Collection') -> 'Collection':
-        assert (type(self) is String) == (type(other) is String)
-        return self.wrap(self.data() + other.data())
+        if type(self) is String and type(other) is String:
+            return self.wrap(self.data() + other.data())
+        elif type(self) in (List, Range) and type(other) in (List, Range):
+            data_self = self.data()
+            assert isinstance(data_self, list)
+            data_other = other.data()
+            assert isinstance(data_other, list)
+            return self.wrap(data_self + data_other)
+        raise ValueError(
+            f'Concatenation of {type(self)} and {type(other)} is not allowed'
+        )
 
     def size(self) -> int:
         return len(self.data())
 
-    def select_element(self, index):
-        return self.data()[index.val()]
+    @abstractmethod
+    def select_element(self, index: Integer) -> 'Object':
+        ...
 
-    def select_slice(self, start, end, jump):
-        if start is not None:
-            start = start.val()
-        if end is not None:
-            end = end.val()
-        if jump is not None:
-            jump = jump.val()
-        return self.wrap(self.data()[start:end:jump])
+    def select_slice(
+        self,
+        start: typing.Optional[Integer],
+        end: typing.Optional[Integer],
+        jump: typing.Optional[Integer],
+    ) -> 'Collection':
+        start_unwrapped = None if start is None else start.val()
+        end_unwrapped = None if end is None else end.val()
+        jump_unwrapped = None if jump is None else jump.val()
+        return self.wrap(
+            self.data()[start_unwrapped:end_unwrapped:jump_unwrapped]
+        )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return repr(self.data())
 
     @staticmethod
-    def wrap(data) -> 'Collection':
+    def wrap(data: str | typing.List[Object]) -> 'Collection':
         if isinstance(data, str):
             return String(data)
         if isinstance(data, list):
@@ -220,10 +234,13 @@ class String(Collection):
         assert isinstance(data, str)
         self.__data = data
 
+    def select_element(self, index: Integer) -> 'String':
+        return String(self.data()[index.val()])
+
     def data(self) -> str:
         return self.__data
 
-    def equals(self, other: 'Object'):
+    def equals(self, other: 'Object') -> bool:
         assert isinstance(other, String)
         return self.data() == other.data()
 
@@ -241,23 +258,26 @@ class String(Collection):
 class List(Collection):
     __slots__ = ('__data',)
 
-    def __init__(self, data: tuple | list):
+    def __init__(self, data: tuple | typing.List[Object]):
         self.__data: typing.List = list(data)
 
-    def data(self) -> typing.List:
+    def select_element(self, index: Integer) -> 'Object':
+        return self.data()[index.val()]
+
+    def data(self) -> typing.List[Object]:
         return self.__data
 
-    def append(self, item):
+    def append(self, item: 'Object') -> None:
         self.__data.append(item)
 
-    def equals(self, other: 'Object'):
+    def equals(self, other: 'Object') -> bool:
         assert isinstance(other, List) or isinstance(other, Range)
         return self.data() == other.data()
 
     def compare(self, other: 'Object') -> ComparisonResult:
         raise NotImplementedError('Comparing lists is not yet implemented')
 
-    def __str__(self):
+    def __str__(self) -> str:
         inner = ','.join(str(i) for i in self.data())
         return f'[{inner}]'
 
@@ -265,51 +285,55 @@ class List(Collection):
 class Range(Collection):
     __slots__ = ('__start', '__end', '__jump')
 
-    def __init__(self, start: Number, end: Number, jump: Number):
+    def __init__(self, start: Integer, end: Integer, jump: Integer):
         self.__start: int = start.val()
         self.__end: int = end.val()
         self.__jump: int = jump.val()
 
-    def data(self) -> typing.List:
-        return list(range(self.__start, self.__end, self.__jump))
+    def data(self) -> typing.List[Object]:
+        return [
+            Integer(x) for x in range(self.__start, self.__end, self.__jump)
+        ]
 
     def size(self) -> int:
-        return (self.__end - self.__start) // self.__jump
+        return self.__end - self.__start // self.__jump
 
-    def select_element(self, index: Number):
+    def select_element(self, index: Integer) -> Integer:
         if (element := self.__start + index.val()) < self.__end:
-            return element
-        raise (
+            return Integer(element)
+        raise ValueError(
             f'Cannot read index {index} from {self.__start} '
             f'which has length {self.size()}.'
         )
 
-    def constrain(self, index):
-        return min(max(index, self.__start), self.__end)
-
     def select_slice(
-        self, start: Number, end: Number, jump: Number
+        self,
+        start: typing.Optional[Integer],
+        end: typing.Optional[Integer],
+        jump: typing.Optional[Integer],
     ) -> 'Range':
         if start:
-            start = min(
-                max(start.val() + self.__start, self.__start), self.__end - 1
+            start = Integer(
+                min(
+                    max(start.val() + self.__start, self.__start),
+                    self.__end - 1,
+                )
             )
         else:
-            start = self.__start
+            start = Integer(self.__start)
 
         if end:
-            end = min(max(end.val() + self.__start, self.__start), self.__end)
+            end = Integer(
+                min(max(end.val() + self.__start, self.__start), self.__end)
+            )
         else:
-            end = self.__end
+            end = Integer(self.__end)
 
-        if jump:
-            jump = jump.val() * self.__jump
-        else:
-            jump = self.__jump
+        jump = Integer(jump.val() * self.__jump if jump else self.__jump)
 
-        return Range(Integer(start), Integer(end), Integer(jump))
+        return Range(start, end, jump)
 
-    def equals(self, other: 'Object'):
+    def equals(self, other: 'Object') -> bool:
         assert isinstance(other, Range) or isinstance(other, List)
         if isinstance(other, Range):
             return (
@@ -322,7 +346,7 @@ class Range(Collection):
     def compare(self, other: 'Object') -> ComparisonResult:
         raise NotImplementedError('Comparing ranges is not yet implemented')
 
-    def __str__(self):
+    def __str__(self) -> str:
         if self.__jump == 1:
             return f'({self.__start}..{self.__end})'
         return f'({self.__start}..{self.__end} by {self.__jump})'

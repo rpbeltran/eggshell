@@ -8,7 +8,7 @@ from .memory import *
 #  (we can free them by inserting frees w/ escape analysis)
 
 
-def test_garbage_collection_basic():
+def test_garbage_collection_basic() -> None:
     memory = Memory()
     assert len(memory.instances) == 0
     assert len(memory.scopes) == 1
@@ -17,11 +17,13 @@ def test_garbage_collection_basic():
     memory.new(types.Integer(100), name="a")
     assert memory.get_id("a") == 0
     a = memory.get_id("a")
-    assert (
-            memory.get_object(a).val()
-            == memory.get_object_by_name("a").val()
-            == 100
-    )
+    assert a is not None
+    a_obj = memory.get_object(a)
+    assert isinstance(a_obj, types.Integer)
+    assert a_obj.val() == 100
+    a_obj_by_name = memory.get_object_by_name("a")
+    assert isinstance(a_obj_by_name, types.Integer)
+    assert a_obj_by_name.val() == 100
 
     # push scope
     memory.push_scope()
@@ -31,7 +33,10 @@ def test_garbage_collection_basic():
     memory.new(types.Integer(101), name="b")
     assert memory.get_id("b") == 1
     b = memory.get_id("b")
-    assert memory.get_object(b).val() == 101
+    assert b is not None
+    b_obj = memory.get_object(b)
+    assert isinstance(b_obj, types.Integer)
+    assert b_obj.val() == 101
     assert len(memory.instances) == 2
 
     # pop scope
@@ -45,7 +50,7 @@ def test_garbage_collection_basic():
     assert len(memory.instances) == 0
 
 
-def test_garbage_collection_nonblocking_depends():
+def test_garbage_collection_nonblocking_depends() -> None:
     memory = Memory()
     assert len(memory.instances) == 0
     assert len(memory.scopes) == 1
@@ -54,7 +59,10 @@ def test_garbage_collection_nonblocking_depends():
     memory.new(types.Integer(100), name="a")
     assert memory.get_id("a") == 0
     a = memory.get_id("a")
-    assert memory.get_object(a).val() == 100
+    assert a is not None
+    a_obj = memory.get_object(a)
+    assert isinstance(a_obj, types.Integer)
+    assert a_obj.val() == 100
 
     # push scope
     memory.push_scope()
@@ -64,14 +72,20 @@ def test_garbage_collection_nonblocking_depends():
     memory.new(types.Integer(101), deps={a}, name="b")
     assert memory.get_id("b") == 1
     b = memory.get_id("b")
-    assert memory.get_object(b).val() == 101
+    assert b is not None
+    b_obj = memory.get_object(b)
+    assert isinstance(b_obj, types.Integer)
+    assert b_obj.val() == 101
     assert len(memory.instances) == 2
 
     # var c = [&b]
     memory.new(types.Integer(102), deps={b}, name="c")
     assert memory.get_id("c") == 2
     c = memory.get_id("c")
-    assert memory.get_object(c).val() == 102
+    assert c is not None
+    c_obj = memory.get_object(c)
+    assert isinstance(c_obj, types.Integer)
+    assert c_obj.val() == 102
     assert len(memory.instances) == 3
 
     # pop scope
@@ -85,7 +99,7 @@ def test_garbage_collection_nonblocking_depends():
     assert len(memory.instances) == 0
 
 
-def test_garbage_collection_depends():
+def test_garbage_collection_depends() -> None:
     memory = Memory()
     assert len(memory.instances) == 0
     assert len(memory.scopes) == 1
@@ -94,7 +108,10 @@ def test_garbage_collection_depends():
     memory.new(types.Integer(100), name="a")
     assert memory.get_id("a") == 0
     a = memory.get_id("a")
-    assert memory.get_object(a).val() == 100
+    assert a is not None
+    a_obj = memory.get_object(a)
+    assert isinstance(a_obj, types.Integer)
+    assert a_obj.val() == 100
 
     # push scope
     memory.push_scope()
@@ -104,7 +121,10 @@ def test_garbage_collection_depends():
     memory.new(types.Integer(101), name="b")
     assert memory.get_id("b") == 1
     b = memory.get_id("b")
-    assert memory.get_object(b).val() == 101
+    assert b is not None
+    b_obj = memory.get_object(b)
+    assert isinstance(b_obj, types.Integer)
+    assert b_obj.val() == 101
     assert len(memory.instances) == 2
 
     # a.push(b)
@@ -121,7 +141,7 @@ def test_garbage_collection_depends():
     assert len(memory.instances) == 0
 
 
-def test_garbage_collection_circular():
+def test_garbage_collection_circular() -> None:
     memory = Memory()
     assert len(memory.instances) == 0
     assert len(memory.scopes) == 1
@@ -130,7 +150,10 @@ def test_garbage_collection_circular():
     memory.new(types.Integer(100), name="a")
     assert memory.get_id("a") == 0
     a = memory.get_id("a")
-    assert memory.get_object(a).val() == 100
+    assert a is not None
+    a_obj = memory.get_object(a)
+    assert isinstance(a_obj, types.Integer)
+    assert a_obj.val() == 100
 
     # push scope
     memory.push_scope()
@@ -140,8 +163,13 @@ def test_garbage_collection_circular():
     memory.new(types.Integer(101), deps={a}, name="b")
     assert memory.get_id("b") == 1
     b = memory.get_id("b")
-    assert memory.get_object(b).val() == 101
+    assert b is not None
+    b_obj = memory.get_object(b)
+    assert isinstance(b_obj, types.Integer)
+    assert b_obj.val() == 101
     assert len(memory.instances) == 2
+
+    assert memory.get_id("foo") is None
 
     # a.push(b)
     memory.add_dependency(a, b)

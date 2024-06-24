@@ -5,11 +5,15 @@ from ..runtime import external_commands
 from ..runtime import types
 
 
-def make_external_command(*args):
+def make_external_command(
+    *args: typing.Iterable[types.Object],
+) -> external_commands.ExternalCommand:
     return external_commands.ExternalCommand(args)
 
 
-def make_pipeline(*args):
+def make_pipeline(
+    *args: typing.Iterable[types.Object],
+) -> external_commands.Pipeline:
     return external_commands.Pipeline(args)
 
 
@@ -39,7 +43,7 @@ def make_list(*data: typing.List) -> types.List:
     return types.List(data)
 
 
-def make_range(start: types.Integer, end: types.Integer) -> types.List:
+def make_range(start: types.Integer, end: types.Integer) -> types.Range:
     return types.Range(start, end, types.Integer(1))
 
 
@@ -52,7 +56,7 @@ class ComparisonType(Enum):
     GTE = 6
 
 
-def do_comparisons(*args):
+def do_comparisons(*args: types.Object | ComparisonType) -> bool:
     assert len(args) >= 3
     assert len(args) % 2 == 1
     for i in range(0, len(args) - 2, 2):
@@ -80,9 +84,9 @@ def do_comparisons(*args):
     return True
 
 
-def assertion(condition: types.Boolean):
+def assertion(condition: types.Boolean) -> None:
     assert condition
 
 
-def say(arg):
+def say(arg: types.Object) -> None:
     print(arg)

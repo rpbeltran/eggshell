@@ -7,7 +7,7 @@ from ..runtime.types import Object
 class Instance:
     __slots__ = ('data', 'deps', 'const')
 
-    def __init__(self, data: Object, deps: Set[int], const=False):
+    def __init__(self, data: Object, deps: Set[int], const: bool = False):
         self.data = data
         self.deps = deps
         self.const = const
@@ -16,21 +16,21 @@ class Instance:
 class Scope:
     __slots__ = ('names',)
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.names: Dict[str, int] = {}
 
-    def store(self, name, ref_id):
+    def store(self, name: str, ref_id: int) -> None:
         self.names[name] = ref_id
 
-    def has_name(self, name) -> bool:
+    def has_name(self, name: str) -> bool:
         return name in self.names
 
-    def get_id(self, name) -> int:
+    def get_id(self, name: str) -> int:
         return self.names[name]
 
 
 class Memory:
-    def __init__(self):
+    def __init__(self) -> None:
         self.instances: Dict[int, Instance] = {}
         self.scopes: List[Scope] = [Scope()]
         self.__next_ref_id_counter = 0
@@ -41,7 +41,7 @@ class Memory:
         deps: Optional[Set[int]] = None,
         name: Optional[str] = None,
         const: bool = False,
-    ):
+    ) -> None:
         ref_id = self.__next_ref_id()
         self.instances[ref_id] = Instance(
             data, set() if deps is None else deps, const=const
@@ -51,21 +51,22 @@ class Memory:
 
     def update_var(
         self, name: str, new_value: Object, deps: Optional[Set[int]] = None
-    ) -> int:
+    ) -> None:
         old_id = self.get_id(name)
+        assert old_id is not None
         assert not self.instances[old_id].const
-        return self.new(new_value, deps=deps, name=name)
+        self.new(new_value, deps=deps, name=name)
 
     def current_scope(self) -> Scope:
         return self.scopes[-1]
 
-    def store(self, name: str, ref_id: int):
+    def store(self, name: str, ref_id: int) -> None:
         self.current_scope().store(name, ref_id)
 
-    def push_scope(self):
+    def push_scope(self) -> None:
         self.scopes.append(Scope())
 
-    def pop_scope(self, garbage_collect=True):
+    def pop_scope(self, garbage_collect: bool = True) -> None:
         self.scopes.pop()
         if garbage_collect:
             self.garbage_collect()
@@ -75,6 +76,7 @@ class Memory:
 
     def get_object_by_name(self, name: str) -> Object:
         ref_id = self.get_id(name)
+        assert ref_id is not None
         return self.instances[ref_id].data
 
     def get_id(self, name: str) -> Optional[int]:
@@ -83,13 +85,13 @@ class Memory:
                 return scope.names[name]
         return None
 
-    def free(self, ref_id: int):
+    def free(self, ref_id: int) -> None:
         del self.instances[ref_id]
 
-    def add_dependency(self, from_id: int, dep_id: int):
+    def add_dependency(self, from_id: int, dep_id: int) -> None:
         self.instances[from_id].deps.add(dep_id)
 
-    def garbage_collect(self):
+    def garbage_collect(self) -> None:
         deps = self._get_used_ids()
         for ref_id in self.instances.keys() - deps:
             self.free(ref_id)
