@@ -1,7 +1,7 @@
 from collections import deque
 from typing import Dict, List, Optional, Set
 
-from runtime.types import Object
+from ..runtime.types import Object
 
 
 class Instance:

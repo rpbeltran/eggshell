@@ -37,3 +37,8 @@ egg-py = "egg:main"
 
 [tool.blue]
 force-exclude = ".+_test.py"
+
+[tool.pytest.ini_options]
+pythonpath = [
+    "."
+]

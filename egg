@@ -1,5 +1,10 @@
-#!/usr/bin/env bash
+#!/usr/bin/env python3
+import os
+import sys
 
-egg_directory="$( dirname -- "$( readlink -f -- "$0" )" )"
+eggshell_dir = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(eggshell_dir)
 
-"${egg_directory}/src/main.py" "$@"
+from src.main import main
+
+main()

@@ -5,14 +5,14 @@ import sys
 
 import lark
 
-from frontend.lexer import EggLexer
-from frontend.lexer_util import LexerError
-from frontend.parser import get_parser
-from backend.py_generator import PythonGenerator, transform_pygen_result
+from ..frontend.lexer import EggLexer
+from ..frontend.lexer_util import LexerError
+from ..frontend.parser import get_parser
+from ..backend.py_generator import PythonGenerator, transform_pygen_result
 from .profilers import maybe_profile, ProfilerConfig
 
-from runtime import egg_lib as _e
-from runtime import memory
+from ..runtime import egg_lib as _e
+from ..runtime import memory
 
 _m = memory.Memory()
 

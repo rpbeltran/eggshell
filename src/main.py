@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import argparse
-
-import cli.cli as cli
+import src.cli.cli as cli
 
 
 def get_args() -> argparse.Namespace:

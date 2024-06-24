@@ -4,11 +4,11 @@ from typing import Dict, Optional
 
 import lark
 
-from frontend.parser import get_parser
-from backend.py_generator import PythonGenerator, transform_pygen_result
+from ..frontend.parser import get_parser
+from ..backend.py_generator import PythonGenerator, transform_pygen_result
 
 from . import egg_lib as _e
-from runtime import memory
+from . import memory
 
 """
 INSTRUCTIONS: To add new test cases:
