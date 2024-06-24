@@ -13,7 +13,7 @@ def get_grammar() -> str:
     return grammar_file.read_text('utf-8')
 
 
-def get_parser(lowering=True) -> lark.Lark:
+def get_parser(lowering: bool = True) -> lark.Lark:
     grammar = get_grammar()
     transformer = LoweringTransformer if lowering else None
     return lark.Lark(

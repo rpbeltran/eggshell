@@ -56,11 +56,11 @@ def match_operator(state: LexerState) -> Optional[Tuple[str, str]]:
 
 
 class OperatorsNode(DFANode):
-    def __init__(self, pattern, operator):
+    def __init__(self, pattern: str, operator: str):
         self.pattern = pattern
         self.operator = operator
 
-    def step(self, c: str, state: LexerState) -> Iterator[Token]:
+    def step(self, _: str, state: LexerState) -> Iterator[Token]:
         state.step_forward(len(self.pattern) - 1)
         if self.operator == 'CURLY_OPEN':
             state.curly_depth += 1
@@ -121,10 +121,10 @@ class QuotedLiteralNode(DFANode):
 
 
 class QuotedArgListNode(DFANode):
-    def __init__(self):
+    def __init__(self) -> None:
         self.escaped = False
         self.quoted = False
-        self.quote_type = None
+        self.quote_type: Optional[str] = None
 
     def step(self, c: str, state: LexerState) -> Iterator[Token]:
         if self.escaped or c == '\\':
@@ -234,7 +234,7 @@ class UnquotedLiteral(DFANode):
                 'Read unexpected char from unquoted esxpression', state
             )
 
-    def get_token_type(self, source: str, state: LexerState):
+    def get_token_type(self, source: str, state: LexerState) -> str:
         if state.get_prev() == 'EXEC_ARG':
             return 'EXEC_ARG'
         if source in KEYWORDS:
@@ -247,7 +247,7 @@ class UnquotedLiteral(DFANode):
 
 
 class NumberNode(DFANode):
-    def __init__(self):
+    def __init__(self) -> None:
         self.has_decimal = False
         self.first_char = True
 
@@ -285,12 +285,9 @@ class NumberNode(DFANode):
             if not c_next.isalpha():
                 break
             unit += c_next.lower()
-        if len(unit):
-            if unit not in UNITS:
-                raise LexerError(
-                    f'Number literal has unknown unit: {unit}', state
-                )
-            return unit
+        if unit not in UNITS:
+            raise LexerError(f'Number literal has unknown unit: {unit}', state)
+        return unit
 
     def get_token_type(self, state: LexerState) -> str:
         if state.get_prev() == 'EXEC_ARG':
@@ -299,10 +296,10 @@ class NumberNode(DFANode):
 
 
 class EggLexer:
-    def __init__(self):
-        self.lexer_state = None
+    def __init__(self) -> None:
+        self.lexer_state: Optional[LexerState] = None
 
-    def lex(self, data) -> Iterator[Token]:
+    def lex(self, data: str) -> Iterator[Token]:
         self.lexer_state = LexerState(data + ' #', StartNode)
         while self.lexer_state.has_data():
             for token in self.step():
@@ -311,19 +308,22 @@ class EggLexer:
             raise LexerError('Read unexpected char', self.lexer_state)
 
     def step(self) -> Iterator[Token]:
+        assert self.lexer_state is not None
         atom = self.lexer_state.read()
         for token in self.lexer_state.state_node.step(atom, self.lexer_state):
             yield token
         self.lexer_state.head += 1
 
-    def reset(self):
+    def reset(self) -> None:
         self.lexer_state = None
 
 
 class EggLexerLark(lark.lexer.Lexer):
-    def __init__(self, _):
+    def __init__(self, _) -> None:   # type: ignore[no-untyped-def]
         self.lexer = EggLexer()
 
-    def lex(self, egg_code):
+    def lex(
+        self, egg_code: str
+    ) -> Iterator[lark.lexer.Token]:   # type: ignore[override]
         for token in self.lexer.lex(egg_code):
             yield token.to_lark()

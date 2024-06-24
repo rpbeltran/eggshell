@@ -1,5 +1,5 @@
 import bisect
-from typing import Dict, NamedTuple, Tuple
+from typing import Dict, List, NamedTuple, Tuple
 
 
 class SourceLocation(NamedTuple):
@@ -14,7 +14,7 @@ class Source:
         self.new_lines = self.get_new_lines(source)
 
     @staticmethod
-    def get_new_lines(source: str):
+    def get_new_lines(source: str) -> List[int]:
         return [i for i, c in enumerate(source) if c == '\n']
 
     def get_line_col(self, offset: int) -> Tuple[int, int]:
@@ -26,10 +26,10 @@ class Source:
 
 
 class SourceManager:
-    def __init__(self):
+    def __init__(self) -> None:
         self.sources: Dict[str, Source] = {}
 
-    def add_source(self, path, src):
+    def add_source(self, path: str, src: str) -> None:
         self.sources[path] = Source(src)
 
     def get_source_for_loc(self, loc: SourceLocation) -> str:

@@ -1,27 +1,28 @@
 import lark.lexer
 
-from typing import Callable, NamedTuple, Optional
+import abc
+from typing import Callable, Iterator, NamedTuple, Optional
 
 
 class Token(NamedTuple):
     token_type: str
     source: str
 
-    def to_lark(self):
+    def to_lark(self) -> lark.lexer.Token:
         return lark.lexer.Token(self.token_type, self.source)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"<{self.token_type}: '{self.source}'>"
 
 
 class LexerError(Exception):
-    def __init__(self, problem, lexer_state: 'LexerState'):
+    def __init__(self, problem: str, lexer_state: 'LexerState'):
         self.problem = problem
         self.position = lexer_state.head
         self.head = lexer_state.read() if lexer_state.has_data() else 'EOF'
         self.dfa_state = lexer_state.state_node
 
-    def __str__(self):
+    def __str__(self) -> str:
         return (
             f"On character '{self.head}' in position {self.position}:\n"
             f'\t{self.problem}\n'
@@ -30,45 +31,52 @@ class LexerError(Exception):
 
 
 class LexerState:
-    def __init__(self, data, StartNodeType: Callable):
+    def __init__(self, data: str, start_node_type: Callable):
         self.data = data
         self.data_length = len(data)
         self.token_start = 0
         self.head = 0
-        self.state_node = StartNodeType()
-        self.prev_token_type = None
+        self.state_node: DFANode = start_node_type()
+        self.prev_token_type: Optional[str] = None
         self.curly_depth = 0
         self.paren_depth = 0
         self.square_depth = 0
 
-    def has_data(self):
+    def has_data(self) -> bool:
         return self.head < self.data_length
 
-    def read(self):
+    def read(self) -> str:
         return self.data[self.head]
 
-    def get_token_source(self, end=None, inclusive=True):
-        if end is None:
-            end = self.head
+    def get_token_source(
+        self, end: Optional[int] = None, inclusive: bool = True
+    ) -> str:
+        end_unwrapped = self.head if end is None else end
         if inclusive:
-            end += 1
-        return self.data[self.token_start : end]
+            end_unwrapped += 1
+        return self.data[self.token_start : end_unwrapped]
 
-    def get_token(self, token_type, end=None, inclusive=True, source=None):
+    def get_token(
+        self,
+        token_type: str,
+        end: Optional[int] = None,
+        inclusive: bool = True,
+        source: Optional[str] = None,
+    ) -> Token:
         if source is None:
             source = self.get_token_source(end, inclusive)
         self.prev_token_type = token_type
         return Token(token_type, source)
 
-    def goto_node(self, state, step_back=False):
+    def goto_node(self, state: 'DFANode', step_back: bool = False) -> None:
         self.state_node = state
         if step_back:
             self.step_back()
 
-    def step_back(self, steps=1):
+    def step_back(self, steps: int = 1) -> None:
         self.head -= steps
 
-    def step_forward(self, steps=1):
+    def step_forward(self, steps: int = 1) -> None:
         self.head += steps
 
     def next_char(self) -> str:
@@ -81,7 +89,7 @@ class LexerState:
                 return c
         return ''
 
-    def clear_prev(self):
+    def clear_prev(self) -> None:
         self.prev_token_type = None
 
     def get_prev(self) -> Optional[str]:
@@ -95,6 +103,10 @@ class LexerState:
         )
 
 
-class DFANode:
-    def __str__(self):
+class DFANode(abc.ABC):
+    def __str__(self) -> str:
         return f'<{self.__class__.__name__}:  {self.__dict__}>'
+
+    @abc.abstractmethod
+    def step(self, c: str, state: LexerState) -> Iterator[Token]:
+        ...

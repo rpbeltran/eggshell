@@ -1,7 +1,7 @@
 from .mm_trie import *
 
 
-def test_ab():
+def test_ab() -> None:
     trie = MaxMunchTrie({
         'a': '1',
         'aab': '2',

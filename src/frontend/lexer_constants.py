@@ -1,7 +1,8 @@
+import typing
 from .mm_trie import MaxMunchTrie
 
 
-def _make_max_munch_safe(d):
+def _make_max_munch_safe(d: typing.Dict[str, str]) -> typing.Dict[str, str]:
     return dict(sorted(d.items(), reverse=True))
 
 

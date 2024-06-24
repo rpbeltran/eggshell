@@ -9,9 +9,9 @@ class TrieResult(NamedTuple):
 
 
 class TrieNode:
-    def __init__(self, prefix_len, named_patterns: Dict[str, str]):
+    def __init__(self, prefix_len: int, named_patterns: Dict[str, str]):
         self.children: Dict[str, TrieNode] = {}
-        self.value: Optional[str] = None
+        self.value: Optional[TrieResult] = None
 
         children_data: DefaultDict[str, Dict[str, str]] = defaultdict(dict)
         for pattern, name in named_patterns.items():
@@ -28,7 +28,9 @@ class MaxMunchTrie:
         self.root_node = TrieNode(0, named_patterns)
         self.first_chars: Set[str] = set(self.root_node.children.keys())
 
-    def largest_prefix(self, data, data_start_from) -> Optional[TrieResult]:
+    def largest_prefix(
+        self, data: str, data_start_from: int
+    ) -> Optional[TrieResult]:
         node = self.root_node
         for i in range(len(data) - data_start_from):
             c = data[data_start_from + i]

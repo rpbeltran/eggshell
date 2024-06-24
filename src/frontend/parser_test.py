@@ -19,24 +19,24 @@ new_test_cases: Dict[str, str] = {}
 
 
 # Prevents accidentally committing data in new_test_cases
-def test_no_new_test_cases():
+def test_no_new_test_cases() -> None:
     assert len(new_test_cases) == 0
 
 
 parser = get_parser(lowering=False)
 
 
-def get_ast(src) -> str:
+def get_ast(src: str) -> str:
     return parser.parse(src).pretty().strip()
 
 
-def test_pipe2():
+def test_pipe2() -> None:
     src = 'a | b'
     expected_ast = 'pipeline' '\n  exec\ta' '\n  exec\tb'
     assert get_ast(src) == expected_ast
 
 
-def test_pipe3():
+def test_pipe3() -> None:
     src = 'a | b | c'
     expected_ast = (
         'pipeline'
@@ -47,7 +47,7 @@ def test_pipe3():
     assert get_ast(src) == expected_ast
 
 
-def test_implicit_execution():
+def test_implicit_execution() -> None:
     src = 'foo -ef "bf c" | wow'
     expected_ast = (
         'pipeline'
@@ -60,7 +60,7 @@ def test_implicit_execution():
     assert get_ast(src) == expected_ast
 
 
-def test_explicit_execution():
+def test_explicit_execution() -> None:
     src = '`foo -ef bf c "d e"` | `wow`'
     expected_ast = (
         'pipeline'
@@ -75,7 +75,7 @@ def test_explicit_execution():
     assert get_ast(src) == expected_ast
 
 
-def test_do_block():
+def test_do_block() -> None:
     src = 'do {}'
     expected_ast = (
         'do_block'
@@ -84,7 +84,7 @@ def test_do_block():
     assert get_ast(src) == expected_ast
 
 
-def test_comparison():
+def test_comparison() -> None:
     src = '1 < 2 <= 3 == 3 != 4 >= 4 > 0'
     expected_ast = (
         'comparison_chain'
@@ -105,7 +105,7 @@ def test_comparison():
     assert get_ast(src) == expected_ast
 
 
-def test_boolean_algebra():
+def test_boolean_algebra() -> None:
     src = 'not true or false and true or false xor true'
     expected_ast = (
         'xor_expr'
@@ -122,7 +122,7 @@ def test_boolean_algebra():
     assert get_ast(src) == expected_ast
 
 
-def test_math_in_block():
+def test_math_in_block() -> None:
     src = 'do { 1 ** -3 + 4 * 5 - 6 // 7 / 8 % 9 }'
     expected_ast = (
         'do_block'
@@ -147,7 +147,7 @@ def test_math_in_block():
     assert get_ast(src) == expected_ast
 
 
-def test_math_top_level():
+def test_math_top_level() -> None:
     src = '1 ** 3 + 4 * 5 - 6 // 7 / 8 % 9 + -1'
     expected_ast = (
         'addition'
@@ -172,7 +172,7 @@ def test_math_top_level():
     assert get_ast(src) == expected_ast
 
 
-def test_identifier_explicit_1():
+def test_identifier_explicit_1() -> None:
     src = '@foo'
     expected_ast = (
         'identifier\tfoo'
@@ -180,7 +180,7 @@ def test_identifier_explicit_1():
     assert get_ast(src) == expected_ast
 
 
-def test_identifier_explicit_2():
+def test_identifier_explicit_2() -> None:
     src = '@foo::bar::a'
     expected_ast = (
         'identifier'
@@ -191,7 +191,7 @@ def test_identifier_explicit_2():
     assert get_ast(src) == expected_ast
 
 
-def test_identifier_explicit_3():
+def test_identifier_explicit_3() -> None:
     src = '@foo::bar::a.b.c.d'
     expected_ast = (
         'select_field'
@@ -208,7 +208,7 @@ def test_identifier_explicit_3():
     assert get_ast(src) == expected_ast
 
 
-def test_identifier_in_block_1():
+def test_identifier_in_block_1() -> None:
     src = 'do { foo }'
     expected_ast = (
         'do_block'
@@ -218,7 +218,7 @@ def test_identifier_in_block_1():
     assert get_ast(src) == expected_ast
 
 
-def test_identifier_in_block_2():
+def test_identifier_in_block_2() -> None:
     src = 'do { foo::bar::a }'
     expected_ast = (
         'do_block'
@@ -231,7 +231,7 @@ def test_identifier_in_block_2():
     assert get_ast(src) == expected_ast
 
 
-def test_identifier_in_block_3():
+def test_identifier_in_block_3() -> None:
     src = 'do { foo::bar::a.b.c.d }'
     expected_ast = (
         'do_block'
@@ -250,7 +250,7 @@ def test_identifier_in_block_3():
     assert get_ast(src) == expected_ast
 
 
-def test_curry():
+def test_curry() -> None:
     src = 'a $ @b + 1 $ c'
     expected_ast = (
         'curried_func'
@@ -264,7 +264,7 @@ def test_curry():
     assert get_ast(src) == expected_ast
 
 
-def test_function():
+def test_function() -> None:
     src = 'fn foo(){\n\ta := b\n\tret 1\n}'
     expected_ast = (
         'define_function'
@@ -280,7 +280,7 @@ def test_function():
     assert get_ast(src) == expected_ast
 
 
-def test_function_params():
+def test_function_params() -> None:
     src = 'fn foo(a, b: int, c:int=4){\n\tr := a+b+c\n\tret r\n}'
     expected_ast = (
         'define_function'
@@ -307,7 +307,7 @@ def test_function_params():
     assert get_ast(src) == expected_ast
 
 
-def test_function_empty():
+def test_function_empty() -> None:
     src = 'fn foo(){}'
     expected_ast = (
         'define_function'
@@ -318,7 +318,7 @@ def test_function_empty():
     assert get_ast(src) == expected_ast
 
 
-def test_declare():
+def test_declare() -> None:
     src = 'a := 1'
     expected_ast = (
         'declare_untyped_variable'
@@ -328,7 +328,7 @@ def test_declare():
     assert get_ast(src) == expected_ast
 
 
-def test_declare_typed():
+def test_declare_typed() -> None:
     src = 'a : int = 1'
     expected_ast = (
         'declare_typed_variable'
@@ -339,7 +339,7 @@ def test_declare_typed():
     assert get_ast(src) == expected_ast
 
 
-def test_declare_generic_typed():
+def test_declare_generic_typed() -> None:
     src = 'a : t[g] = [1]'
     expected_ast = (
         'declare_typed_variable'
@@ -354,7 +354,7 @@ def test_declare_generic_typed():
     assert get_ast(src) == expected_ast
 
 
-def test_assignment():
+def test_assignment() -> None:
     src = 'a = @b'
     expected_ast = (
         'reassign'
@@ -364,7 +364,7 @@ def test_assignment():
     assert get_ast(src) == expected_ast
 
 
-def test_list():
+def test_list() -> None:
     src = '[1,2,3+3,4,5]'
     expected_ast = (
         'list'
@@ -379,7 +379,7 @@ def test_list():
     assert get_ast(src) == expected_ast
 
 
-def test_range_square():
+def test_range_square() -> None:
     src = '[i..j]'
     expected_ast = (
         'range'
@@ -389,7 +389,7 @@ def test_range_square():
     assert get_ast(src) == expected_ast
 
 
-def test_range_paren():
+def test_range_paren() -> None:
     src = '(i..j)'
     expected_ast = (
         'range'
@@ -399,7 +399,7 @@ def test_range_paren():
     assert get_ast(src) == expected_ast
 
 
-def test_lambda():
+def test_lambda() -> None:
     src = 'a | \\x -> y'
     expected_ast = (
         'pipeline'
@@ -411,7 +411,7 @@ def test_lambda():
     assert get_ast(src) == expected_ast
 
 
-def test_lambda_block():
+def test_lambda_block() -> None:
     src = 'a | \\x {a;b}'
     expected_ast = (
         'pipeline'
@@ -425,7 +425,7 @@ def test_lambda_block():
     assert get_ast(src) == expected_ast
 
 
-def test_lambda_no_param():
+def test_lambda_no_param() -> None:
     src = 'a | \\() -> x'
     expected_ast = (
         'pipeline'
@@ -437,7 +437,7 @@ def test_lambda_no_param():
     assert get_ast(src) == expected_ast
 
 
-def test_lambda_3_params():
+def test_lambda_3_params() -> None:
     src = 'a | \\(a, b:int, c:int=1) -> x'
     expected_ast = (
         'pipeline'
@@ -460,7 +460,7 @@ def test_lambda_3_params():
     assert get_ast(src) == expected_ast
 
 
-def test_ellipsis():
+def test_ellipsis() -> None:
     src = 'a | \\x -> @x.b... | c'
     expected_ast = (
         'pipeline'
@@ -476,7 +476,7 @@ def test_ellipsis():
     assert get_ast(src) == expected_ast
 
 
-def test_loop():
+def test_loop() -> None:
     src = 'loop {x(); y()}'
     expected_ast = (
         'always_loop'
@@ -491,7 +491,7 @@ def test_loop():
     assert get_ast(src) == expected_ast
 
 
-def test_loop_empty():
+def test_loop_empty() -> None:
     src = 'loop {}'
     expected_ast = (
         'always_loop'
@@ -500,7 +500,7 @@ def test_loop_empty():
     assert get_ast(src) == expected_ast
 
 
-def test_loop_labeled():
+def test_loop_labeled() -> None:
     src = 'loop as x {y}'
     expected_ast = (
         'always_loop'
@@ -511,7 +511,7 @@ def test_loop_labeled():
     assert get_ast(src) == expected_ast
 
 
-def test_while():
+def test_while() -> None:
     src = 'while(a == b) {x(); y()}'
     expected_ast = (
         'while'
@@ -530,7 +530,7 @@ def test_while():
     assert get_ast(src) == expected_ast
 
 
-def test_while_empty():
+def test_while_empty() -> None:
     src = 'while(a == b) {}'
     expected_ast = (
         'while'
@@ -543,7 +543,7 @@ def test_while_empty():
     assert get_ast(src) == expected_ast
 
 
-def test_while_labeled():
+def test_while_labeled() -> None:
     src = 'while(a == b) as x {y}'
     expected_ast = (
         'while'
@@ -558,7 +558,7 @@ def test_while_labeled():
     assert get_ast(src) == expected_ast
 
 
-def test_for():
+def test_for() -> None:
     src = 'for i in l {x(); y()}'
     expected_ast = (
         'for'
@@ -575,7 +575,7 @@ def test_for():
     assert get_ast(src) == expected_ast
 
 
-def test_for_empty():
+def test_for_empty() -> None:
     src = 'for i in [1,2,3] {}'
     expected_ast = (
         'for'
@@ -589,7 +589,7 @@ def test_for_empty():
     assert get_ast(src) == expected_ast
 
 
-def test_for_labeled():
+def test_for_labeled() -> None:
     src = 'for i in [0..1] as x {y}'
     expected_ast = (
         'for'
@@ -604,7 +604,7 @@ def test_for_labeled():
     assert get_ast(src) == expected_ast
 
 
-def test_parenthesis():
+def test_parenthesis() -> None:
     src = '(((1 + 2)+((3))+4))'
     expected_ast = (
         'addition'
@@ -618,7 +618,7 @@ def test_parenthesis():
     assert get_ast(src) == expected_ast
 
 
-def test_methods():
+def test_methods() -> None:
     src = 'module_name::a.b(1)'
     expected_ast = (
         'function_call'
@@ -633,7 +633,7 @@ def test_methods():
     assert get_ast(src) == expected_ast
 
 
-def test_import():
+def test_import() -> None:
     src = 'import "a.egg"'
     expected_ast = (
         'import\ta.egg'
@@ -641,7 +641,7 @@ def test_import():
     assert get_ast(src) == expected_ast
 
 
-def test_class():
+def test_class() -> None:
     src = 'class thing {a: b\n c; d\nfn my_method(){}}'
     expected_ast = (
         'define_class'
@@ -661,7 +661,7 @@ def test_class():
     assert get_ast(src) == expected_ast
 
 
-def test_class_extending():
+def test_class_extending() -> None:
     src = 'class Cow : Animal {}'
     expected_ast = (
         'define_derived_class'
@@ -673,7 +673,7 @@ def test_class_extending():
     assert get_ast(src) == expected_ast
 
 
-def test_map():
+def test_map() -> None:
     src = '{1: 10, "b": "b0", l: [1], m:{} }'
     expected_ast = (
         'map'
@@ -694,7 +694,7 @@ def test_map():
     assert get_ast(src) == expected_ast
 
 
-def test_map_empty():
+def test_map_empty() -> None:
     src = '{}'
     expected_ast = (
         'map'
@@ -702,7 +702,7 @@ def test_map_empty():
     assert get_ast(src) == expected_ast
 
 
-def test_error_sequence():
+def test_error_sequence() -> None:
     src = 'a && b && c || do {a; b; c}'
     expected_ast = (
         'logical_sequence'
@@ -723,7 +723,7 @@ def test_error_sequence():
     assert get_ast(src) == expected_ast
 
 
-def test_try():
+def test_try() -> None:
     src = 'try{`x`}'
     expected_ast = (
         'try_catch'
@@ -734,7 +734,7 @@ def test_try():
     assert get_ast(src) == expected_ast
 
 
-def test_try_catch():
+def test_try_catch() -> None:
     src = 'try{`x`} catch {`y`}'
     expected_ast = (
         'try_catch'
@@ -747,7 +747,7 @@ def test_try_catch():
     assert get_ast(src) == expected_ast
 
 
-def test_try_catch_param():
+def test_try_catch_param() -> None:
     src = 'try{`x`} catch e {`y`}'
     expected_ast = (
         'try_catch'
@@ -761,7 +761,7 @@ def test_try_catch_param():
     assert get_ast(src) == expected_ast
 
 
-def test_try_catch_param_typed():
+def test_try_catch_param_typed() -> None:
     src = 'try{`x`} catch e: t {`y`}'
     expected_ast = (
         'try_catch'
@@ -776,7 +776,7 @@ def test_try_catch_param_typed():
     assert get_ast(src) == expected_ast
 
 
-def test_asynch():
+def test_asynch() -> None:
     src = '~(`foo`)'
     expected_ast = (
         'async_expr'
@@ -785,7 +785,7 @@ def test_asynch():
     assert get_ast(src) == expected_ast
 
 
-def test_asynch_block():
+def test_asynch_block() -> None:
     src = '~ { `foo`; `bar` }'
     expected_ast = (
         'async_expr'
@@ -796,7 +796,7 @@ def test_asynch_block():
     assert get_ast(src) == expected_ast
 
 
-def test_asynch_methods():
+def test_asynch_methods() -> None:
     src = '~(`foo`).x'
     expected_ast = (
         'select_field'
@@ -807,7 +807,7 @@ def test_asynch_methods():
     assert get_ast(src) == expected_ast
 
 
-def test_returned_obj_methods():
+def test_returned_obj_methods() -> None:
     src = '@a().x'
     expected_ast = (
         'select_field'
@@ -819,7 +819,7 @@ def test_returned_obj_methods():
     assert get_ast(src) == expected_ast
 
 
-def test_concatenation():
+def test_concatenation() -> None:
     src = '@a ++ @b'
     expected_ast = (
         'concatenate'
@@ -829,7 +829,7 @@ def test_concatenation():
     assert get_ast(src) == expected_ast
 
 
-def test_concatenation_executions():
+def test_concatenation_executions() -> None:
     src = 'a ++ b'
     expected_ast = (
         'concatenate'
@@ -839,7 +839,7 @@ def test_concatenation_executions():
     assert get_ast(src) == expected_ast
 
 
-def test_select_element():
+def test_select_element() -> None:
     src = '@a[i]'
     expected_ast = (
         'select_element'
@@ -849,7 +849,7 @@ def test_select_element():
     assert get_ast(src) == expected_ast
 
 
-def test_select_slice():
+def test_select_slice() -> None:
     src = '@a[1:2 by 3]'
     expected_ast = (
         'select_slice'
@@ -864,7 +864,7 @@ def test_select_slice():
     assert get_ast(src) == expected_ast
 
 
-def test_select_slice2():
+def test_select_slice2() -> None:
     src = '@a[1:2]'
     expected_ast = (
         'select_slice'
@@ -878,7 +878,7 @@ def test_select_slice2():
     assert get_ast(src) == expected_ast
 
 
-def test_select_slice_rev():
+def test_select_slice_rev() -> None:
     src = '@a[: by -1]'
     expected_ast = (
         'select_slice'
@@ -892,7 +892,7 @@ def test_select_slice_rev():
     assert get_ast(src) == expected_ast
 
 
-def test_select_slice_end_only():
+def test_select_slice_end_only() -> None:
     src = '@a[:1]'
     expected_ast = (
         'select_slice'
@@ -905,7 +905,7 @@ def test_select_slice_end_only():
     assert get_ast(src) == expected_ast
 
 
-def test_select_slice_end_and_jump():
+def test_select_slice_end_and_jump() -> None:
     src = '@a[:1 by 2]'
     expected_ast = (
         'select_slice'
@@ -919,7 +919,7 @@ def test_select_slice_end_and_jump():
     assert get_ast(src) == expected_ast
 
 
-def test_with():
+def test_with() -> None:
     src = 'with a.y() {}'
     expected_ast = (
         'with_block'
@@ -933,7 +933,7 @@ def test_with():
     assert get_ast(src) == expected_ast
 
 
-def test_with_as():
+def test_with_as() -> None:
     src = 'with a.y() as x {}'
     expected_ast = (
         'with_block'
@@ -948,7 +948,7 @@ def test_with_as():
     assert get_ast(src) == expected_ast
 
 
-def test_explicit_pipeline():
+def test_explicit_pipeline() -> None:
     src = '`a | b | c`'
     expected_ast = (
         'pipeline'
@@ -959,7 +959,7 @@ def test_explicit_pipeline():
     assert get_ast(src) == expected_ast
 
 
-def test_list_comprehension():
+def test_list_comprehension() -> None:
     src = '[10**x for x in (0..10)]'
     expected_ast = (
         'list_comprehension'
@@ -974,7 +974,7 @@ def test_list_comprehension():
     assert get_ast(src) == expected_ast
 
 
-def test_map_comprehension():
+def test_map_comprehension() -> None:
     src = '{-x: 10**-x for x in (0..10)}'
     expected_ast = (
         'map_comprehension'
@@ -992,7 +992,7 @@ def test_map_comprehension():
     assert get_ast(src) == expected_ast
 
 
-def test_fn_normal_multi_and_kw_param():
+def test_fn_normal_multi_and_kw_param() -> None:
     src = 'fn foo (a, b, *c, **d){}'
     expected_ast = (
         'define_function'
@@ -1007,7 +1007,7 @@ def test_fn_normal_multi_and_kw_param():
     assert get_ast(src) == expected_ast
 
 
-def test_fn_multi_and_kw_param():
+def test_fn_multi_and_kw_param() -> None:
     src = 'fn foo (*a, **b){}'
     expected_ast = (
         'define_function'
@@ -1020,7 +1020,7 @@ def test_fn_multi_and_kw_param():
     assert get_ast(src) == expected_ast
 
 
-def test_fn_multi_param():
+def test_fn_multi_param() -> None:
     src = 'fn foo (a, *b){}'
     expected_ast = (
         'define_function'
@@ -1033,7 +1033,7 @@ def test_fn_multi_param():
     assert get_ast(src) == expected_ast
 
 
-def test_fn_multi_param_only():
+def test_fn_multi_param_only() -> None:
     src = 'fn foo (*b){}'
     expected_ast = (
         'define_function'
@@ -1045,7 +1045,7 @@ def test_fn_multi_param_only():
     assert get_ast(src) == expected_ast
 
 
-def test_fn_kw_param():
+def test_fn_kw_param() -> None:
     src = 'fn foo (a, **b){}'
     expected_ast = (
         'define_function'
@@ -1058,7 +1058,7 @@ def test_fn_kw_param():
     assert get_ast(src) == expected_ast
 
 
-def test_fn_kw_param_only():
+def test_fn_kw_param_only() -> None:
     src = 'fn foo (**b){}'
     expected_ast = (
         'define_function'
@@ -1070,7 +1070,7 @@ def test_fn_kw_param_only():
     assert get_ast(src) == expected_ast
 
 
-def test_lambda_normal_multi_and_kw_param():
+def test_lambda_normal_multi_and_kw_param() -> None:
     src = '\\(a, b, *c, **d){}'
     expected_ast = (
         'lambda_func'
@@ -1084,7 +1084,7 @@ def test_lambda_normal_multi_and_kw_param():
     assert get_ast(src) == expected_ast
 
 
-def test_lambda_multi_and_kw_param():
+def test_lambda_multi_and_kw_param() -> None:
     src = '\\(*a, **b){}'
     expected_ast = (
         'lambda_func'
@@ -1096,7 +1096,7 @@ def test_lambda_multi_and_kw_param():
     assert get_ast(src) == expected_ast
 
 
-def test_lambda_multi_param():
+def test_lambda_multi_param() -> None:
     src = '\\(a, *b){}'
     expected_ast = (
         'lambda_func'
@@ -1108,7 +1108,7 @@ def test_lambda_multi_param():
     assert get_ast(src) == expected_ast
 
 
-def test_lambda_multi_param_only():
+def test_lambda_multi_param_only() -> None:
     src = '\\(*b){}'
     expected_ast = (
         'lambda_func'
@@ -1119,7 +1119,7 @@ def test_lambda_multi_param_only():
     assert get_ast(src) == expected_ast
 
 
-def test_lambda_multi_param_only_no_paren():
+def test_lambda_multi_param_only_no_paren() -> None:
     src = '\\*b{}'
     expected_ast = (
         'lambda_func'
@@ -1129,7 +1129,7 @@ def test_lambda_multi_param_only_no_paren():
     assert get_ast(src) == expected_ast
 
 
-def test_lambda_kw_param():
+def test_lambda_kw_param() -> None:
     src = '\\(a, **b){}'
     expected_ast = (
         'lambda_func'
@@ -1141,7 +1141,7 @@ def test_lambda_kw_param():
     assert get_ast(src) == expected_ast
 
 
-def test_lambda_kw_param_only():
+def test_lambda_kw_param_only() -> None:
     src = '\\(**b){}'
     expected_ast = (
         'lambda_func'
@@ -1152,7 +1152,7 @@ def test_lambda_kw_param_only():
     assert get_ast(src) == expected_ast
 
 
-def test_lambda_kw_param_only_no_paren():
+def test_lambda_kw_param_only_no_paren() -> None:
     src = '\\**b{}'
     expected_ast = (
         'lambda_func'
@@ -1162,7 +1162,7 @@ def test_lambda_kw_param_only_no_paren():
     assert get_ast(src) == expected_ast
 
 
-def test_kw_args():
+def test_kw_args() -> None:
     src = 'foo(a, b=c, d=e)'
     expected_ast = (
         'function_call'
@@ -1179,7 +1179,7 @@ def test_kw_args():
     assert get_ast(src) == expected_ast
 
 
-def test_implicit_lambda():
+def test_implicit_lambda() -> None:
     src = '_'
     expected_ast = (
         'implicit_lambda_param'
@@ -1187,7 +1187,7 @@ def test_implicit_lambda():
     assert get_ast(src) == expected_ast
 
 
-def test_implicit_lambda_method():
+def test_implicit_lambda_method() -> None:
     src = '_.hello() + _.world()'
     expected_ast = (
         'addition'
@@ -1205,7 +1205,7 @@ def test_implicit_lambda_method():
     assert get_ast(src) == expected_ast
 
 
-def test_implicit_lambda_piped():
+def test_implicit_lambda_piped() -> None:
     src = 'a | _.sort() | b'
     expected_ast = (
         'pipeline'
@@ -1220,7 +1220,7 @@ def test_implicit_lambda_piped():
     assert get_ast(src) == expected_ast
 
 
-def test_selection_lambda_shorthand():
+def test_selection_lambda_shorthand() -> None:
     src = 'get_files | ...date'
     expected_ast = (
         'pipeline'
@@ -1230,7 +1230,7 @@ def test_selection_lambda_shorthand():
     assert get_ast(src) == expected_ast
 
 
-def test_pipeline_to_implicit_lambda():
+def test_pipeline_to_implicit_lambda() -> None:
     src = 'a | _ | c'
     expected_ast = (
         'pipeline'
@@ -1241,7 +1241,7 @@ def test_pipeline_to_implicit_lambda():
     assert get_ast(src) == expected_ast
 
 
-def test_pipeline_to_implicit_lambda2():
+def test_pipeline_to_implicit_lambda2() -> None:
     src = 'a | _ | _ + _ | c'
     expected_ast = (
         'pipeline'
@@ -1255,7 +1255,7 @@ def test_pipeline_to_implicit_lambda2():
     assert get_ast(src) == expected_ast
 
 
-def test_if_statement():
+def test_if_statement() -> None:
     src = 'if (1 == 2) {}'
     expected_ast = (
         'if_statement'
@@ -1268,7 +1268,7 @@ def test_if_statement():
     assert get_ast(src) == expected_ast
 
 
-def test_if_no_paren():
+def test_if_no_paren() -> None:
     src = 'if 1 == 2 {}'
     expected_ast = (
         'if_statement'
@@ -1281,7 +1281,7 @@ def test_if_no_paren():
     assert get_ast(src) == expected_ast
 
 
-def test_unit_b():
+def test_unit_b() -> None:
     src = '45b + 4.5b'
     expected_ast = (
         'addition'
@@ -1291,7 +1291,7 @@ def test_unit_b():
     assert get_ast(src) == expected_ast
 
 
-def test_unit_kb():
+def test_unit_kb() -> None:
     src = '45kb + 4.5kb'
     expected_ast = (
         'addition'
@@ -1301,7 +1301,7 @@ def test_unit_kb():
     assert get_ast(src) == expected_ast
 
 
-def test_unit_mb():
+def test_unit_mb() -> None:
     src = '45mb + 4.5mb'
     expected_ast = (
         'addition'
@@ -1311,7 +1311,7 @@ def test_unit_mb():
     assert get_ast(src) == expected_ast
 
 
-def test_unit_gb():
+def test_unit_gb() -> None:
     src = '45gb + 4.5gb'
     expected_ast = (
         'addition'
@@ -1321,7 +1321,7 @@ def test_unit_gb():
     assert get_ast(src) == expected_ast
 
 
-def test_unit_tb():
+def test_unit_tb() -> None:
     src = '45tb + 4.5tb'
     expected_ast = (
         'addition'
@@ -1331,7 +1331,7 @@ def test_unit_tb():
     assert get_ast(src) == expected_ast
 
 
-def test_unit_pb():
+def test_unit_pb() -> None:
     src = '45pb + 4.5pb'
     expected_ast = (
         'addition'
@@ -1341,7 +1341,7 @@ def test_unit_pb():
     assert get_ast(src) == expected_ast
 
 
-def test_unit_kib():
+def test_unit_kib() -> None:
     src = '45kib + 4.5kib'
     expected_ast = (
         'addition'
@@ -1351,7 +1351,7 @@ def test_unit_kib():
     assert get_ast(src) == expected_ast
 
 
-def test_unit_mib():
+def test_unit_mib() -> None:
     src = '45mib + 4.5mib'
     expected_ast = (
         'addition'
@@ -1361,7 +1361,7 @@ def test_unit_mib():
     assert get_ast(src) == expected_ast
 
 
-def test_unit_gib():
+def test_unit_gib() -> None:
     src = '45gib + 4.5gib'
     expected_ast = (
         'addition'
@@ -1371,7 +1371,7 @@ def test_unit_gib():
     assert get_ast(src) == expected_ast
 
 
-def test_unit_tib():
+def test_unit_tib() -> None:
     src = '45tib + 4.5tib'
     expected_ast = (
         'addition'
@@ -1381,7 +1381,7 @@ def test_unit_tib():
     assert get_ast(src) == expected_ast
 
 
-def test_unit_pib():
+def test_unit_pib() -> None:
     src = '45pib + 4.5pib'
     expected_ast = (
         'addition'
@@ -1391,7 +1391,7 @@ def test_unit_pib():
     assert get_ast(src) == expected_ast
 
 
-def test_plus_assignment():
+def test_plus_assignment() -> None:
     src = '@a += @b'
     expected_ast = (
         'plus_assign'
@@ -1401,7 +1401,7 @@ def test_plus_assignment():
     assert get_ast(src) == expected_ast
 
 
-def test_minus_assignment():
+def test_minus_assignment() -> None:
     src = '@a -= @b'
     expected_ast = (
         'minus_assign'
@@ -1411,7 +1411,7 @@ def test_minus_assignment():
     assert get_ast(src) == expected_ast
 
 
-def test_times_assignment():
+def test_times_assignment() -> None:
     src = '@a *= @b'
     expected_ast = (
         'times_assign'
@@ -1421,7 +1421,7 @@ def test_times_assignment():
     assert get_ast(src) == expected_ast
 
 
-def test_divide_assignment():
+def test_divide_assignment() -> None:
     src = '@a /= @b'
     expected_ast = (
         'divide_assign'
@@ -1431,7 +1431,7 @@ def test_divide_assignment():
     assert get_ast(src) == expected_ast
 
 
-def test_mod_assignment():
+def test_mod_assignment() -> None:
     src = '@a %= @b'
     expected_ast = (
         'mod_assign'
@@ -1441,7 +1441,7 @@ def test_mod_assignment():
     assert get_ast(src) == expected_ast
 
 
-def test_power_assignment():
+def test_power_assignment() -> None:
     src = '@a **= @b'
     expected_ast = (
         'power_assign'
@@ -1451,7 +1451,7 @@ def test_power_assignment():
     assert get_ast(src) == expected_ast
 
 
-def test_int_div_assignment():
+def test_int_div_assignment() -> None:
     src = '@a //= @b'
     expected_ast = (
         'int_div_assign'
@@ -1461,7 +1461,7 @@ def test_int_div_assignment():
     assert get_ast(src) == expected_ast
 
 
-def test_concat_assignment():
+def test_concat_assignment() -> None:
     src = '@a ++= @b'
     expected_ast = (
         'concat_assign'
@@ -1471,7 +1471,7 @@ def test_concat_assignment():
     assert get_ast(src) == expected_ast
 
 
-def test_seq_and_assignment():
+def test_seq_and_assignment() -> None:
     src = '@a &&= @b'
     expected_ast = (
         'seq_and_assign'
@@ -1481,7 +1481,7 @@ def test_seq_and_assignment():
     assert get_ast(src) == expected_ast
 
 
-def test_seq_or_assignment():
+def test_seq_or_assignment() -> None:
     src = '@a ||= @b'
     expected_ast = (
         'seq_or_assign'
@@ -1491,7 +1491,7 @@ def test_seq_or_assignment():
     assert get_ast(src) == expected_ast
 
 
-def test_pipe_assignment():
+def test_pipe_assignment() -> None:
     src = '@a |= @b'
     expected_ast = (
         'pipe_assign'
@@ -1501,7 +1501,7 @@ def test_pipe_assignment():
     assert get_ast(src) == expected_ast
 
 
-def test_assertion():
+def test_assertion() -> None:
     src = 'assert 1 == one()'
     expected_ast = (
         'assertion'
@@ -1515,7 +1515,7 @@ def test_assertion():
     assert get_ast(src) == expected_ast
 
 
-def test_const_declare():
+def test_const_declare() -> None:
     src = 'const a := 1'
     expected_ast = (
         'declare_untyped_constant'
@@ -1525,7 +1525,7 @@ def test_const_declare():
     assert get_ast(src) == expected_ast
 
 
-def test_say():
+def test_say() -> None:
     src = 'say a b c'
     expected_ast = (
         'say'
@@ -1537,7 +1537,7 @@ def test_say():
     assert get_ast(src) == expected_ast
 
 
-def test_if_elif_else():
+def test_if_elif_else() -> None:
     src = 'if true {} elif false {} else if true {} else {}'
     expected_ast = (
         'if_statement'

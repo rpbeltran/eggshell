@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List, Tuple
 
 from .lexer import *
 
@@ -19,19 +19,19 @@ new_test_cases: Dict[str, str] = {}
 
 
 # Prevents accidentally committing data in new_test_cases
-def test_no_new_test_cases():
+def test_no_new_test_cases() -> None:
     assert len(new_test_cases) == 0
 
 
 lexer = EggLexer()
 
 
-def get_tokens(egg: str):
+def get_tokens(egg: str) -> List[Tuple[str,str]]:
     lexer.reset()
     return [(token.token_type, token.source) for token in lexer.lex(egg)]
 
 
-def test_basic_pipe():
+def test_basic_pipe() -> None:
     egg_code = 'a | b'
     expected_tokens = [
         ('EXEC_ARG', 'a'),
@@ -41,7 +41,7 @@ def test_basic_pipe():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_basic_pipe3():
+def test_basic_pipe3() -> None:
     egg_code = 'a b | b | c'
     expected_tokens = [
         ('EXEC_ARG', 'a'),
@@ -54,7 +54,7 @@ def test_basic_pipe3():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_semicolons():
+def test_semicolons() -> None:
     egg_code = 'a ; b ; c'
     expected_tokens = [
         ('EXEC_ARG', 'a'),
@@ -66,7 +66,7 @@ def test_semicolons():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_function_basic():
+def test_function_basic() -> None:
     egg_code = 'fn foo() {`b`}'
     expected_tokens = [
         ('FN', 'fn'),
@@ -80,7 +80,7 @@ def test_function_basic():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_function_return():
+def test_function_return() -> None:
     egg_code = 'fn foo(): int {\n  ret 2\n}'
     expected_tokens = [
         ('FN', 'fn'),
@@ -99,7 +99,7 @@ def test_function_return():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_function_param():
+def test_function_param() -> None:
     egg_code = 'fn foo(a, b := 1, c: int = 2) {}'
     expected_tokens = [
         ('FN', 'fn'),
@@ -123,7 +123,7 @@ def test_function_param():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_lambda():
+def test_lambda() -> None:
     egg_code = '\\a -> b'
     expected_tokens = [
         ('LAMBDA', '\\'),
@@ -134,7 +134,7 @@ def test_lambda():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_lambda2():
+def test_lambda2() -> None:
     egg_code = '\\(a,b) -> c'
     expected_tokens = [
         ('LAMBDA', '\\'),
@@ -149,7 +149,7 @@ def test_lambda2():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_lambda3():
+def test_lambda3() -> None:
     egg_code = '\\(a,b,c) -> d'
     expected_tokens = [
         ('LAMBDA', '\\'),
@@ -166,7 +166,7 @@ def test_lambda3():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_lambda_multi():
+def test_lambda_multi() -> None:
     egg_code = '\\a {ret 1}'
     expected_tokens = [
         ('LAMBDA', '\\'),
@@ -179,7 +179,7 @@ def test_lambda_multi():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_identifiers():
+def test_identifiers() -> None:
     egg_code = '@a b @c'
     expected_tokens = [
         ('NAME', 'a'),
@@ -189,7 +189,7 @@ def test_identifiers():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_declaration():
+def test_declaration() -> None:
     egg_code = 'a := 1'
     expected_tokens = [
         ('NAME', 'a'),
@@ -199,7 +199,7 @@ def test_declaration():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_typed_declaration():
+def test_typed_declaration() -> None:
     egg_code = 'a : int = 1'
     expected_tokens = [
         ('NAME', 'a'),
@@ -211,7 +211,7 @@ def test_typed_declaration():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_quoted_executions():
+def test_quoted_executions() -> None:
     egg_code = '`a` {`b`}'
     expected_tokens = [
         ('EXEC_ARG', 'a'),
@@ -222,7 +222,7 @@ def test_quoted_executions():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_list():
+def test_list() -> None:
     egg_code = 'a := [1,2,3]'
     expected_tokens = [
         ('NAME', 'a'),
@@ -238,7 +238,7 @@ def test_list():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_list_types():
+def test_list_types() -> None:
     egg_code = 'a: [int] = '
     expected_tokens = [
         ('NAME', 'a'),
@@ -251,7 +251,7 @@ def test_list_types():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_list_access():
+def test_list_access() -> None:
     egg_code = 'a[1]'
     expected_tokens = [
         ('EXEC_ARG', 'a'),
@@ -262,7 +262,7 @@ def test_list_access():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_list_access2():
+def test_list_access2() -> None:
     egg_code = 'a[1:2]'
     expected_tokens = [
         ('EXEC_ARG', 'a'),
@@ -275,7 +275,7 @@ def test_list_access2():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_list_access3():
+def test_list_access3() -> None:
     egg_code = 'a[1:2:3]'
     expected_tokens = [
         ('EXEC_ARG', 'a'),
@@ -290,7 +290,7 @@ def test_list_access3():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_list_access_var():
+def test_list_access_var() -> None:
     egg_code = 'a[b:c:d]'
     expected_tokens = [
         ('EXEC_ARG', 'a'),
@@ -305,7 +305,7 @@ def test_list_access_var():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_currying():
+def test_currying() -> None:
     egg_code = 'a $ b $ c'
     expected_tokens = [
         ('EXEC_ARG', 'a'),
@@ -317,7 +317,7 @@ def test_currying():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_field_access():
+def test_field_access() -> None:
     egg_code = '@a.b.c'
     expected_tokens = [
         ('NAME', 'a'),
@@ -329,7 +329,7 @@ def test_field_access():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_comment():
+def test_comment() -> None:
     egg_code = 'a # hello \n #world \n b'
     expected_tokens = [
         ('EXEC_ARG', 'a'),
@@ -340,7 +340,7 @@ def test_comment():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_pass_by_function():
+def test_pass_by_function() -> None:
     egg_code = '@a...'
     expected_tokens = [
         ('NAME', 'a'),
@@ -349,7 +349,7 @@ def test_pass_by_function():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_error_handling():
+def test_error_handling() -> None:
     egg_code = '(a && b) || c'
     expected_tokens = [
         ('PAREN_OPEN', '('),
@@ -363,7 +363,7 @@ def test_error_handling():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_try():
+def test_try() -> None:
     egg_code = 'try{\n\t`a` }'
     expected_tokens = [
         ('TRY', 'try'),
@@ -375,7 +375,7 @@ def test_try():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_try_catch():
+def test_try_catch() -> None:
     egg_code = 'try { `a` } catch { `b` }'
     expected_tokens = [
         ('TRY', 'try'),
@@ -390,7 +390,7 @@ def test_try_catch():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_try_catch_param():
+def test_try_catch_param() -> None:
     egg_code = 'try { `a` } catch e { `b` }'
     expected_tokens = [
         ('TRY', 'try'),
@@ -406,7 +406,7 @@ def test_try_catch_param():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_range():
+def test_range() -> None:
     egg_code = '(a..b)'
     expected_tokens = [
         ('PAREN_OPEN', '('),
@@ -418,7 +418,7 @@ def test_range():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_loop():
+def test_loop() -> None:
     egg_code = 'loop { }'
     expected_tokens = [
         ('ALWAYS_LOOP', 'loop'),
@@ -428,7 +428,7 @@ def test_loop():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_while():
+def test_while() -> None:
     egg_code = 'while true { }'
     expected_tokens = [
         ('WHILE', 'while'),
@@ -439,7 +439,7 @@ def test_while():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_for():
+def test_for() -> None:
     egg_code = 'for a in @b { }'
     expected_tokens = [
         ('FOR', 'for'),
@@ -452,7 +452,7 @@ def test_for():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_async():
+def test_async() -> None:
     egg_code = '~(`b`)'
     expected_tokens = [
         ('ASYNC', '~'),
@@ -463,7 +463,7 @@ def test_async():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_import():
+def test_import() -> None:
     egg_code = 'import "a"'
     expected_tokens = [
         ('IMPORT', 'import'),
@@ -472,7 +472,7 @@ def test_import():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_class():
+def test_class() -> None:
     egg_code = 'class Thing {a: Int = 1\n b: Int = 2; fn c(){}}'
     expected_tokens = [
         ('CLASS', 'class'),
@@ -501,7 +501,7 @@ def test_class():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_derived_class():
+def test_derived_class() -> None:
     egg_code = 'class Cow: Animal {}'
     expected_tokens = [
         ('CLASS', 'class'),
@@ -514,7 +514,7 @@ def test_derived_class():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_map():
+def test_map() -> None:
     egg_code = '{ 1: 10, 2: 20}'
     expected_tokens = [
         ('CURLY_OPEN', '{'),
@@ -530,7 +530,7 @@ def test_map():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_math():
+def test_math() -> None:
     egg_code = '(1 + 2 - 3 * 4 / 5 // 6 ** 7 ** 8 % -9)'
     expected_tokens = [
         ('PAREN_OPEN', '('),
@@ -557,7 +557,7 @@ def test_math():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_math_root_level():
+def test_math_root_level() -> None:
     egg_code = '1 ** 2 // 3 * 4 / 5'
     expected_tokens = [
         ('INTEGER', '1'),
@@ -573,7 +573,7 @@ def test_math_root_level():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_comparison():
+def test_comparison() -> None:
     egg_code = '1 < 2 <= 3 == 4 != 5 >= 6 > 7'
     expected_tokens = [
         ('INTEGER', '1'),
@@ -593,7 +593,7 @@ def test_comparison():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_logic():
+def test_logic() -> None:
     egg_code = '(a and b or c cor not !d)'
     expected_tokens = [
         ('PAREN_OPEN', '('),
@@ -611,7 +611,7 @@ def test_logic():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_function_call():
+def test_function_call() -> None:
     egg_code = 'a()'
     expected_tokens = [
         ('NAME', 'a'),
@@ -621,7 +621,7 @@ def test_function_call():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_function_call_params():
+def test_function_call_params() -> None:
     egg_code = 'a(b,c)'
     expected_tokens = [
         ('NAME', 'a'),
@@ -634,7 +634,7 @@ def test_function_call_params():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_function_call_in_block():
+def test_function_call_in_block() -> None:
     egg_code = '{a(b)}'
     expected_tokens = [
         ('CURLY_OPEN', '{'),
@@ -647,7 +647,7 @@ def test_function_call_in_block():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_env_access():
+def test_env_access() -> None:
     egg_code = 'env["foo"]'
     expected_tokens = [
         ('EXEC_ARG', 'env'),
@@ -658,7 +658,7 @@ def test_env_access():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_env_get():
+def test_env_get() -> None:
     egg_code = 'env.get()'
     expected_tokens = [
         ('NAME', 'env'),
@@ -670,7 +670,7 @@ def test_env_get():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_method_call():
+def test_method_call() -> None:
     egg_code = '@thing.method()'
     expected_tokens = [
         ('NAME', 'thing'),
@@ -682,7 +682,7 @@ def test_method_call():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_do_block():
+def test_do_block() -> None:
     egg_code = 'do {}'
     expected_tokens = [
         ('DO', 'do'),
@@ -692,7 +692,7 @@ def test_do_block():
     assert get_tokens(egg_code) == expected_tokens
 
 
-def test_multiline_parenthetical():
+def test_multiline_parenthetical() -> None:
     src = '(a\n+\n\n\n\t2)'
     expected_tokens = [
         ('PAREN_OPEN', '('),
@@ -704,7 +704,7 @@ def test_multiline_parenthetical():
     assert get_tokens(src) == expected_tokens
 
 
-def test_slice():
+def test_slice() -> None:
     src = '@a[1:2:3]'
     expected_tokens = [
         ('NAME', 'a'),
@@ -719,7 +719,7 @@ def test_slice():
     assert get_tokens(src) == expected_tokens
 
 
-def test_slice_rev():
+def test_slice_rev() -> None:
     src = '@a[: by 2]'
     expected_tokens = [
         ('NAME', 'a'),
@@ -732,7 +732,7 @@ def test_slice_rev():
     assert get_tokens(src) == expected_tokens
 
 
-def test_with():
+def test_with() -> None:
     src = 'with a.y() {}'
     expected_tokens = [
         ('WITH', 'with'),
@@ -747,7 +747,7 @@ def test_with():
     assert get_tokens(src) == expected_tokens
 
 
-def test_with_as():
+def test_with_as() -> None:
     src = 'with a.y() as x {}'
     expected_tokens = [
         ('WITH', 'with'),
@@ -764,7 +764,7 @@ def test_with_as():
     assert get_tokens(src) == expected_tokens
 
 
-def test_explicit_pipeline():
+def test_explicit_pipeline() -> None:
     src = '`a | b | c`'
     expected_tokens = [
         ('EXEC_ARG', 'a'),
@@ -776,7 +776,7 @@ def test_explicit_pipeline():
     assert get_tokens(src) == expected_tokens
 
 
-def test_explicit_pipeline_minified():
+def test_explicit_pipeline_minified() -> None:
     src = '`a|b|c`'
     expected_tokens = [
         ('EXEC_ARG', 'a'),
@@ -788,7 +788,7 @@ def test_explicit_pipeline_minified():
     assert get_tokens(src) == expected_tokens
 
 
-def test_quoted_explicit_param():
+def test_quoted_explicit_param() -> None:
     src = '`a "b \' c" d`'
     expected_tokens = [
         ('EXEC_ARG', 'a'),
@@ -798,7 +798,7 @@ def test_quoted_explicit_param():
     assert get_tokens(src) == expected_tokens
 
 
-def test_quoted_explicit_param2():
+def test_quoted_explicit_param2() -> None:
     src = '`"a b c" d e `'
     expected_tokens = [
         ('EXEC_ARG', 'a b c'),
@@ -808,7 +808,7 @@ def test_quoted_explicit_param2():
     assert get_tokens(src) == expected_tokens
 
 
-def test_list_comprehension():
+def test_list_comprehension() -> None:
     src = '[10**x for x in (0..10)]'
     expected_tokens = [
         ('SQUARE_OPEN', '['),
@@ -828,7 +828,7 @@ def test_list_comprehension():
     assert get_tokens(src) == expected_tokens
 
 
-def test_map_comprehension():
+def test_map_comprehension() -> None:
     src = '{-x: 100**-x for x in (0..10)]'
     expected_tokens = [
         ('CURLY_OPEN', '{'),
@@ -852,7 +852,7 @@ def test_map_comprehension():
     assert get_tokens(src) == expected_tokens
 
 
-def test_fn_normal_multi_and_kw_param():
+def test_fn_normal_multi_and_kw_param() -> None:
     src = 'fn foo (a, b, *c, **d){}'
     expected_tokens = [
         ('FN', 'fn'),
@@ -874,7 +874,7 @@ def test_fn_normal_multi_and_kw_param():
     assert get_tokens(src) == expected_tokens
 
 
-def test_fn_multi_and_kw_param():
+def test_fn_multi_and_kw_param() -> None:
     src = 'fn foo (*a, **b){}'
     expected_tokens = [
         ('FN', 'fn'),
@@ -892,7 +892,7 @@ def test_fn_multi_and_kw_param():
     assert get_tokens(src) == expected_tokens
 
 
-def test_fn_multi_param():
+def test_fn_multi_param() -> None:
     src = 'fn foo (a, *b){}'
     expected_tokens = [
         ('FN', 'fn'),
@@ -909,7 +909,7 @@ def test_fn_multi_param():
     assert get_tokens(src) == expected_tokens
 
 
-def test_fn_multi_param_only():
+def test_fn_multi_param_only() -> None:
     src = 'fn foo (*b){}'
     expected_tokens = [
         ('FN', 'fn'),
@@ -924,7 +924,7 @@ def test_fn_multi_param_only():
     assert get_tokens(src) == expected_tokens
 
 
-def test_fn_kw_param():
+def test_fn_kw_param() -> None:
     src = 'fn foo (a, **b){}'
     expected_tokens = [
         ('FN', 'fn'),
@@ -941,7 +941,7 @@ def test_fn_kw_param():
     assert get_tokens(src) == expected_tokens
 
 
-def test_fn_kw_param_only():
+def test_fn_kw_param_only() -> None:
     src = 'fn foo (**b){}'
     expected_tokens = [
         ('FN', 'fn'),
@@ -956,7 +956,7 @@ def test_fn_kw_param_only():
     assert get_tokens(src) == expected_tokens
 
 
-def test_lambda_normal_multi_and_kw_param():
+def test_lambda_normal_multi_and_kw_param() -> None:
     src = '\\(a, b, *c, **d){}'
     expected_tokens = [
         ('LAMBDA', '\\'),
@@ -977,7 +977,7 @@ def test_lambda_normal_multi_and_kw_param():
     assert get_tokens(src) == expected_tokens
 
 
-def test_lambda_multi_and_kw_param():
+def test_lambda_multi_and_kw_param() -> None:
     src = '\\(*a, **b){}'
     expected_tokens = [
         ('LAMBDA', '\\'),
@@ -994,7 +994,7 @@ def test_lambda_multi_and_kw_param():
     assert get_tokens(src) == expected_tokens
 
 
-def test_lambda_multi_param():
+def test_lambda_multi_param() -> None:
     src = '\\(a, *b){}'
     expected_tokens = [
         ('LAMBDA', '\\'),
@@ -1010,7 +1010,7 @@ def test_lambda_multi_param():
     assert get_tokens(src) == expected_tokens
 
 
-def test_lambda_multi_param_only():
+def test_lambda_multi_param_only() -> None:
     src = '\\(*b){}'
     expected_tokens = [
         ('LAMBDA', '\\'),
@@ -1024,7 +1024,7 @@ def test_lambda_multi_param_only():
     assert get_tokens(src) == expected_tokens
 
 
-def test_lambda_multi_param_only_no_paren():
+def test_lambda_multi_param_only_no_paren() -> None:
     src = '\\*b{}'
     expected_tokens = [
         ('LAMBDA', '\\'),
@@ -1036,7 +1036,7 @@ def test_lambda_multi_param_only_no_paren():
     assert get_tokens(src) == expected_tokens
 
 
-def test_lambda_kw_param():
+def test_lambda_kw_param() -> None:
     src = '\\(a, **b){}'
     expected_tokens = [
         ('LAMBDA', '\\'),
@@ -1052,7 +1052,7 @@ def test_lambda_kw_param():
     assert get_tokens(src) == expected_tokens
 
 
-def test_lambda_kw_param_only():
+def test_lambda_kw_param_only() -> None:
     src = '\\(**b){}'
     expected_tokens = [
         ('LAMBDA', '\\'),
@@ -1066,7 +1066,7 @@ def test_lambda_kw_param_only():
     assert get_tokens(src) == expected_tokens
 
 
-def test_lambda_kw_param_only_no_paren():
+def test_lambda_kw_param_only_no_paren() -> None:
     src = '\\**b{}'
     expected_tokens = [
         ('LAMBDA', '\\'),
@@ -1078,7 +1078,7 @@ def test_lambda_kw_param_only_no_paren():
     assert get_tokens(src) == expected_tokens
 
 
-def test_kw_args():
+def test_kw_args() -> None:
     src = 'foo(a, b=c, d=e)'
     expected_tokens = [
         ('NAME', 'foo'),
@@ -1097,7 +1097,7 @@ def test_kw_args():
     assert get_tokens(src) == expected_tokens
 
 
-def test_declare_generic_typed():
+def test_declare_generic_typed() -> None:
     src = 'a : t[g] = [1]'
     expected_tokens = [
         ('NAME', 'a'),
@@ -1114,7 +1114,7 @@ def test_declare_generic_typed():
     assert get_tokens(src) == expected_tokens
 
 
-def test_implicit_lambda():
+def test_implicit_lambda() -> None:
     src = '_'
     expected_tokens = [
         ('IMPLICIT_LAMBDA_PARAM', '_'),
@@ -1122,7 +1122,7 @@ def test_implicit_lambda():
     assert get_tokens(src) == expected_tokens
 
 
-def test_implicit_lambda_method():
+def test_implicit_lambda_method() -> None:
     src = '_.hello() + _.world()'
     expected_tokens = [
         ('IMPLICIT_LAMBDA_PARAM', '_'),
@@ -1140,7 +1140,7 @@ def test_implicit_lambda_method():
     assert get_tokens(src) == expected_tokens
 
 
-def test_implicit_lambda_piped():
+def test_implicit_lambda_piped() -> None:
     src = 'a | _.sort | b'
     expected_tokens = [
         ('EXEC_ARG', 'a'),
@@ -1154,7 +1154,7 @@ def test_implicit_lambda_piped():
     assert get_tokens(src) == expected_tokens
 
 
-def test_selection_lambda_shorthand():
+def test_selection_lambda_shorthand() -> None:
     src = 'utils::list_files | ...date'
     expected_tokens = [
         ('NAME', 'utils'),
@@ -1167,7 +1167,7 @@ def test_selection_lambda_shorthand():
     assert get_tokens(src) == expected_tokens
 
 
-def test_unit_b():
+def test_unit_b() -> None:
     src = '45b + 4.5b'
     expected_tokens = [
         ('UNIT_INTEGER', '45:b'),
@@ -1177,7 +1177,7 @@ def test_unit_b():
     assert get_tokens(src) == expected_tokens
 
 
-def test_unit_B():
+def test_unit_B() -> None:
     src = '45B + 4.5B'
     expected_tokens = [
         ('UNIT_INTEGER', '45:b'),
@@ -1187,7 +1187,7 @@ def test_unit_B():
     assert get_tokens(src) == expected_tokens
 
 
-def test_unit_kb():
+def test_unit_kb() -> None:
     src = '45kb + 4.5kb'
     expected_tokens = [
         ('UNIT_INTEGER', '45:kb'),
@@ -1197,7 +1197,7 @@ def test_unit_kb():
     assert get_tokens(src) == expected_tokens
 
 
-def test_unit_Kb():
+def test_unit_Kb() -> None:
     src = '45Kb + 4.5Kb'
     expected_tokens = [
         ('UNIT_INTEGER', '45:kb'),
@@ -1207,7 +1207,7 @@ def test_unit_Kb():
     assert get_tokens(src) == expected_tokens
 
 
-def test_unit_KB():
+def test_unit_KB() -> None:
     src = '45Kb + 4.5Kb'
     expected_tokens = [
         ('UNIT_INTEGER', '45:kb'),
@@ -1217,7 +1217,7 @@ def test_unit_KB():
     assert get_tokens(src) == expected_tokens
 
 
-def test_unit_kB():
+def test_unit_kB() -> None:
     src = '45Kb + 4.5Kb'
     expected_tokens = [
         ('UNIT_INTEGER', '45:kb'),
@@ -1227,7 +1227,7 @@ def test_unit_kB():
     assert get_tokens(src) == expected_tokens
 
 
-def test_unit_mb():
+def test_unit_mb() -> None:
     src = '45mb + 4.5mb'
     expected_tokens = [
         ('UNIT_INTEGER', '45:mb'),
@@ -1237,7 +1237,7 @@ def test_unit_mb():
     assert get_tokens(src) == expected_tokens
 
 
-def test_unit_gb():
+def test_unit_gb() -> None:
     src = '45gb + 4.5gb'
     expected_tokens = [
         ('UNIT_INTEGER', '45:gb'),
@@ -1247,7 +1247,7 @@ def test_unit_gb():
     assert get_tokens(src) == expected_tokens
 
 
-def test_unit_tb():
+def test_unit_tb() -> None:
     src = '45tb + 4.5tb'
     expected_tokens = [
         ('UNIT_INTEGER', '45:tb'),
@@ -1257,7 +1257,7 @@ def test_unit_tb():
     assert get_tokens(src) == expected_tokens
 
 
-def test_unit_pb():
+def test_unit_pb() -> None:
     src = '45pb + 4.5pb'
     expected_tokens = [
         ('UNIT_INTEGER', '45:pb'),
@@ -1267,7 +1267,7 @@ def test_unit_pb():
     assert get_tokens(src) == expected_tokens
 
 
-def test_unit_kib():
+def test_unit_kib() -> None:
     src = '45kib + 4.5kib'
     expected_tokens = [
         ('UNIT_INTEGER', '45:kib'),
@@ -1277,7 +1277,7 @@ def test_unit_kib():
     assert get_tokens(src) == expected_tokens
 
 
-def test_unit_mib():
+def test_unit_mib() -> None:
     src = '45mib + 4.5mib'
     expected_tokens = [
         ('UNIT_INTEGER', '45:mib'),
@@ -1287,7 +1287,7 @@ def test_unit_mib():
     assert get_tokens(src) == expected_tokens
 
 
-def test_unit_gib():
+def test_unit_gib() -> None:
     src = '45gib + 4.5gib'
     expected_tokens = [
         ('UNIT_INTEGER', '45:gib'),
@@ -1297,7 +1297,7 @@ def test_unit_gib():
     assert get_tokens(src) == expected_tokens
 
 
-def test_unit_tib():
+def test_unit_tib() -> None:
     src = '45tib + 4.5tib'
     expected_tokens = [
         ('UNIT_INTEGER', '45:tib'),
@@ -1307,7 +1307,7 @@ def test_unit_tib():
     assert get_tokens(src) == expected_tokens
 
 
-def test_unit_pib():
+def test_unit_pib() -> None:
     src = '45pib + 4.5pib'
     expected_tokens = [
         ('UNIT_INTEGER', '45:pib'),
@@ -1317,7 +1317,7 @@ def test_unit_pib():
     assert get_tokens(src) == expected_tokens
 
 
-def test_plus_assignment():
+def test_plus_assignment() -> None:
     src = '@a += @b'
     expected_tokens = [
         ('NAME', 'a'),
@@ -1327,7 +1327,7 @@ def test_plus_assignment():
     assert get_tokens(src) == expected_tokens
 
 
-def test_minus_assignment():
+def test_minus_assignment() -> None:
     src = '@a -= @b'
     expected_tokens = [
         ('NAME', 'a'),
@@ -1337,7 +1337,7 @@ def test_minus_assignment():
     assert get_tokens(src) == expected_tokens
 
 
-def test_times_assignment():
+def test_times_assignment() -> None:
     src = '@a *= @b'
     expected_tokens = [
         ('NAME', 'a'),
@@ -1347,7 +1347,7 @@ def test_times_assignment():
     assert get_tokens(src) == expected_tokens
 
 
-def test_divide_assignment():
+def test_divide_assignment() -> None:
     src = '@a /= @b'
     expected_tokens = [
         ('NAME', 'a'),
@@ -1357,7 +1357,7 @@ def test_divide_assignment():
     assert get_tokens(src) == expected_tokens
 
 
-def test_mod_assignment():
+def test_mod_assignment() -> None:
     src = '@a %= @b'
     expected_tokens = [
         ('NAME', 'a'),
@@ -1367,7 +1367,7 @@ def test_mod_assignment():
     assert get_tokens(src) == expected_tokens
 
 
-def test_power_assignment():
+def test_power_assignment() -> None:
     src = '@a **= @b'
     expected_tokens = [
         ('NAME', 'a'),
@@ -1377,7 +1377,7 @@ def test_power_assignment():
     assert get_tokens(src) == expected_tokens
 
 
-def test_int_div_assignment():
+def test_int_div_assignment() -> None:
     src = '@a //= @b'
     expected_tokens = [
         ('NAME', 'a'),
@@ -1387,7 +1387,7 @@ def test_int_div_assignment():
     assert get_tokens(src) == expected_tokens
 
 
-def test_concat_assignment():
+def test_concat_assignment() -> None:
     src = '@a ++= @b'
     expected_tokens = [
         ('NAME', 'a'),
@@ -1397,7 +1397,7 @@ def test_concat_assignment():
     assert get_tokens(src) == expected_tokens
 
 
-def test_seq_and_assignment():
+def test_seq_and_assignment() -> None:
     src = '@a &&= @b'
     expected_tokens = [
         ('NAME', 'a'),
@@ -1407,7 +1407,7 @@ def test_seq_and_assignment():
     assert get_tokens(src) == expected_tokens
 
 
-def test_seq_or_assignment():
+def test_seq_or_assignment() -> None:
     src = '@a ||= @b'
     expected_tokens = [
         ('NAME', 'a'),
@@ -1417,7 +1417,7 @@ def test_seq_or_assignment():
     assert get_tokens(src) == expected_tokens
 
 
-def test_pipe_assignment():
+def test_pipe_assignment() -> None:
     src = '@a |= @b'
     expected_tokens = [
         ('NAME', 'a'),
@@ -1427,7 +1427,7 @@ def test_pipe_assignment():
     assert get_tokens(src) == expected_tokens
 
 
-def test_assertion():
+def test_assertion() -> None:
     src = 'assert 1 == one()'
     expected_tokens = [
         ('ASSERT', 'assert'),
@@ -1440,7 +1440,7 @@ def test_assertion():
     assert get_tokens(src) == expected_tokens
 
 
-def test_const_declare():
+def test_const_declare() -> None:
     src = 'const a := 1'
     expected_tokens = [
         ('CONST', 'const'),
@@ -1451,7 +1451,7 @@ def test_const_declare():
     assert get_tokens(src) == expected_tokens
 
 
-def test_say():
+def test_say() -> None:
     src = 'say a b c'
     expected_tokens = [
         ('SAY', 'say'),
@@ -1462,7 +1462,7 @@ def test_say():
     assert get_tokens(src) == expected_tokens
 
 
-def test_if_elif_else():
+def test_if_elif_else() -> None:
     src = 'if true {} elif false {} else if true {} else {}'
     expected_tokens = [
         ('IF', 'if'),

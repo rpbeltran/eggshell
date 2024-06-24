@@ -8,14 +8,14 @@ src_str = (
 )
 
 
-def test_source():
+def test_source() -> None:
     src = Source(src_str)
     assert src.new_lines == [9, 19, 29]
     for i in range(34):
         assert src.get_line_col(i) == (i // 10, i % 10)
 
 
-def test_source_manager():
+def test_source_manager() -> None:
     src_man = SourceManager()
     src_man.add_source("test_src", src_str)
     for i in range(34):

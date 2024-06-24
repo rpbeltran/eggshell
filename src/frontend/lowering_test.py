@@ -19,18 +19,18 @@ new_test_cases: Dict[str, str] = {}
 
 
 # Prevents accidentally committing data in new_test_cases
-def test_no_new_test_cases():
+def test_no_new_test_cases() -> None:
     assert len(new_test_cases) == 0
 
 
 parser = get_parser()
 
 
-def get_ast(src) -> str:
+def get_ast(src: str) -> str:
     return parser.parse(src).pretty().strip()
 
 
-def test_always_loop_to_while():
+def test_always_loop_to_while() -> None:
     src = 'loop {}'
     expected_ast = (
         'while'
@@ -40,7 +40,7 @@ def test_always_loop_to_while():
     assert get_ast(src) == expected_ast
 
 
-def test_selection_lambda_shorthand():
+def test_selection_lambda_shorthand() -> None:
     src = 'a | ...b'
     expected_ast = (
         'pipeline'
@@ -54,7 +54,7 @@ def test_selection_lambda_shorthand():
     assert get_ast(src) == expected_ast
 
 
-def test_pipeline_to_implicit_lambda():
+def test_pipeline_to_implicit_lambda() -> None:
     src = 'a | _ | c'
     expected_ast = (
         'pipeline'
@@ -67,7 +67,7 @@ def test_pipeline_to_implicit_lambda():
     assert get_ast(src) == expected_ast
 
 
-def test_pipeline_to_implicit_lambda2():
+def test_pipeline_to_implicit_lambda2() -> None:
     src = 'a | _ | _ + _ | c'
     expected_ast = (
         'pipeline'
@@ -85,7 +85,7 @@ def test_pipeline_to_implicit_lambda2():
     assert get_ast(src) == expected_ast
 
 
-def test_unit_literals():
+def test_unit_literals() -> None:
     src = '10gb + 1.5mb'
     expected_ast = (
         'addition'
@@ -101,73 +101,73 @@ def test_unit_literals():
     assert get_ast(src) == expected_ast
 
 
-def test_plus_assignment():
+def test_plus_assignment() -> None:
     src = '@a += @b'
     equivalent_src = '@a = @a + @b'
     assert get_ast(src) == get_ast(equivalent_src)
 
 
-def test_minus_assignment():
+def test_minus_assignment() -> None:
     src = '@a -= @b'
     equivalent_src = '@a = @a - @b'
     assert get_ast(src) == get_ast(equivalent_src)
 
 
-def test_times_assignment():
+def test_times_assignment() -> None:
     src = '@a *= @b'
     equivalent_src = '@a = @a * @b'
     assert get_ast(src) == get_ast(equivalent_src)
 
 
-def test_divide_assignment():
+def test_divide_assignment() -> None:
     src = '@a /= @b'
     equivalent_src = '@a = @a / @b'
     assert get_ast(src) == get_ast(equivalent_src)
 
 
-def test_mod_assignment():
+def test_mod_assignment() -> None:
     src = '@a %= @b'
     equivalent_src = '@a = @a % @b'
     assert get_ast(src) == get_ast(equivalent_src)
 
 
-def test_power_assignment():
+def test_power_assignment() -> None:
     src = '@a **= @b'
     equivalent_src ='@a = @a ** @b'
     assert get_ast(src) == get_ast(equivalent_src)
 
 
-def test_int_div_assignment():
+def test_int_div_assignment() -> None:
     src = '@a //= @b'
     equivalent_src ='@a = @a // @b'
     assert get_ast(src) == get_ast(equivalent_src)
 
 
-def test_concat_assignment():
+def test_concat_assignment() -> None:
     src = '@a ++= @b'
     equivalent_src ='@a = @a ++ @b'
     assert get_ast(src) == get_ast(equivalent_src)
 
 
-def test_seq_and_assignment():
+def test_seq_and_assignment() -> None:
     src = '@a &&= @b'
     equivalent_src ='@a = @a && @b'
     assert get_ast(src) == get_ast(equivalent_src)
 
 
-def test_seq_or_assignment():
+def test_seq_or_assignment() -> None:
     src = '@a ||= @b'
     equivalent_src ='@a = @a || @b'
     assert get_ast(src) == get_ast(equivalent_src)
 
 
-def test_pipe_assignment():
+def test_pipe_assignment() -> None:
     src = '@a |= @b'
     equivalent_src = '@a = (@a | @b)'
     assert get_ast(src) == get_ast(equivalent_src)
 
 
-def test_exec():
+def test_exec() -> None:
     src = 'foo'
     expected_ast = (
         'exec\tfoo'
@@ -175,7 +175,7 @@ def test_exec():
     assert get_ast(src) == expected_ast
 
 
-def test_exec_multiple_args():
+def test_exec_multiple_args() -> None:
     src = 'foo -o bar'
     expected_ast = (
         'exec'
@@ -186,7 +186,7 @@ def test_exec_multiple_args():
     assert get_ast(src) == expected_ast
 
 
-def test_explicit_exec():
+def test_explicit_exec() -> None:
     src = '`"foo bar" -o hello`'
     expected_ast = (
         'exec'
