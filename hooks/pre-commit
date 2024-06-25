@@ -22,7 +22,7 @@ offer_death() {
 
 
 offer_reformatting() {
-  blue --diff src/**.py
+  blue --diff src
   read -r -p "Apply reformatting? [y/N] " response
   case "$response" in
       [yY][eE][sS]|[yY])
@@ -37,6 +37,23 @@ offer_reformatting() {
 }
 
 
+offer_fix_imports() {
+  isort --profile black --line-length=79 --diff src
+  read -r -p "Apply imports reformatting? [y/N] " response
+  case "$response" in
+      [yY][eE][sS]|[yY])
+        isort --profile black --line-length=79 src
+        echo "Fixed imports formatting automatically. Now try again!"
+        exit 1
+        ;;
+      *)
+        offer_death
+        ;;
+  esac
+}
+
+
 pytest src || offer_death
 mypy src || offer_death
 blue --check src || offer_reformatting
+isort --profile black --line-length=79 --check src || offer_fix_imports
