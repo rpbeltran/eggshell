@@ -43,7 +43,7 @@ def get_args() -> argparse.Namespace:
     return arg_parser.parse_args()
 
 
-def main():
+def main() -> None:
     args = get_args()
 
     if args.lex:

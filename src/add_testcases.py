@@ -2,6 +2,7 @@
 
 import os
 import sys
+from typing import List, Optional
 
 src_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.append(src_dir)
@@ -21,7 +22,7 @@ pygen_test_path = f'{here}/backend/py_generator_test.py'
 runtime_test_path = f'{here}/runtime/runtime_test.py'
 
 
-def make_lexer_test_code(test_name, src) -> str:
+def make_lexer_test_code(test_name: str, src: str) -> str:
     token_string = '\n'.join(
         f'        {tok},' for tok in lexer_test.get_tokens(src)
     )
@@ -32,7 +33,7 @@ def test_{test_name}() -> None:
     assert get_tokens(src) == expected_tokens\n"""
 
 
-def make_parser_test_code(test_name, src, ast) -> str:
+def make_parser_test_code(test_name: str, src: str, ast: str) -> str:
     ast_lines = ast.split('\n')
     expected_ast_inner = '\n'.join(
         ' ' * 8 + repr(f'\n{line}' if i != 0 else line)
@@ -45,7 +46,7 @@ def test_{test_name}() -> None:
     assert get_ast(src) == expected_ast\n"""
 
 
-def make_backend_test_code(test_name, src, gen_code) -> str:
+def make_backend_test_code(test_name: str, src: str, gen_code: str) -> str:
     gen_code_lines = gen_code.split('\n')
     if len(gen_code_lines) > 1:
         expected_gen_code_inner = '\n'.join(
@@ -63,8 +64,10 @@ def test_{test_name}() -> None:
     assert get_gen_code(src) == expected_gen_code\n"""
 
 
-def make_runtime_test_code(test_name, src, output) -> str:
-    output_lines = output.split('\n') if output is not None else [None]
+def make_runtime_test_code(
+    test_name: str, src: str, output: Optional[str]
+) -> str:
+    output_lines = output.split('\n') if output is not None else []
     if len(output_lines) > 1:
         expected_gen_code_inner = '\n'.join(
             ' ' * 8 + repr(f'\n{line}' if i != 0 else line)
@@ -80,7 +83,7 @@ def test_{test_name}() -> None:
     assert execute_src(src) == expected_output\n"""
 
 
-def main():
+def main() -> None:
     with open(lexer_test_path, 'a') as test_file:
         for name, code in lexer_test.new_test_cases.items():
             test_file.write(make_lexer_test_code(name, code))
@@ -102,8 +105,8 @@ def main():
 
     with open(runtime_test_path, 'a') as test_file:
         for name, code in runtime_test.new_test_cases.items():
-            code_gen = runtime_test.execute_src(code)
-            test_file.write(make_runtime_test_code(name, code, code_gen))
+            output = runtime_test.execute_src(code)
+            test_file.write(make_runtime_test_code(name, code, output))
 
 
 if __name__ == '__main__':
