@@ -2,7 +2,6 @@ from typing import Dict
 
 from .parser import *
 
-
 """
 INSTRUCTIONS: To add new test cases:
   1) Add them to the new_test_cases variable

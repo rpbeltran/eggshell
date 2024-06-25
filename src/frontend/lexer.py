@@ -1,11 +1,12 @@
-import lark.lexer
 from typing import Iterator, Optional, Tuple
+
+import lark.lexer
 
 from .lexer_constants import (
     KEYWORDS,
-    non_arithmetic_ps_trie,
-    all_operators_trie,
     UNITS,
+    all_operators_trie,
+    non_arithmetic_ps_trie,
 )
 from .lexer_util import DFANode, LexerError, LexerState, Token
 

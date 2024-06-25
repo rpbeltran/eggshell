@@ -1,18 +1,17 @@
-from enum import Enum
 import pathlib
 import readline
 import sys
+from enum import Enum
 
 import lark
 
+from ..backend.py_generator import PythonGenerator, transform_pygen_result
 from ..frontend.lexer import EggLexer
 from ..frontend.lexer_util import LexerError
 from ..frontend.parser import get_parser
-from ..backend.py_generator import PythonGenerator, transform_pygen_result
-from .profilers import maybe_profile, ProfilerConfig
-
 from ..runtime import egg_lib as _e
 from ..runtime import memory
+from .profilers import ProfilerConfig, maybe_profile
 
 _m = memory.Memory()
 

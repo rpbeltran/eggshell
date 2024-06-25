@@ -1,8 +1,7 @@
-from enum import Enum
 import typing
+from enum import Enum
 
-from ..runtime import external_commands
-from ..runtime import types
+from ..runtime import external_commands, types
 
 
 def make_external_command(

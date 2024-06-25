@@ -1,8 +1,8 @@
 import typing
 
 from lark import Transformer, Tree
-from lark.tree import Meta
 from lark.lexer import Token
+from lark.tree import Meta
 
 from .lexer_constants import UNITS
 

@@ -1,5 +1,5 @@
 from .egg_lib import *
-from .types import Integer, Float
+from .types import Float, Integer
 
 
 def test_do_comparisons() -> None:

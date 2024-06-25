@@ -1,7 +1,7 @@
-import lark.lexer
-
 import abc
 from typing import Callable, Iterator, NamedTuple, Optional
+
+import lark.lexer
 
 
 class Token(NamedTuple):

@@ -7,12 +7,11 @@ from typing import List, Optional
 src_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.append(src_dir)
 
-import src.frontend.lexer_test as lexer_test
-import src.frontend.parser_test as parser_test
-import src.frontend.lowering_test as lowering_test
 import src.backend.py_generator_test as pygen_test
+import src.frontend.lexer_test as lexer_test
+import src.frontend.lowering_test as lowering_test
+import src.frontend.parser_test as parser_test
 import src.runtime.runtime_test as runtime_test
-
 
 here = os.path.dirname(__file__)
 lexer_test_path = f'{here}/frontend/lexer_test.py'
