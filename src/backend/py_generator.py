@@ -1,13 +1,17 @@
+from typing import Any, Callable, Iterable, List, Optional, Set
+
 import lark
+import lark.tree
 from lark import Transformer, Tree
+from lark.lexer import Token
 from .temporary_objects import Block, Name
 
 
 class FeatureUnimplemented(Exception):
-    def __init__(self, feature):
+    def __init__(self, feature: str):
         self.feature = feature
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'This feature has not yet been implemented:\n\t{self.feature}'
 
 
@@ -17,17 +21,21 @@ class PythonGenerator(Transformer):
     memory_instance = '_m'
 
     @staticmethod
-    def map_to_constant(value):
-        @staticmethod
-        def action(_):
+    def map_to_constant(value: str) -> Callable[[Iterable], str]:
+        @staticmethod   # type: ignore[misc]
+        def action(_: Iterable) -> str:
             return f'{PythonGenerator.backend_library}.{value}'
 
         return action
 
     @staticmethod
-    def combine_with_function(func_name, map_items=None, quote_args=False):
-        @staticmethod
-        def action(items):
+    def combine_with_function(
+        func_name: str,
+        map_items: Optional[Callable[[Any], Any]] = None,
+        quote_args: bool = False,
+    ) -> Callable[[Iterable], str]:
+        @staticmethod   # type: ignore[misc]
+        def action(items: Iterable) -> str:
             items = [
                 PythonGenerator.__resolve_placeholders(item) for item in items
             ]
@@ -42,9 +50,11 @@ class PythonGenerator(Transformer):
         return action
 
     @staticmethod
-    def combine_with_method_left(func_name, quote_args=False):
-        @staticmethod
-        def action(items):
+    def combine_with_method_left(
+        func_name: str, quote_args: bool = False
+    ) -> Callable[[Iterable], str]:
+        @staticmethod   # type: ignore[misc]
+        def action(items: Iterable) -> str:
             items = [
                 PythonGenerator.__resolve_placeholders(item) for item in items
             ]
@@ -58,21 +68,31 @@ class PythonGenerator(Transformer):
 
     # Blocks
     @staticmethod
-    def block(items):
+    def block(items: Iterable[str | Name | Block]) -> Block:
         return Block(
             [PythonGenerator.__resolve_placeholders(item) for item in items]
         )
 
     @staticmethod
-    def if_statement(items):
-        condition = items[0]
-        block_item = items[1]
-        if_block = block_item.make_if(condition)
+    def if_statement(items: List[str | Name | Block | Tree]) -> Block:
+        assert not isinstance(items[0], Tree)
+        condition = PythonGenerator.__resolve_placeholders(items[0])
+        block = items[1]
+        assert isinstance(block, Block)
+        if_block = block.make_if(condition)
         for item in items[2:]:
+            assert isinstance(item, Tree)
             if item.data == 'elif_statement':
-                if_block.add_elif(*item.children)
+                assert not isinstance(item.children[0], Tree)
+                assert isinstance(item.children[1], Block)
+                if_block.add_elif(
+                    PythonGenerator.__resolve_placeholders(item.children[0]),
+                    item.children[1],
+                )
             else:
-                if_block.add_else(*item.children)
+                assert item.data == 'else_statement'
+                assert isinstance(item.children[0], Block)
+                if_block.add_else(item.children[0])
         return if_block
 
     start = block
@@ -87,7 +107,7 @@ class PythonGenerator(Transformer):
     select_element = combine_with_method_left('select_element')
 
     @staticmethod
-    def select_slice(items):
+    def select_slice(items: List[Tree]) -> str:
         start = None
         end = None
         jump = None
@@ -134,37 +154,48 @@ class PythonGenerator(Transformer):
 
     # Memory
     @staticmethod
-    def declare_untyped_variable(items):
+    def declare_untyped_variable(
+        items: List[Token | str | Name | Block],
+    ) -> str:
         (name, value) = items
+        assert isinstance(name, Token)
         name = name.value
+        assert not isinstance(value, Token)
+        value = PythonGenerator.__resolve_placeholders(value)
         return f'{PythonGenerator.memory_instance}.new({value}, name={repr(name)})'
 
     @staticmethod
-    def declare_untyped_constant(items):
+    def declare_untyped_constant(
+        items: List[Token | str | Name | Block],
+    ) -> str:
         (name, value) = items
+        assert isinstance(name, Token)
         name = name.value
+        assert not isinstance(value, Token)
+        value = PythonGenerator.__resolve_placeholders(value)
         return (
             f'{PythonGenerator.memory_instance}'
             f'.new({value}, name={repr(name)}, const=True)'
         )
 
     @staticmethod
-    def reassign(items):
+    def reassign(items: List[Token | str | Name | Block]) -> str:
         (lhs, rhs) = items
         assert isinstance(lhs, Name)
         if lhs.namespace:
             raise FeatureUnimplemented('Namespaces are not yet supported')
+        rhs = PythonGenerator.__resolve_placeholders(rhs)
         return (
             f'{PythonGenerator.memory_instance}'
             f'.update_var({repr(lhs.name)}, {rhs})'
         )
 
     @staticmethod
-    def identifier(items):
-        items = [item.value for item in items]
+    def identifier(items: List[Token]) -> Name:
+        item_strings = [item.value for item in items]
         if len(items) > 1:
-            return Name(items[0], namespace=items[1:])
-        return Name(items[0])
+            return Name(item_strings[0], namespace=item_strings[1:])
+        return Name(item_strings[0])
 
     # External Commands
     exec = combine_with_function('make_external_command', quote_args=True)
@@ -174,17 +205,21 @@ class PythonGenerator(Transformer):
     assertion = combine_with_function('assertion')
 
     @staticmethod
-    def unit_literal(items):
+    def unit_literal(items: List[Tree | str | Name | Block]) -> str:
         (unit_type_tree, unit_tree, quantity) = items
+        assert isinstance(unit_type_tree, Tree)
         unit_type = unit_type_tree.children[0]
+        assert isinstance(unit_tree, Tree)
         unit = unit_tree.children[0]
+        assert not isinstance(quantity, Tree)
+        quantity = PythonGenerator.__resolve_placeholders(quantity)
         return (
             f'{PythonGenerator.backend_library}.make_unit_value'
             f'({repr(unit_type)}, {repr(unit)}, {quantity})'
         )
 
     # Nodes not to modify
-    pass_through = {
+    pass_through: Set[str] = {
         'elif_statement',
         'else_statement',
         'unit_type',
@@ -195,20 +230,22 @@ class PythonGenerator(Transformer):
     }
 
     @staticmethod
-    def __default__(data, children, meta):
+    def __default__(
+        data: str, children: List[Tree | Token], meta: lark.tree.Meta
+    ) -> Tree:
         as_tree = Tree(data, children, meta)
         if data in PythonGenerator.pass_through:
             return as_tree
-        raise FeatureUnimplemented(as_tree)
+        raise FeatureUnimplemented(data)
 
     # Utilities
 
     @staticmethod
-    def __resolve_placeholders(result):
+    def __resolve_placeholders(result: str | Name | Block) -> str:
         return transform_pygen_result(result)
 
 
-def transform_pygen_result(result) -> str:
+def transform_pygen_result(result: str | Name | Block) -> str:
     if isinstance(result, Name):
         return (
             f'{PythonGenerator.memory_instance}'

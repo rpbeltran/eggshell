@@ -322,8 +322,8 @@ class EggLexerLark(lark.lexer.Lexer):
     def __init__(self, _) -> None:   # type: ignore[no-untyped-def]
         self.lexer = EggLexer()
 
-    def lex(
+    def lex(  # type: ignore[override]
         self, egg_code: str
-    ) -> Iterator[lark.lexer.Token]:   # type: ignore[override]
+    ) -> Iterator[lark.lexer.Token]:
         for token in self.lexer.lex(egg_code):
             yield token.to_lark()
