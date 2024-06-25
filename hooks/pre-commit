@@ -38,4 +38,5 @@ offer_reformatting() {
 
 
 pytest src || offer_death
+mypy src || offer_death
 blue --check src || offer_reformatting
