@@ -32,7 +32,7 @@ class EggCLI:
         self.initialize_transformers()
 
     @maybe_profile(lambda self: 'initialization')
-    def initialize_transformers(self):
+    def initialize_transformers(self) -> None:
         if self.mode == CLIMode.lex:
             self.lexer = EggLexer()
         elif self.mode == CLIMode.ast:
@@ -41,7 +41,7 @@ class EggCLI:
             self.parser = get_parser()
             self.pygen = PythonGenerator()
 
-    def interactive_mode(self):
+    def interactive_mode(self) -> None:
         while True:
             expression = input('egg> ').strip()
             if not expression:
@@ -56,16 +56,16 @@ class EggCLI:
                 print(e, file=sys.stderr)
 
     @maybe_profile(lambda self, path: 'script_' + pathlib.Path(path).name)
-    def consume_script(self, file_path):
+    def consume_script(self, file_path: str) -> None:
         script = pathlib.Path(file_path).read_text('utf-8')
         self.consume_source(script)
 
     @maybe_profile(lambda self, src: f'interactive_{self.interactive_counter}')
-    def consume_interactive(self, src):
+    def consume_interactive(self, src: str) -> None:
         self.consume_source(src)
         self.interactive_counter += 1
 
-    def consume_source(self, src: str):
+    def consume_source(self, src: str) -> None:
         if not src:
             return
         if self.mode == CLIMode.lex:
@@ -77,21 +77,21 @@ class EggCLI:
         elif self.mode == CLIMode.execute:
             self.execute(src)
 
-    def show_lex(self, src: str):
+    def show_lex(self, src: str) -> None:
         tokens = self.lexer.lex(src)
         tokens_str = ', '.join([str(token) for token in tokens])
         print(f'[{tokens_str}]')
 
-    def show_ast(self, src: str):
+    def show_ast(self, src: str) -> None:
         ast = self.parser.parse(src)
         print(ast.pretty(), end='')
 
-    def show_pygen(self, src: str):
+    def show_pygen(self, src: str) -> None:
         ast = self.parser.parse(src)
         py = transform_pygen_result(self.pygen.transform(ast))
         print(py)
 
-    def execute(self, src: str):
+    def execute(self, src: str) -> None:
         ast_or_value = self.parser.parse(src)
         if type(ast_or_value) == lark.tree.Tree:
             py_code = transform_pygen_result(

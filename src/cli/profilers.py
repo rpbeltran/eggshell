@@ -1,16 +1,16 @@
 import cProfile
 import os
 import random
-import typing
+from typing import Any, Callable, List, Optional
 
 
 class ProfilerConfig:
-    def __init__(self, enabled: bool, profiles_root_dir='profiles'):
+    def __init__(self, enabled: bool, profiles_root_dir: str = 'profiles'):
         self.enabled = enabled
         self.profiles_root_dir = profiles_root_dir
         os.makedirs(self.profiles_root_dir, exist_ok=True)
 
-    def get_path_for(self, profile_name: typing.Optional[str] = None) -> str:
+    def get_path_for(self, profile_name: Optional[str] = None) -> str:
         if not profile_name:
             profile_name = self._get_random_name()
         return f'{self.profiles_root_dir}/{profile_name}.prof'
@@ -20,9 +20,9 @@ class ProfilerConfig:
         return hex(random.getrandbits(16 * 4))
 
 
-def maybe_profile(profile_naming_function):
-    def wrapped_decorator(f):
-        def wrapped_func(self, *args, **kwargs):
+def maybe_profile(profile_naming_function: Callable) -> Callable:
+    def wrapped_decorator(f: Callable) -> Callable:
+        def wrapped_func(self: Any, *args: Any, **kwargs: Any) -> None:
             if self.profiler_config.enabled:
                 profile_name = profile_naming_function(self, *args, **kwargs)
                 profile_path = self.profiler_config.get_path_for(profile_name)
