@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 
-import frontend.lexer_test as lexer_test
-import frontend.parser_test as parser_test
-import frontend.lowering_test as lowering_test
-import backend.py_generator_test as pygen_test
-import runtime.runtime_test as runtime_test
+src_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+sys.path.append(src_dir)
+
+import src.frontend.lexer_test as lexer_test
+import src.frontend.parser_test as parser_test
+import src.frontend.lowering_test as lowering_test
+import src.backend.py_generator_test as pygen_test
+import src.runtime.runtime_test as runtime_test
 
 
 here = os.path.dirname(__file__)
@@ -22,7 +26,7 @@ def make_lexer_test_code(test_name, src) -> str:
         f'        {tok},' for tok in lexer_test.get_tokens(src)
     )
     return f"""\n
-def test_{test_name}():
+def test_{test_name}() -> None:
     src = {repr(src)}
     expected_tokens = [\n{token_string}\n    ]
     assert get_tokens(src) == expected_tokens\n"""
@@ -35,7 +39,7 @@ def make_parser_test_code(test_name, src, ast) -> str:
         for i, line in enumerate(ast_lines)
     )
     return f"""\n
-def test_{test_name}():
+def test_{test_name}() -> None:
     src = {repr(src)}
     expected_ast = (\n{expected_ast_inner}\n    )
     assert get_ast(src) == expected_ast\n"""
@@ -53,7 +57,7 @@ def make_backend_test_code(test_name, src, gen_code) -> str:
         expected_gen_code = repr(gen_code)
 
     return f"""\n
-def test_{test_name}():
+def test_{test_name}() -> None:
     src = {repr(src)}
     expected_gen_code = {expected_gen_code}
     assert get_gen_code(src) == expected_gen_code\n"""
@@ -70,7 +74,7 @@ def make_runtime_test_code(test_name, src, output) -> str:
     else:
         expected_output = repr(output)
     return f"""\n
-def test_{test_name}():
+def test_{test_name}() -> None:
     src = {repr(src)}
     expected_output = {expected_output}
     assert execute_src(src) == expected_output\n"""
