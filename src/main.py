@@ -21,6 +21,11 @@ def get_args() -> argparse.Namespace:
         action='store_true',
     )
     mode_group.add_argument(
+        '--sema',
+        help='Construct an ast from input and apply lowering and sema instead of executing.',
+        action='store_true',
+    )
+    mode_group.add_argument(
         '--pygen',
         '-p',
         help='Get the output from pygen instead of executing it.',
@@ -51,6 +56,8 @@ def main() -> None:
         mode = cli.CLIMode.lex
     elif args.ast:
         mode = cli.CLIMode.ast
+    elif args.sema:
+        mode = cli.CLIMode.sema
     elif args.pygen:
         mode = cli.CLIMode.pygen
     else:

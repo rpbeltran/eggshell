@@ -19,8 +19,9 @@ _m = memory.Memory()
 class CLIMode(Enum):
     lex = 1
     ast = 2
-    pygen = 3
-    execute = 4
+    sema = 3
+    pygen = 4
+    execute = 5
 
 
 class EggCLI:
@@ -36,6 +37,8 @@ class EggCLI:
             self.lexer = EggLexer()
         elif self.mode == CLIMode.ast:
             self.parser = get_parser(lowering=False)
+        elif self.mode == CLIMode.sema:
+            self.parser = get_parser()
         elif self.mode in [CLIMode.pygen, CLIMode.execute]:
             self.parser = get_parser()
             self.pygen = PythonGenerator()
@@ -69,7 +72,7 @@ class EggCLI:
             return
         if self.mode == CLIMode.lex:
             self.show_lex(src)
-        elif self.mode == CLIMode.ast:
+        elif self.mode in (CLIMode.ast, CLIMode.sema):
             self.show_ast(src)
         elif self.mode == CLIMode.pygen:
             self.show_pygen(src)
