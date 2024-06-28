@@ -120,7 +120,7 @@ class LoweringTransformer(Transformer):
 
     @staticmethod
     def implicit_lambda_param(items: typing.Iterable) -> Tree:
-        arg = '@@implicit_lambda@@'
+        arg = Token('NAME', '@@implicit_lambda@@')
         identifier = Tree('identifier', [arg])
         return Tree('poisonous_lambda_func', [arg, identifier])
 
@@ -145,7 +145,10 @@ class LoweringTransformer(Transformer):
         if poisoned:
             return Tree(
                 'poisonous_lambda_func',
-                ['@@implicit_lambda_arg@@', Tree(tree.data, tree.children)],
+                [
+                    Token('NAME', '@@implicit_lambda_arg@@'),
+                    Tree(tree.data, tree.children),
+                ],
             )
         return Tree(tree.data, tree.children, tree.meta)
 

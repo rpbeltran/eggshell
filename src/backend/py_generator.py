@@ -154,6 +154,33 @@ class PythonGenerator(Transformer):
     )
 
     # Memory
+
+    @staticmethod
+    def lambda_func(items: List[Token | str | Name | Block]) -> str:
+        (lhs, rhs) = items
+        if isinstance(lhs, Tree):
+            assert lhs.data == 'param_list'
+            params = [param.value for param in lhs.children]
+        else:
+            assert isinstance(lhs, Token) and lhs.type == 'NAME'
+            params = [lhs.value]
+
+        if isinstance(rhs, Block):
+            # lambdas returning blocks need to be handled with temporary
+            # function definitions, or we could do something weird perhaps like
+            # put each into a list and discard the output of that list.
+            raise FeatureUnimplemented('Block lambdas are not yet implemented')
+
+        rhs_pygen = PythonGenerator.__resolve_placeholders(rhs)
+
+        return (
+            f'{PythonGenerator.backend_library}'
+            f'.make_lambda({repr(params)},lambda: {rhs_pygen})'
+        )
+
+    poisonous_lambda_func = lambda_func
+
+    # Memory
     @staticmethod
     def declare_untyped_variable(
         items: List[Token | str | Name | Block],
@@ -228,6 +255,7 @@ class PythonGenerator(Transformer):
         'slice_start',
         'slice_end',
         'slice_jump',
+        'param_list',
     }
 
     @staticmethod

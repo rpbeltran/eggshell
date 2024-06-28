@@ -350,3 +350,27 @@ class Range(Collection):
         if self.__jump == 1:
             return f'({self.__start}..{self.__end})'
         return f'({self.__start}..{self.__end} by {self.__jump})'
+
+
+class Functional(Object):
+    @abstractmethod
+    def call(self, args: typing.List['Object']) -> None:
+        ...
+
+    def compare(self, other: 'Object') -> ComparisonResult:
+        raise NotImplementedError('Functional types are not comparable.')
+
+    def equals(self, other: 'Object') -> bool:
+        raise NotImplementedError('Functional types are not comparable.')
+
+
+class LambdaExpression(Functional):
+    def __init__(self, args: typing.List[str], expression: str):
+        self.args = args
+        self.expression = expression
+
+    def call(self, args: typing.List['Object']) -> None:
+        # todo: implement this soon
+        raise NotImplementedError(
+            'Calling lambdas has not yet been implemented.'
+        )

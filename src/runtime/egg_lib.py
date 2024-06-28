@@ -46,6 +46,10 @@ def make_range(start: types.Integer, end: types.Integer) -> types.Range:
     return types.Range(start, end, types.Integer(1))
 
 
+def make_lambda(args: typing.List[str], expr: str) -> types.LambdaExpression:
+    return types.LambdaExpression(args, expr)
+
+
 class ComparisonType(Enum):
     EQUAL = 1
     UNEQUAL = 2
