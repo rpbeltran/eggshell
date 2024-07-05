@@ -52,3 +52,21 @@ class IfBlock(Block):
         indent = f'{extra_indent}\t'
         self.lines.append(f'{extra_indent}else:')
         self.lines.extend(f'{indent}{line}' for line in block.lines)
+
+
+class PygenIntermediary:
+
+    memory_instance = '_m'
+
+    def __init__(self, inline: str | Name | Block):
+        self.inline = inline
+
+    def finalize(self) -> str:
+        if isinstance(self.inline, Name):
+            return (
+                f'{PygenIntermediary.memory_instance}'
+                f'.get_object_by_name({repr(self.inline.name)})'
+            )
+        if isinstance(self.inline, Block):
+            return self.inline.join()
+        return self.inline

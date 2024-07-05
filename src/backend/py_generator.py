@@ -5,7 +5,7 @@ import lark.tree
 from lark import Transformer, Tree
 from lark.lexer import Token
 
-from .temporary_objects import Block, Name
+from .temporary_objects import Block, Name, PygenIntermediary
 
 
 class FeatureUnimplemented(Exception):
@@ -22,10 +22,12 @@ class PythonGenerator(Transformer):
     memory_instance = '_m'
 
     @staticmethod
-    def map_to_constant(value: str) -> Callable[[Iterable], str]:
+    def map_to_constant(value: str) -> Callable[[Iterable], PygenIntermediary]:
         @staticmethod   # type: ignore[misc]
-        def action(_: Iterable) -> str:
-            return f'{PythonGenerator.backend_library}.{value}'
+        def action(_: Iterable) -> PygenIntermediary:
+            return PygenIntermediary(
+                f'{PythonGenerator.backend_library}.{value}'
+            )
 
         return action
 
@@ -34,9 +36,9 @@ class PythonGenerator(Transformer):
         func_name: str,
         map_items: Optional[Callable[[Any], Any]] = None,
         quote_args: bool = False,
-    ) -> Callable[[Iterable], str]:
+    ) -> Callable[[Iterable], PygenIntermediary]:
         @staticmethod   # type: ignore[misc]
-        def action(items: Iterable) -> str:
+        def action(items: Iterable) -> PygenIntermediary:
             items = [
                 PythonGenerator.__resolve_placeholders(item) for item in items
             ]
@@ -46,16 +48,18 @@ class PythonGenerator(Transformer):
                 arg_list = ','.join(repr(item) for item in items)
             else:
                 arg_list = ','.join(str(item) for item in items)
-            return f'{PythonGenerator.backend_library}.{func_name}({arg_list})'
+            return PygenIntermediary(
+                f'{PythonGenerator.backend_library}.{func_name}({arg_list})'
+            )
 
         return action
 
     @staticmethod
     def combine_with_method_left(
         func_name: str, quote_args: bool = False
-    ) -> Callable[[Iterable], str]:
+    ) -> Callable[[Iterable], PygenIntermediary]:
         @staticmethod   # type: ignore[misc]
-        def action(items: Iterable) -> str:
+        def action(items: Iterable) -> PygenIntermediary:
             items = [
                 PythonGenerator.__resolve_placeholders(item) for item in items
             ]
@@ -63,46 +67,59 @@ class PythonGenerator(Transformer):
                 arg_list = ','.join(repr(item) for item in items[1:])
             else:
                 arg_list = ','.join(str(item) for item in items[1:])
-            return f'{items[0]}.{func_name}({arg_list})'
+            return PygenIntermediary(f'{items[0]}.{func_name}({arg_list})')
 
         return action
 
     # Blocks
     @staticmethod
-    def block(items: Iterable[str | Name | Block]) -> Block:
-        return Block(
-            [PythonGenerator.__resolve_placeholders(item) for item in items]
+    def block(items: Iterable[str | Name | Block]) -> PygenIntermediary:
+        return PygenIntermediary(
+            Block(
+                [
+                    PythonGenerator.__resolve_placeholders(item)
+                    for item in items
+                ]
+            )
         )
 
     @staticmethod
-    def if_statement(items: List[str | Name | Block | Tree]) -> Block:
-        assert not isinstance(items[0], Tree)
-        condition = PythonGenerator.__resolve_placeholders(items[0])
-        block = items[1]
+    def if_statement(
+        items: List[PygenIntermediary | Tree],
+    ) -> PygenIntermediary:
+        assert isinstance(items[0], PygenIntermediary)
+        condition = items[0].finalize()
+        assert isinstance(items[1], PygenIntermediary)
+        block = items[1].inline
         assert isinstance(block, Block)
         if_block = block.make_if(condition)
         for item in items[2:]:
             assert isinstance(item, Tree)
             if item.data == 'elif_statement':
-                assert not isinstance(item.children[0], Tree)
-                assert isinstance(item.children[1], Block)
+                assert isinstance(item.children[0], PygenIntermediary)
+                assert isinstance(item.children[1], PygenIntermediary)
+                assert isinstance(item.children[1].inline, Block)
                 if_block.add_elif(
                     PythonGenerator.__resolve_placeholders(item.children[0]),
-                    item.children[1],
+                    item.children[1].inline,
                 )
             else:
                 assert item.data == 'else_statement'
-                assert isinstance(item.children[0], Block)
-                if_block.add_else(item.children[0])
-        return if_block
+                assert isinstance(item.children[0], PygenIntermediary)
+                assert isinstance(item.children[0].inline, Block)
+                if_block.add_else(item.children[0].inline)
+        return PygenIntermediary(if_block)
 
     @staticmethod
-    def while_statement(items: List[str | Name | Block | Tree]) -> Block:
-        assert not isinstance(items[0], Tree)
-        condition = PythonGenerator.__resolve_placeholders(items[0])
-        block = items[1]
+    def while_statement(
+        items: List[Tree | PygenIntermediary],
+    ) -> PygenIntermediary:
+        assert isinstance(items[0], PygenIntermediary)
+        condition = items[0].finalize()
+        assert isinstance(items[1], PygenIntermediary)
+        block = items[1].inline
         assert isinstance(block, Block)
-        return block.make_while(condition)
+        return PygenIntermediary(block.make_while(condition))
 
     start = block
 
@@ -116,22 +133,28 @@ class PythonGenerator(Transformer):
     select_element = combine_with_method_left('select_element')
 
     @staticmethod
-    def select_slice(items: List[Tree]) -> str:
+    def select_slice(
+        items: List[Tree | PygenIntermediary],
+    ) -> PygenIntermediary:
         start = None
         end = None
         jump = None
         for item in items[1:]:
+            assert isinstance(item, Tree)
             if not item.children:
                 continue
+            assert isinstance(item.children[0], PygenIntermediary)
             if item.data == 'slice_start':
-                start = item.children[0]
+                start = item.children[0].finalize()
             elif item.data == 'slice_end':
-                end = item.children[0]
+                end = item.children[0].finalize()
             elif item.data == 'slice_jump':
-                jump = item.children[0]
+                jump = item.children[0].finalize()
             else:
                 raise ValueError(f'select_slize has unexpected child {item}')
-        return f'{items[0]}.select_slice({start},{end},{jump})'
+        assert isinstance(items[0], PygenIntermediary)
+        lhs = items[0].finalize()
+        return PygenIntermediary(f'{lhs}.select_slice({start},{end},{jump})')
 
     # Arithmetic
     integer_literal = combine_with_function('make_integer')
@@ -164,11 +187,16 @@ class PythonGenerator(Transformer):
     # Memory
 
     @staticmethod
-    def lambda_func(items: List[Token | str | Name | Block]) -> str:
+    def lambda_func(
+        items: List[Tree | Token | PygenIntermediary],
+    ) -> PygenIntermediary:
         (lhs, rhs) = items
         if isinstance(lhs, Tree):
             assert lhs.data == 'param_list'
-            params = [param.value for param in lhs.children]
+            params = []
+            for param in lhs.children:
+                assert isinstance(param, Token)
+                params.append(param.value)
         else:
             assert isinstance(lhs, Token) and lhs.type == 'NAME'
             params = [lhs.value]
@@ -179,9 +207,10 @@ class PythonGenerator(Transformer):
             # put each into a list and discard the output of that list.
             raise FeatureUnimplemented('Block lambdas are not yet implemented')
 
+        assert not isinstance(rhs, Tree)
         rhs_pygen = PythonGenerator.__resolve_placeholders(rhs)
 
-        return (
+        return PygenIntermediary(
             f'{PythonGenerator.backend_library}'
             f'.make_lambda({repr(params)},lambda: {rhs_pygen})'
         )
@@ -191,47 +220,50 @@ class PythonGenerator(Transformer):
     # Memory
     @staticmethod
     def declare_untyped_variable(
-        items: List[Token | str | Name | Block],
-    ) -> str:
+        items: List[Token | PygenIntermediary],
+    ) -> PygenIntermediary:
         (name, value) = items
         assert isinstance(name, Token)
         name = name.value
-        assert not isinstance(value, Token)
-        value = PythonGenerator.__resolve_placeholders(value)
-        return f'{PythonGenerator.memory_instance}.new({value}, name={repr(name)})'
+        assert isinstance(value, PygenIntermediary)
+        return PygenIntermediary(
+            f'{PythonGenerator.memory_instance}'
+            f'.new({value.finalize()}, name={repr(name)})'
+        )
 
     @staticmethod
     def declare_untyped_constant(
-        items: List[Token | str | Name | Block],
-    ) -> str:
+        items: List[Token | PygenIntermediary],
+    ) -> PygenIntermediary:
         (name, value) = items
         assert isinstance(name, Token)
-        name = name.value
-        assert not isinstance(value, Token)
-        value = PythonGenerator.__resolve_placeholders(value)
-        return (
+        assert isinstance(value, PygenIntermediary)
+        return PygenIntermediary(
             f'{PythonGenerator.memory_instance}'
-            f'.new({value}, name={repr(name)}, const=True)'
+            f'.new({value.finalize()}, name={repr(name.value)}, const=True)'
         )
 
     @staticmethod
-    def reassign(items: List[Token | str | Name | Block]) -> str:
+    def reassign(items: List[Token | PygenIntermediary]) -> PygenIntermediary:
         (lhs, rhs) = items
-        assert isinstance(lhs, Name)
-        if lhs.namespace:
+        assert isinstance(lhs, PygenIntermediary)
+        assert isinstance(lhs.inline, Name)
+        if lhs.inline.namespace:
             raise FeatureUnimplemented('Namespaces are not yet supported')
-        rhs = PythonGenerator.__resolve_placeholders(rhs)
-        return (
+        assert isinstance(rhs, PygenIntermediary)
+        return PygenIntermediary(
             f'{PythonGenerator.memory_instance}'
-            f'.update_var({repr(lhs.name)}, {rhs})'
+            f'.update_var({repr(lhs.inline.name)}, {rhs.finalize()})'
         )
 
     @staticmethod
-    def identifier(items: List[Token]) -> Name:
+    def identifier(items: List[Token]) -> PygenIntermediary:
         item_strings = [item.value for item in items]
         if len(items) > 1:
-            return Name(item_strings[0], namespace=item_strings[1:])
-        return Name(item_strings[0])
+            return PygenIntermediary(
+                Name(item_strings[0], namespace=item_strings[1:])
+            )
+        return PygenIntermediary(Name(item_strings[0]))
 
     # External Commands
     exec = combine_with_function('make_external_command', quote_args=True)
@@ -241,15 +273,16 @@ class PythonGenerator(Transformer):
     assertion = combine_with_function('assertion')
 
     @staticmethod
-    def unit_literal(items: List[Tree | str | Name | Block]) -> str:
+    def unit_literal(
+        items: List[Tree | PygenIntermediary | int | float],
+    ) -> PygenIntermediary:
         (unit_type_tree, unit_tree, quantity) = items
         assert isinstance(unit_type_tree, Tree)
         unit_type = unit_type_tree.children[0]
         assert isinstance(unit_tree, Tree)
         unit = unit_tree.children[0]
-        assert not isinstance(quantity, Tree)
-        quantity = PythonGenerator.__resolve_placeholders(quantity)
-        return (
+        assert isinstance(quantity, int | float)
+        return PygenIntermediary(
             f'{PythonGenerator.backend_library}.make_unit_value'
             f'({repr(unit_type)}, {repr(unit)}, {quantity})'
         )
@@ -278,16 +311,22 @@ class PythonGenerator(Transformer):
     # Utilities
 
     @staticmethod
-    def __resolve_placeholders(result: str | Name | Block) -> str:
+    def __resolve_placeholders(
+        result: PygenIntermediary | str | Name | Block,
+    ) -> str:
         return transform_pygen_result(result)
 
 
-def transform_pygen_result(result: str | Name | Block) -> str:
-    if isinstance(result, Name):
+def transform_pygen_result(
+    intermediate: PygenIntermediary | str | Name | Block,
+) -> str:
+    if isinstance(intermediate, PygenIntermediary):
+        return intermediate.finalize()
+    if isinstance(intermediate, Name):
         return (
             f'{PythonGenerator.memory_instance}'
-            f'.get_object_by_name({repr(result.name)})'
+            f'.get_object_by_name({repr(intermediate.name)})'
         )
-    if isinstance(result, Block):
-        return result.join()
-    return result
+    if isinstance(intermediate, Block):
+        return intermediate.join()
+    return intermediate
