@@ -96,6 +96,14 @@ class PythonGenerator(Transformer):
                 if_block.add_else(item.children[0])
         return if_block
 
+    @staticmethod
+    def while_statement(items: List[str | Name | Block | Tree]) -> Block:
+        assert not isinstance(items[0], Tree)
+        condition = PythonGenerator.__resolve_placeholders(items[0])
+        block = items[1]
+        assert isinstance(block, Block)
+        return block.make_while(condition)
+
     start = block
 
     # Collections

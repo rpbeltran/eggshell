@@ -405,3 +405,14 @@ def test_empty_if() -> None:
         '\n\tpass'
     )
     assert get_gen_code(src) == expected_gen_code
+
+
+def test_while() -> None:
+    src = 'x := 5\nwhile @x > 0 {\n\tsay x\n\tx -= 1}'
+    expected_gen_code = (
+        "_m.new(_e.make_integer(5), name='x')"
+        "\nwhile _e.do_comparisons(_m.get_object_by_name('x'),_e.ComparisonType.GREATER,_e.make_integer(0)):"
+        "\n\t_e.say(_m.get_object_by_name('x'))"
+        "\n\t_m.update_var('x', _m.get_object_by_name('x').subtract(_e.make_integer(1)))"
+    )
+    assert get_gen_code(src) == expected_gen_code

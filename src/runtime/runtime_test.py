@@ -46,7 +46,7 @@ def execute_src(src: str) -> Optional[str]:
         if value is None:
             return value
         return str(eval(py_code))
-    except SyntaxError:
+    except:
         string_io = StringIO()
         with redirect_stdout(string_io):
             exec(py_code)
@@ -195,4 +195,17 @@ def test_if_elif_else4() -> None:
 def test_empty_if() -> None:
     src = 'if true {}'
     expected_output = ''
+    assert execute_src(src) == expected_output
+
+
+def test_while() -> None:
+    src = 'x := 5\nwhile @x > 0 {\n\tsay x\n\tx -= 1}'
+    expected_output = (
+        '5'
+        '\n4'
+        '\n3'
+        '\n2'
+        '\n1'
+        '\n'
+    )
     assert execute_src(src) == expected_output

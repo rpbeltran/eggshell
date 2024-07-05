@@ -513,7 +513,7 @@ def test_loop_labeled() -> None:
 def test_while() -> None:
     src = 'while(a == b) {x(); y()}'
     expected_ast = (
-        'while'
+        'while_statement'
         '\n  comparison_chain'
         '\n    identifier\ta'
         '\n    equal_to'
@@ -532,7 +532,7 @@ def test_while() -> None:
 def test_while_empty() -> None:
     src = 'while(a == b) {}'
     expected_ast = (
-        'while'
+        'while_statement'
         '\n  comparison_chain'
         '\n    identifier\ta'
         '\n    equal_to'
@@ -545,7 +545,7 @@ def test_while_empty() -> None:
 def test_while_labeled() -> None:
     src = 'while(a == b) as x {y}'
     expected_ast = (
-        'while'
+        'while_statement'
         '\n  comparison_chain'
         '\n    identifier\ta'
         '\n    equal_to'

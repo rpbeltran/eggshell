@@ -24,6 +24,16 @@ class Block:
             + [f'{indent}{line}' for line in self.lines]
         )
 
+    def make_while(
+        self, condition: str, extra_indentation: int = 0
+    ) -> 'Block':
+        extra_indent = '\t' * extra_indentation
+        indent = f'{extra_indent}\t'
+        return Block(
+            [f'{extra_indent}while {condition}:']
+            + [f'{indent}{line}' for line in self.lines]
+        )
+
 
 class IfBlock(Block):
     def __init__(self, lines: List[str]):
