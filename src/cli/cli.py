@@ -1,7 +1,10 @@
 import pathlib
 import readline
 import sys
+from contextlib import redirect_stdout
 from enum import Enum
+from io import StringIO
+from typing import Optional
 
 import lark
 
@@ -10,7 +13,7 @@ from ..frontend.lexer import EggLexer
 from ..frontend.lexer_util import LexerError
 from ..frontend.parser import get_parser
 from ..runtime import egg_lib as _e
-from ..runtime import memory
+from ..runtime import external_commands, memory
 from .profilers import ProfilerConfig, maybe_profile
 
 _m = memory.Memory()
@@ -77,7 +80,7 @@ class EggCLI:
         elif self.mode == CLIMode.pygen:
             self.show_pygen(src)
         elif self.mode == CLIMode.execute:
-            self.execute(src)
+            self.show_execute(src)
 
     def show_lex(self, src: str) -> None:
         tokens = self.lexer.lex(src)
@@ -93,16 +96,25 @@ class EggCLI:
         py = transform_pygen_result(self.pygen.transform(ast))
         print(py)
 
-    def execute(self, src: str) -> None:
+    def show_execute(self, src: str) -> None:
+        if (output := self.execute(src)) is not None:
+            print(output)
+
+    def execute(self, src: str) -> Optional[str]:
         ast_or_value = self.parser.parse(src)
-        if type(ast_or_value) == lark.tree.Tree:
+        if isinstance(ast_or_value, lark.tree.Tree):
             py_code = transform_pygen_result(
                 self.pygen.transform(ast_or_value)
             )
             try:
                 if (output := eval(py_code)) is not None:
-                    print(output)
+                    return str(output)
+                return None
             except SyntaxError:
-                exec(py_code)
-        else:
-            print(ast_or_value)
+                string_io = StringIO()
+                with redirect_stdout(string_io):
+                    exec(py_code)
+                return string_io.getvalue()
+        elif ast_or_value is None:
+            return ast_or_value
+        return str(ast_or_value)

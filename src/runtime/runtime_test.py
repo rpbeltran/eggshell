@@ -5,6 +5,7 @@ from typing import Dict, Optional
 import lark
 
 from ..backend.py_generator import PythonGenerator, transform_pygen_result
+from ..cli.cli import CLIMode, EggCLI
 from ..frontend.parser import get_parser
 from . import egg_lib as _e
 from . import memory
@@ -29,28 +30,11 @@ def test_no_new_test_cases() -> None:
     assert len(new_test_cases) == 0
 
 
-parser = get_parser()
-pygen = PythonGenerator()
+egg_cli = EggCLI(CLIMode.execute, use_profiler=False)
 
 
 def execute_src(src: str) -> Optional[str]:
-    _m = memory.Memory()
-    ast_or_value = parser.parse(src)
-    if type(ast_or_value) != lark.tree.Tree:
-        if ast_or_value is None:
-            return ast_or_value
-        return str(ast_or_value)
-    py_code = transform_pygen_result(pygen.transform(ast_or_value))
-    try:
-        value = eval(py_code)
-        if value is None:
-            return value
-        return str(eval(py_code))
-    except:
-        string_io = StringIO()
-        with redirect_stdout(string_io):
-            exec(py_code)
-        return string_io.getvalue()
+    return egg_cli.execute(src)
 
 
 def test_arithmetic() -> None:
