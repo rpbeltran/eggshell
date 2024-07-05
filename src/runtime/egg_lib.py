@@ -4,15 +4,11 @@ from enum import Enum
 from ..runtime import external_commands, types
 
 
-def make_external_command(
-    *args: typing.Iterable[types.Object],
-) -> external_commands.ExternalCommand:
+def make_external_command(*args: str) -> external_commands.ExternalCommand:
     return external_commands.ExternalCommand(args)
 
 
-def make_pipeline(
-    *args: typing.Iterable[types.Object],
-) -> external_commands.Pipeline:
+def make_pipeline(*args: types.Object) -> external_commands.Pipeline:
     return external_commands.Pipeline(args)
 
 
