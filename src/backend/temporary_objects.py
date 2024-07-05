@@ -10,7 +10,7 @@ class Block:
     __slots__ = ('lines',)
 
     def __init__(self, lines: List[str]):
-        self.lines: List[str] = lines
+        self.lines: List[str] = lines or ['pass']
 
     def join(self, indentation: int = 0) -> str:
         indent = '\t' * indentation

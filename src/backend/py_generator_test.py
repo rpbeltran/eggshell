@@ -396,3 +396,12 @@ def test_implicit_lambda2() -> None:
         ".add(_m.get_object_by_name('@@implicit_lambda@@')))"
     )
     assert get_gen_code(src) == expected_gen_code
+
+
+def test_empty_if() -> None:
+    src = 'if true {}'
+    expected_gen_code = (
+        'if _e.make_boolean(True):'
+        '\n\tpass'
+    )
+    assert get_gen_code(src) == expected_gen_code

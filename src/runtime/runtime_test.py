@@ -190,3 +190,9 @@ def test_if_elif_else4() -> None:
     src = 'if false {say 1} elif false {say 2} else if false {say 3} else {say 4}'
     expected_output = '4\n'
     assert execute_src(src) == expected_output
+
+
+def test_empty_if() -> None:
+    src = 'if true {}'
+    expected_output = ''
+    assert execute_src(src) == expected_output
