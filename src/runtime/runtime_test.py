@@ -142,7 +142,7 @@ def test_multiple_lines() -> None:
 
 def test_if_true() -> None:
     src = 'if true {say "hello world"}'
-    expected_output = "'hello world'\n"
+    expected_output = "hello world\n"
     assert execute_src(src) == expected_output
 
 

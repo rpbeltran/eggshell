@@ -111,7 +111,7 @@ class EggCLI:
                     | external_commands.Pipeline,
                 ):
                     return str(output.evaluate())
-                return str(output)
+                return repr(output)
             return None
         except SyntaxError:
             string_io = StringIO()

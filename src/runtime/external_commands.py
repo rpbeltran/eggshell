@@ -10,7 +10,7 @@ class ExternalCommand:
     def evaluate(self, stdin: Optional[types.Object] = None) -> types.String:
         command_inner = ' '.join(str(arg) for arg in self.args)
         if stdin:
-            return types.String(f'{stdin} -> Exec[{command_inner}]')
+            return types.String(str(stdin) + f' -> Exec[{command_inner}]')
         return types.String(f'Exec[{command_inner}]')
 
 

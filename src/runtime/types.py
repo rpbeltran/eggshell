@@ -65,6 +65,9 @@ class Number(Object):
     def __str__(self) -> str:
         return str(self.val())
 
+    def __repr__(self) -> str:
+        return repr(self.val())
+
     @staticmethod
     def wrap(value: int | float) -> 'Number':
         if isinstance(value, int):
@@ -138,6 +141,8 @@ class Boolean(Object):
     def __str__(self) -> str:
         return 'true' if self.__value else 'false'
 
+    __repr__ = __str__
+
 
 class UnitValue(Object):
     __slots__ = (
@@ -152,6 +157,9 @@ class UnitValue(Object):
         self.__value = value
 
     def __str__(self) -> str:
+        return f'{self.__value}{self.__unit}'
+
+    def __repr__(self) -> str:
         return f'{self.__value}{self.__unit}'
 
     def base_val(self) -> int | float:
@@ -213,7 +221,10 @@ class Collection(Object):
             self.data()[start_unwrapped:end_unwrapped:jump_unwrapped]
         )
 
-    def __str__(self) -> str:
+    def __str__(self):
+        return str(self.data())
+
+    def __repr__(self):
         return repr(self.data())
 
     @staticmethod
@@ -254,12 +265,6 @@ class String(Collection):
             return ComparisonResult.LESS
         return ComparisonResult.GREATER
 
-    def __str__(self):
-        return str(self.data())
-
-    def __repr__(self):
-        return str(self.data())
-
 
 class List(Collection):
     __slots__ = ('__data',)
@@ -284,8 +289,10 @@ class List(Collection):
         raise NotImplementedError('Comparing lists is not yet implemented')
 
     def __str__(self) -> str:
-        inner = ','.join(str(i) for i in self.data())
+        inner = ','.join(repr(i) for i in self.data())
         return f'[{inner}]'
+
+    __repr__ = __str__
 
 
 class Range(Collection):
@@ -356,6 +363,8 @@ class Range(Collection):
         if self.__jump == 1:
             return f'({self.__start}..{self.__end})'
         return f'({self.__start}..{self.__end} by {self.__jump})'
+
+    __repr__ = __str__
 
 
 class Functional(Object):
