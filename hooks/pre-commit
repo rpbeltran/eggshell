@@ -53,7 +53,17 @@ offer_fix_imports() {
 }
 
 
+echo "\nRunning pytest..."
 pytest src || offer_death
+
+echo "\nRunning mypy..."
 mypy --warn-unreachable --no-implicit-reexport --strict-equality src || offer_death
+
+echo "\nRunning pyflakes..."
+pyflakes src || offer_death
+
+echo "\nRunning blue..."
 blue --check src || offer_reformatting
+
+echo "\nRunning isort..."
 isort --profile black --line-length=79 --check src || offer_fix_imports
