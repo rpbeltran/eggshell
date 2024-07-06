@@ -146,7 +146,7 @@ class LoweringTransformer(Transformer):
             return Tree(
                 'poisonous_lambda_func',
                 [
-                    Token('NAME', '@@implicit_lambda_arg@@'),
+                    Token('NAME', '@@implicit_lambda@@'),
                     Tree(tree.data, tree.children),
                 ],
             )

@@ -391,7 +391,7 @@ def test_implicit_lambda() -> None:
 def test_implicit_lambda2() -> None:
     src = '_ + _'
     expected_gen_code = (
-        "_e.make_lambda(_m,['@@implicit_lambda_arg@@'],"
+        "_e.make_lambda(_m,['@@implicit_lambda@@'],"
         "lambda: _m.get_object_by_name('@@implicit_lambda@@')"
         ".add(_m.get_object_by_name('@@implicit_lambda@@')))"
     )

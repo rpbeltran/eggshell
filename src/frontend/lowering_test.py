@@ -75,7 +75,7 @@ def test_pipeline_to_implicit_lambda2() -> None:
         '\n    @@implicit_lambda@@'
         '\n    identifier\t@@implicit_lambda@@'
         '\n  poisonous_lambda_func'
-        '\n    @@implicit_lambda_arg@@'
+        '\n    @@implicit_lambda@@'
         '\n    addition'
         '\n      identifier\t@@implicit_lambda@@'
         '\n      identifier\t@@implicit_lambda@@'
