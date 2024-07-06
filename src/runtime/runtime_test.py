@@ -193,3 +193,15 @@ def test_while() -> None:
         '\n'
     )
     assert execute_src(src) == expected_output
+
+
+def test_temporary__exec_pipeline() -> None:
+    src = 'a | b | c'
+    expected_output = 'Exec[a] -> Exec[b] -> Exec[c]'
+    assert execute_src(src) == expected_output
+
+
+def test_temporary__exec_pipeline_number() -> None:
+    src = '12| a | b | c'
+    expected_output = '12 -> Exec[a] -> Exec[b] -> Exec[c]'
+    assert execute_src(src) == expected_output

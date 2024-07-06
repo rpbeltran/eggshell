@@ -54,6 +54,6 @@ offer_fix_imports() {
 
 
 pytest src || offer_death
-mypy src || offer_death
+mypy --warn-unreachable --no-implicit-reexport --strict-equality src || offer_death
 blue --check src || offer_reformatting
 isort --profile black --line-length=79 --check src || offer_fix_imports

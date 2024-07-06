@@ -102,19 +102,19 @@ class EggCLI:
 
     def execute(self, src: str) -> Optional[str]:
         ast_or_value = self.parser.parse(src)
-        if isinstance(ast_or_value, lark.tree.Tree):
-            py_code = transform_pygen_result(
-                self.pygen.transform(ast_or_value)
-            )
-            try:
-                if (output := eval(py_code)) is not None:
-                    return str(output)
-                return None
-            except SyntaxError:
-                string_io = StringIO()
-                with redirect_stdout(string_io):
-                    exec(py_code)
-                return string_io.getvalue()
-        elif ast_or_value is None:
-            return ast_or_value
-        return str(ast_or_value)
+        py_code = transform_pygen_result(self.pygen.transform(ast_or_value))
+        try:
+            if (output := eval(py_code)) is not None:
+                if isinstance(
+                    output,
+                    external_commands.ExternalCommand
+                    | external_commands.Pipeline,
+                ):
+                    return str(output.evaluate())
+                return str(output)
+            return None
+        except SyntaxError:
+            string_io = StringIO()
+            with redirect_stdout(string_io):
+                exec(py_code)
+            return string_io.getvalue()

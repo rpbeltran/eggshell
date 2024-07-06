@@ -254,6 +254,12 @@ class String(Collection):
             return ComparisonResult.LESS
         return ComparisonResult.GREATER
 
+    def __str__(self):
+        return str(self.data())
+
+    def __repr__(self):
+        return str(self.data())
+
 
 class List(Collection):
     __slots__ = ('__data',)
@@ -354,7 +360,7 @@ class Range(Collection):
 
 class Functional(Object):
     @abstractmethod
-    def call(self, args: typing.List['Object']) -> None:
+    def call(self, args: typing.List['Object']) -> typing.Optional[Object]:
         ...
 
     def compare(self, other: 'Object') -> ComparisonResult:
@@ -369,7 +375,7 @@ class LambdaExpression(Functional):
         self.args = args
         self.expression = expression
 
-    def call(self, args: typing.List['Object']) -> None:
+    def call(self, args: typing.List['Object']) -> typing.Optional[Object]:
         # todo: implement this soon
         raise NotImplementedError(
             'Calling lambdas has not yet been implemented.'
