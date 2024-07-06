@@ -205,3 +205,15 @@ def test_temporary__exec_pipeline_number() -> None:
     src = '12| a | b | c'
     expected_output = '12 -> Exec[a] -> Exec[b] -> Exec[c]'
     assert execute_src(src) == expected_output
+
+
+def test_pipe_lambda_identity() -> None:
+    src = '19.7 | \\x -> @x | _'
+    expected_output = '19.7'
+    assert execute_src(src) == expected_output
+
+
+def test_pipe_lambda_arithmatic() -> None:
+    src = '10 | (10 ** _ + 91 * _ + _) / _ | _ // 2'
+    expected_output = '500000046.0'
+    assert execute_src(src) == expected_output

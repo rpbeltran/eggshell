@@ -48,7 +48,9 @@ def make_range(start: Integer, end: Integer) -> Range:
 
 
 def make_lambda(
-    memory: Memory, args: typing.List[str], expr: str
+    memory: Memory,
+    args: typing.List[str],
+    expr: typing.Callable[[], Object | None],
 ) -> LambdaExpression:
     return LambdaExpression(memory, args, expr)
 
