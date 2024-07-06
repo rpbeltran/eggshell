@@ -2,6 +2,7 @@ import typing
 from enum import Enum
 
 from ..runtime import external_commands
+from ..runtime.memory import Memory
 from ..runtime.types.collections import List, Range, String
 from ..runtime.types.functional import LambdaExpression
 from ..runtime.types.numeric import Boolean, Float, Integer, UnitValue
@@ -46,8 +47,10 @@ def make_range(start: Integer, end: Integer) -> Range:
     return Range(start, end, Integer(1))
 
 
-def make_lambda(args: typing.List[str], expr: str) -> LambdaExpression:
-    return LambdaExpression(args, expr)
+def make_lambda(
+    memory: Memory, args: typing.List[str], expr: str
+) -> LambdaExpression:
+    return LambdaExpression(memory, args, expr)
 
 
 class ComparisonType(Enum):

@@ -365,7 +365,7 @@ def test_declare_name_via_name() -> None:
 def test_lambda() -> None:
     src = '\\x -> @x'
     expected_gen_code = (
-        "_e.make_lambda(['x'],lambda: _m.get_object_by_name('x'))"
+        "_e.make_lambda(_m,['x'],lambda: _m.get_object_by_name('x'))"
     )
     assert get_gen_code(src) == expected_gen_code
 
@@ -373,7 +373,7 @@ def test_lambda() -> None:
 def test_lambda2() -> None:
     src = '\\(x, y) -> @x + @y'
     expected_gen_code = (
-        "_e.make_lambda(['x', 'y'],"
+        "_e.make_lambda(_m,['x', 'y'],"
         "lambda: _m.get_object_by_name('x').add(_m.get_object_by_name('y')))"
     )
     assert get_gen_code(src) == expected_gen_code
@@ -382,7 +382,7 @@ def test_lambda2() -> None:
 def test_implicit_lambda() -> None:
     src = '_'
     expected_gen_code = (
-        "_e.make_lambda(['@@implicit_lambda@@'],"
+        "_e.make_lambda(_m,['@@implicit_lambda@@'],"
         "lambda: _m.get_object_by_name('@@implicit_lambda@@'))"
     )
     assert get_gen_code(src) == expected_gen_code
@@ -391,7 +391,7 @@ def test_implicit_lambda() -> None:
 def test_implicit_lambda2() -> None:
     src = '_ + _'
     expected_gen_code = (
-        "_e.make_lambda(['@@implicit_lambda_arg@@'],"
+        "_e.make_lambda(_m,['@@implicit_lambda_arg@@'],"
         "lambda: _m.get_object_by_name('@@implicit_lambda@@')"
         ".add(_m.get_object_by_name('@@implicit_lambda@@')))"
     )

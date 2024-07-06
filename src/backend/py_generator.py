@@ -212,7 +212,8 @@ class PythonGenerator(Transformer):
 
         return PygenIntermediary(
             f'{PythonGenerator.backend_library}'
-            f'.make_lambda({repr(params)},lambda: {rhs_pygen})'
+            f'.make_lambda({PythonGenerator.memory_instance},{repr(params)},'
+            f'lambda: {rhs_pygen})'
         )
 
     poisonous_lambda_func = lambda_func

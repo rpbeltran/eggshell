@@ -1,6 +1,7 @@
 import typing
 from abc import abstractmethod
 
+from ..memory import Memory
 from ..types.objects import ComparisonResult, Object
 
 
@@ -17,7 +18,10 @@ class Functional(Object):
 
 
 class LambdaExpression(Functional):
-    def __init__(self, args: typing.List[str], expression: str):
+    def __init__(
+        self, memory: Memory, args: typing.List[str], expression: str
+    ):
+        self.memory = memory
         self.args = args
         self.expression = expression
 
