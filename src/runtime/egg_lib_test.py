@@ -1,7 +1,8 @@
 import typing
 
 from .egg_lib import *
-from .types import Float, Integer, Object
+from .types.numeric import Float, Integer
+from .types.objects import Object
 
 
 def test_do_comparisons() -> None:

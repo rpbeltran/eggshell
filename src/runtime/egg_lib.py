@@ -1,49 +1,53 @@
 import typing
 from enum import Enum
 
-from ..runtime import external_commands, types
+from ..runtime import external_commands
+from ..runtime.types.collections import List, Range, String
+from ..runtime.types.functional import LambdaExpression
+from ..runtime.types.numeric import Boolean, Float, Integer, UnitValue
+from ..runtime.types.objects import ComparisonResult, Object
 
 
 def make_external_command(*args: str) -> external_commands.ExternalCommand:
     return external_commands.ExternalCommand(args)
 
 
-def make_pipeline(*args: types.Object) -> external_commands.Pipeline:
+def make_pipeline(*args: Object) -> external_commands.Pipeline:
     return external_commands.Pipeline(args)
 
 
-def make_string(data: str) -> types.String:
-    return types.String(data)
+def make_string(data: str) -> String:
+    return String(data)
 
 
-def make_integer(value: int) -> types.Integer:
-    return types.Integer(value)
+def make_integer(value: int) -> Integer:
+    return Integer(value)
 
 
-def make_float(value: float) -> types.Float:
-    return types.Float(value)
+def make_float(value: float) -> Float:
+    return Float(value)
 
 
-def make_boolean(value: bool) -> types.Boolean:
-    return types.Boolean(value)
+def make_boolean(value: bool) -> Boolean:
+    return Boolean(value)
 
 
 def make_unit_value(
     unit_type: str, unit: str, quantity: int | float
-) -> types.UnitValue:
-    return types.UnitValue(unit_type, unit, quantity)
+) -> UnitValue:
+    return UnitValue(unit_type, unit, quantity)
 
 
-def make_list(*data: typing.List) -> types.List:
-    return types.List(data)
+def make_list(*data: typing.List) -> List:
+    return List(data)
 
 
-def make_range(start: types.Integer, end: types.Integer) -> types.Range:
-    return types.Range(start, end, types.Integer(1))
+def make_range(start: Integer, end: Integer) -> Range:
+    return Range(start, end, Integer(1))
 
 
-def make_lambda(args: typing.List[str], expr: str) -> types.LambdaExpression:
-    return types.LambdaExpression(args, expr)
+def make_lambda(args: typing.List[str], expr: str) -> LambdaExpression:
+    return LambdaExpression(args, expr)
 
 
 class ComparisonType(Enum):
@@ -55,13 +59,13 @@ class ComparisonType(Enum):
     GTE = 6
 
 
-def do_comparisons(*args: types.Object | ComparisonType) -> bool:
+def do_comparisons(*args: Object | ComparisonType) -> bool:
     assert len(args) >= 3
     assert len(args) % 2 == 1
     for i in range(0, len(args) - 2, 2):
         a, op, b = args[i : i + 3]
-        assert isinstance(a, types.Object)
-        assert isinstance(b, types.Object)
+        assert isinstance(a, Object)
+        assert isinstance(b, Object)
         if op == ComparisonType.EQUAL:
             if not (a.equals(b)):
                 return False
@@ -69,23 +73,23 @@ def do_comparisons(*args: types.Object | ComparisonType) -> bool:
             if not (not a.equals(b)):
                 return False
         elif op == ComparisonType.LESS:
-            if not (a.compare(b) == types.ComparisonResult.LESS):
+            if not (a.compare(b) == ComparisonResult.LESS):
                 return False
         elif op == ComparisonType.LTE:
-            if not (a.compare(b) != types.ComparisonResult.GREATER):
+            if not (a.compare(b) != ComparisonResult.GREATER):
                 return False
         elif op == ComparisonType.GREATER:
-            if not (a.compare(b) == types.ComparisonResult.GREATER):
+            if not (a.compare(b) == ComparisonResult.GREATER):
                 return False
         elif op == ComparisonType.GTE:
-            if not (a.compare(b) != types.ComparisonResult.LESS):
+            if not (a.compare(b) != ComparisonResult.LESS):
                 return False
     return True
 
 
-def assertion(condition: types.Boolean) -> None:
+def assertion(condition: Boolean) -> None:
     assert condition
 
 
-def say(arg: types.Object) -> None:
+def say(arg: Object) -> None:
     print(arg)
