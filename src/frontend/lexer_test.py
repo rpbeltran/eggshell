@@ -1,6 +1,6 @@
 from typing import Dict, List, Tuple
 
-from .lexer import *
+from .lexer import EggLexer
 
 """
 INSTRUCTIONS: To add new test cases:

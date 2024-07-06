@@ -1,6 +1,6 @@
 from typing import Dict
 
-from .parser import *
+from .parser import get_parser
 
 """
 INSTRUCTIONS: To add new test cases:

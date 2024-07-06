@@ -16,6 +16,8 @@ from ..runtime import egg_lib as _e
 from ..runtime import external_commands, memory
 from .profilers import ProfilerConfig, maybe_profile
 
+assert readline   # silence pyflakes
+assert _e   # silence pyflakes
 _m = memory.Memory()
 
 

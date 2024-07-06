@@ -1,12 +1,12 @@
-import typing
+from typing import List
 
-from .egg_lib import *
+from .egg_lib import ComparisonType, do_comparisons
 from .types.numeric import Float, Integer
 from .types.objects import Object
 
 
 def test_do_comparisons() -> None:
-    true_cases: typing.List[typing.List[Object | ComparisonType]] = [
+    true_cases: List[List[Object | ComparisonType]] = [
         [Integer(1), ComparisonType.LESS, Integer(2)],
         [Integer(1), ComparisonType.LTE, Integer(2)],
         [Integer(1), ComparisonType.LTE, Integer(1)],
@@ -18,7 +18,7 @@ def test_do_comparisons() -> None:
         [Integer(2), ComparisonType.UNEQUAL, Float(3.0)],
         [Integer(1), ComparisonType.UNEQUAL, Integer(2), ComparisonType.UNEQUAL, Integer(3)],
     ]
-    false_cases: typing.List[typing.List[Object | ComparisonType]] = [
+    false_cases: List[List[Object | ComparisonType]] = [
         [Integer(2), ComparisonType.LESS, Integer(1)],
         [Integer(2), ComparisonType.LESS, Integer(2)],
         [Integer(3), ComparisonType.LTE, Integer(2)],

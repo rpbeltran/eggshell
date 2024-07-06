@@ -1,4 +1,4 @@
-from .mm_trie import *
+from .mm_trie import MaxMunchTrie, TrieResult
 
 
 def test_ab() -> None:

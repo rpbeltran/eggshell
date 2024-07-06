@@ -2,13 +2,7 @@ from contextlib import redirect_stdout
 from io import StringIO
 from typing import Dict, Optional
 
-import lark
-
-from ..backend.py_generator import PythonGenerator, transform_pygen_result
 from ..cli.cli import CLIMode, EggCLI
-from ..frontend.parser import get_parser
-from . import egg_lib as _e
-from . import memory
 
 """
 INSTRUCTIONS: To add new test cases:

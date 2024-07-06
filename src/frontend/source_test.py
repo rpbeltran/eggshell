@@ -1,4 +1,4 @@
-from .source import *
+from .source import Source, SourceLocation, SourceManager
 
 src_str = (
     "012345678\n"

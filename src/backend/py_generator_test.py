@@ -1,7 +1,7 @@
 from typing import Dict
 
 from ..frontend.parser import get_parser
-from .py_generator import *
+from .py_generator import PythonGenerator, transform_pygen_result
 
 """
 INSTRUCTIONS: To add new test cases:

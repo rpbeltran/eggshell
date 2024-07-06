@@ -1,4 +1,4 @@
-from .memory import *
+from .memory import Memory
 from .types.numeric import Integer
 
 # Garbage Collection todolist:

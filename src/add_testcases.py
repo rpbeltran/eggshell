@@ -2,7 +2,7 @@
 
 import os
 import sys
-from typing import List, Optional
+from typing import Optional
 
 src_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.append(src_dir)

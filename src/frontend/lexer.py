@@ -145,7 +145,7 @@ class QuotedArgListNode(DFANode):
         elif c == '|':
             if state.head != state.token_start:
                 yield state.get_token('EXEC_ARG', inclusive=False)
-            yield Token(f'PIPE', '|')
+            yield Token('PIPE', '|')
             state.token_start = state.head + 1
         elif c.isspace():
             if state.head != state.token_start:
@@ -228,7 +228,7 @@ class UnquotedLiteral(DFANode):
             yield state.get_token(predicted_token_type, source=source)
             if c == '\n' and state.paren_depth == 0:
 
-                yield Token(f'SEMICOLON', '')
+                yield Token('SEMICOLON', '')
             state.goto_node(StartNode(), step_back=True)
         elif c in '@':
             raise LexerError(
