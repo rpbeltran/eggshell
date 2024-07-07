@@ -96,7 +96,7 @@ class IdentifierNode(DFANode):
             state.token_start = state.head
             yield state.get_token('DOT', inclusive=True)
             state.token_start = state.head + 1
-        elif c.isspace() or c in r':=+-/[]{}()<>.':
+        elif c.isspace() or c in r':=+-/[]{}()<>.,':
             if state.token_start == state.head:
                 raise LexerError('Identifier is empty', state)
             yield state.get_token('NAME', inclusive=False)

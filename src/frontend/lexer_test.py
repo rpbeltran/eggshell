@@ -1482,3 +1482,20 @@ def test_if_elif_else() -> None:
         ('CURLY_CLOSE', '}'),
     ]
     assert get_tokens(src) == expected_tokens
+
+
+def test_function_call3() -> None:
+    src = 'foo(1, @a, @x + 1)'
+    expected_tokens = [
+        ('NAME', 'foo'),
+        ('PAREN_OPEN', '('),
+        ('INTEGER', '1'),
+        ('COMMA', ','),
+        ('NAME', 'a'),
+        ('COMMA', ','),
+        ('NAME', 'x'),
+        ('PLUS', '+'),
+        ('INTEGER', '1'),
+        ('PAREN_CLOSE', ')'),
+    ]
+    assert get_tokens(src) == expected_tokens
