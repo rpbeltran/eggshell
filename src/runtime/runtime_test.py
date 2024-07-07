@@ -211,3 +211,30 @@ def test_pipe_lambda_arithmatic() -> None:
     src = '10 | (10 ** _ + 91 * _ + _) / _ | _ // 2'
     expected_output = '500000046.0'
     assert execute_src(src) == expected_output
+
+
+def test_call_lambda_0() -> None:
+    src = (
+        'foo := \\() -> 7\n'
+        'say(@foo())'
+    )
+    expected_output = '7\n'
+    assert execute_src(src) == expected_output
+
+
+def test_call_lambda_1() -> None:
+    src = (
+        'foo := \\x -> @x\n'
+        'say(@foo(1 + 2))'
+    )
+    expected_output = '3\n'
+    assert execute_src(src) == expected_output
+
+
+def test_call_lambda_3() -> None:
+    src = (
+        'foo := \\(x, y, z) -> (x + y + z)\n'
+        'say(@foo(1, 2, 3))'
+    )
+    expected_output = '6\n'
+    assert execute_src(src) == expected_output

@@ -218,6 +218,20 @@ class PythonGenerator(Transformer):
 
     poisonous_lambda_func = lambda_func
 
+    @staticmethod
+    def function_call(
+        items: List[PygenIntermediary | Tree],
+    ) -> PygenIntermediary:
+        (func, arg_list) = items
+        assert isinstance(func, PygenIntermediary)
+        assert isinstance(arg_list, Tree)
+        arg_list_finalized: List[str] = []
+        for arg in arg_list.children:
+            assert isinstance(arg, PygenIntermediary)
+            arg_list_finalized.append(arg.finalize())
+        arg_list_inner = ','.join(arg_list_finalized)
+        return PygenIntermediary(f'{func.finalize()}.call([{arg_list_inner}])')
+
     # Memory
     @staticmethod
     def declare_untyped_variable(
@@ -298,6 +312,7 @@ class PythonGenerator(Transformer):
         'slice_end',
         'slice_jump',
         'param_list',
+        'arg_list',
     }
 
     @staticmethod

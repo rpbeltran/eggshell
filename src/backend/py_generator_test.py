@@ -416,3 +416,28 @@ def test_while() -> None:
         "\n\t_m.update_var('x', _m.get_object_by_name('x').subtract(_e.make_integer(1)))"
     )
     assert get_gen_code(src) == expected_gen_code
+
+
+def test_function_call0() -> None:
+    src = 'foo()'
+    expected_gen_code = "_m.get_object_by_name('foo').call([])"
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_function_call1() -> None:
+    src = 'foo(1 + 2)'
+    expected_gen_code = (
+        "_m.get_object_by_name('foo')"
+        ".call([_e.make_integer(1).add(_e.make_integer(2))])"
+    )
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_function_call3() -> None:
+    src = 'foo(1, @a, @x + 1)'
+    expected_gen_code = (
+        "_m.get_object_by_name('foo')"
+        ".call([_e.make_integer(1),_m.get_object_by_name('a'),"
+        "_m.get_object_by_name('x').add(_e.make_integer(1))])"
+    )
+    assert get_gen_code(src) == expected_gen_code
