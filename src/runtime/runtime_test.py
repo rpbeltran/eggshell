@@ -238,3 +238,15 @@ def test_call_lambda_3() -> None:
     )
     expected_output = '6\n'
     assert execute_src(src) == expected_output
+
+
+def test_define_function_empty() -> None:
+    src = 'fn foo(){}\nfoo()'
+    expected_output = ''
+    assert execute_src(src) == expected_output
+
+
+def test_define_function_3_args() -> None:
+    src = 'fn foo(a, b, c) {d:= a + b; say(d + c)}\nfoo(1,2,3)'
+    expected_output = '6\n'
+    assert execute_src(src) == expected_output

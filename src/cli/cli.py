@@ -8,7 +8,11 @@ from typing import Optional
 
 import lark
 
-from ..backend.py_generator import PythonGenerator, transform_pygen_result
+from ..backend.py_generator import (
+    PythonGenerator,
+    get_required_functions,
+    transform_pygen_result,
+)
 from ..frontend.lexer import EggLexer
 from ..frontend.lexer_util import LexerError
 from ..frontend.parser import get_parser
@@ -93,10 +97,17 @@ class EggCLI:
         ast = self.parser.parse(src)
         print(ast.pretty(), end='')
 
-    def show_pygen(self, src: str) -> None:
+    def get_pygen(self, src: str) -> str:
         ast = self.parser.parse(src)
         py = transform_pygen_result(self.pygen.transform(ast))
-        print(py)
+        lines = [
+            transform_pygen_result(func) for func in get_required_functions()
+        ]
+        lines.append(py)
+        return '\n'.join(lines)
+
+    def show_pygen(self, src: str) -> None:
+        print(self.get_pygen(src))
 
     def show_execute(self, src: str) -> None:
         if (output := self.execute(src)) is not None:
@@ -105,6 +116,8 @@ class EggCLI:
     def execute(self, src: str) -> Optional[str]:
         ast_or_value = self.parser.parse(src)
         py_code = transform_pygen_result(self.pygen.transform(ast_or_value))
+        for func in get_required_functions():
+            exec(transform_pygen_result(func))
         try:
             if (output := eval(py_code)) is not None:
                 if isinstance(

@@ -1,5 +1,5 @@
 from collections import deque
-from typing import Dict, List, Optional, Set
+from typing import Callable, Dict, List, Optional, Set
 
 from ..runtime.types.objects import Object
 
@@ -7,7 +7,9 @@ from ..runtime.types.objects import Object
 class Instance:
     __slots__ = ('data', 'deps', 'const')
 
-    def __init__(self, data: Object, deps: Set[int], const: bool = False):
+    def __init__(
+        self, data: Object | Callable, deps: Set[int], const: bool = False
+    ):
         self.data = data
         self.deps = deps
         self.const = const
@@ -37,7 +39,7 @@ class Memory:
 
     def new(
         self,
-        data: Object,
+        data: Object | Callable,
         deps: Optional[Set[int]] = None,
         name: Optional[str] = None,
         const: bool = False,
@@ -50,7 +52,10 @@ class Memory:
             self.store(name, ref_id)
 
     def update_var(
-        self, name: str, new_value: Object, deps: Optional[Set[int]] = None
+        self,
+        name: str,
+        new_value: Object | Callable,
+        deps: Optional[Set[int]] = None,
     ) -> None:
         old_id = self.get_id(name)
         assert old_id is not None
@@ -71,12 +76,17 @@ class Memory:
         if garbage_collect:
             self.garbage_collect()
 
-    def get_object(self, ref_id: int) -> Object:
+    def get_object(self, ref_id: int) -> Object | Callable:
         return self.instances[ref_id].data
 
-    def get_object_by_name(self, name: str) -> Object:
+    def get_object_by_name(self, name: str) -> Object | Callable:
         ref_id = self.get_id(name)
-        assert ref_id is not None
+        if ref_id is None:
+            print('missing ref_id for', name)
+            for scope in self.scopes:
+                print('scope: ', self.current_scope().names)
+
+            assert ref_id is not None
         return self.instances[ref_id].data
 
     def get_id(self, name: str) -> Optional[int]:

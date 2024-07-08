@@ -1,7 +1,6 @@
 from typing import Dict
 
-from ..frontend.parser import get_parser
-from .py_generator import PythonGenerator, transform_pygen_result
+from ..cli.cli import CLIMode, EggCLI
 
 """
 INSTRUCTIONS: To add new test cases:
@@ -23,13 +22,11 @@ def test_no_new_test_cases() -> None:
     assert len(new_test_cases) == 0
 
 
-parser = get_parser()
-pygen = PythonGenerator()
+egg_cli = EggCLI(CLIMode.pygen, use_profiler=False)
 
 
 def get_gen_code(src: str) -> str:
-    ast = parser.parse(src)
-    return transform_pygen_result(pygen.transform(ast))
+    return egg_cli.get_pygen(src)
 
 
 def test_add() -> None:
@@ -439,5 +436,40 @@ def test_function_call3() -> None:
         "_m.get_object_by_name('foo')"
         ".call([_e.make_integer(1),_m.get_object_by_name('a'),"
         "_m.get_object_by_name('x').add(_e.make_integer(1))])"
+    )
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_define_function_empty() -> None:
+    src = 'fn foo(){}'
+    expected_gen_code = (
+        'def ___foo_backing_function():'
+        '\n\t_m.push_scope()'
+        '\n\tpass'
+        '\n\t_m.pop_scope()'
+        '\n_m.new(___foo_backing_function, name="___foo_backing_function")'
+        "\n_m.new(_e.make_lambda(_m,[],"
+        "lambda: _m.get_object_by_name('___foo_backing_function')()), "
+        "name='foo', const=True)"
+    )
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_define_function_3_args() -> None:
+    src = 'fn foo(a, b, c) {d:= a + b; say(d + c)}'
+    expected_gen_code = (
+        'def ___foo_backing_function(a,b,c):'
+        '\n\t_m.push_scope()'
+        '\n\t_m.new(a, name=a)'
+        '\n\t_m.new(b, name=b)'
+        '\n\t_m.new(c, name=c)'
+        "\n\t_m.new(_m.get_object_by_name('a').add(_m.get_object_by_name('b')), name='d')"
+        "\n\t_e.say(_m.get_object_by_name('d').add(_m.get_object_by_name('c')))"
+        '\n\t_m.pop_scope()'
+        '\n_m.new(___foo_backing_function, name="___foo_backing_function")'
+        "\n_m.new(_e.make_lambda(_m,['a', 'b', 'c'],"
+        "lambda: _m.get_object_by_name('___foo_backing_function')"
+        "(_m.get_object_by_name('a'),_m.get_object_by_name('b'),"
+        "_m.get_object_by_name('c'))), name='foo', const=True)"
     )
     assert get_gen_code(src) == expected_gen_code

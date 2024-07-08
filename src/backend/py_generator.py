@@ -1,6 +1,5 @@
 from typing import Any, Callable, Iterable, List, Optional, Set
 
-import lark
 import lark.tree
 from lark import Transformer, Tree
 from lark.lexer import Token
@@ -184,7 +183,37 @@ class PythonGenerator(Transformer):
         'make_boolean', map_items=lambda item: item == 'true'
     )
 
-    # Memory
+    # Functions
+
+    @staticmethod
+    def define_function(
+        items: List[Token | Tree | PygenIntermediary],
+    ) -> PygenIntermediary:
+        (name, param_list, block) = items
+        assert isinstance(name, Token)
+        assert isinstance(param_list, Tree)
+        params = []
+        for param in param_list.children:
+            assert isinstance(param, Token)
+            params.append(param.value)
+        assert isinstance(block, PygenIntermediary)
+        assert isinstance(block.inline, Block)
+        PygenIntermediary.add_header(
+            block.inline.make_function(name.value, params)
+        )
+        arg_list = ','.join(
+            f'_m.get_object_by_name({repr(param)})' for param in params
+        )
+        backing_func = f'___{name}_backing_function'
+        lambda_expr = (
+            f'{PythonGenerator.backend_library}'
+            f'.make_lambda({PythonGenerator.memory_instance},{repr(params)},'
+            f'lambda: _m.get_object_by_name({repr(backing_func)})({arg_list}))'
+        )
+        return PygenIntermediary(
+            f'{PythonGenerator.memory_instance}'
+            f'.new({lambda_expr}, name={repr(name.value)}, const=True)'
+        )
 
     @staticmethod
     def lambda_func(
@@ -346,3 +375,7 @@ def transform_pygen_result(
     if isinstance(intermediate, Block):
         return intermediate.join()
     return intermediate
+
+
+def get_required_functions() -> List[Block]:
+    return PygenIntermediary.pop_headers()

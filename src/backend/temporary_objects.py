@@ -34,6 +34,19 @@ class Block:
             + [f'{indent}{line}' for line in self.lines]
         )
 
+    def make_function(
+        self, name: str, param_list: List[str], extra_indentation: int = 0
+    ) -> 'Block':
+        indent = '\t' * extra_indentation
+        backing_name = f'___{name}_backing_function'
+        signature = f'{indent}def {backing_name}({",".join(param_list)}):'
+        start_scope = f'{indent}\t_m.push_scope()'
+        end_scope = f'{indent}\t_m.pop_scope()'
+        pre_body = [f'_m.new({p}, name={p})' for p in param_list]
+        body = [f'{indent}\t{line}' for line in pre_body + self.lines]
+        push_backing = f'{indent}_m.new({backing_name}, name="{backing_name}")'
+        return Block([signature, start_scope, *body, end_scope, push_backing])
+
 
 class IfBlock(Block):
     def __init__(self, lines: List[str]):
@@ -55,8 +68,8 @@ class IfBlock(Block):
 
 
 class PygenIntermediary:
-
     memory_instance = '_m'
+    headers: List[Block] = []
 
     def __init__(self, inline: str | Name | Block):
         self.inline = inline
@@ -70,3 +83,13 @@ class PygenIntermediary:
         if isinstance(self.inline, Block):
             return self.inline.join()
         return self.inline
+
+    @classmethod
+    def add_header(cls, block: Block):
+        cls.headers.append(block)
+
+    @classmethod
+    def pop_headers(cls) -> List[Block]:
+        headers = cls.headers
+        cls.headers = []
+        return headers
