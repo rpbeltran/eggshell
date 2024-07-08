@@ -183,3 +183,28 @@ def test_garbage_collection_circular() -> None:
     memory.pop_scope()
     assert len(memory.scopes) == 0
     assert len(memory.instances) == 0
+
+
+def test_stack_register():
+    memory = Memory()
+    memory.push_stack_register(Integer(1))
+    memory.push_stack_register(Integer(2))
+    memory.push_stack_register(Integer(3))
+
+    pop3 = memory.pop_stack_register()
+    assert isinstance(pop3, Integer)
+    assert pop3.val() == 3
+
+    pop2 = memory.pop_stack_register()
+    assert isinstance(pop2, Integer)
+    assert pop2.val() == 2
+
+    pop1 = memory.pop_stack_register()
+    assert isinstance(pop1, Integer)
+    assert pop1.val() == 1
+
+    try:
+        memory.pop_stack_register()
+        raise AssertionError
+    except IndexError:
+        pass

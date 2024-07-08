@@ -36,6 +36,7 @@ class Memory:
         self.instances: Dict[int, Instance] = {}
         self.scopes: List[Scope] = [Scope()]
         self.__next_ref_id_counter = 0
+        self.stack_register: List[Object] = []
 
     def new(
         self,
@@ -81,12 +82,7 @@ class Memory:
 
     def get_object_by_name(self, name: str) -> Object | Callable:
         ref_id = self.get_id(name)
-        if ref_id is None:
-            print('missing ref_id for', name)
-            for scope in self.scopes:
-                print('scope: ', self.current_scope().names)
-
-            assert ref_id is not None
+        assert ref_id is not None
         return self.instances[ref_id].data
 
     def get_id(self, name: str) -> Optional[int]:
@@ -120,3 +116,9 @@ class Memory:
         next_ref_id = self.__next_ref_id_counter
         self.__next_ref_id_counter += 1
         return next_ref_id
+
+    def push_stack_register(self, item: Object):
+        self.stack_register.append(item)
+
+    def pop_stack_register(self) -> Object:
+        return self.stack_register.pop()
