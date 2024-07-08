@@ -49,7 +49,9 @@ class Block:
         signature = f'{indent}def {backing_name}({",".join(param_list)}):'
         start_scope = f'{indent}\t_m.push_scope()'
         end_scope = f'{indent}\t_m.pop_scope()'
-        pre_body = [f'{indent}\t_m.new({p}, name={p})' for p in param_list]
+        pre_body = [
+            f'{indent}\t_m.new({p}, name={repr(p)})' for p in param_list
+        ]
         body = self.join(1)
         push_backing = f'{indent}_m.new({backing_name}, name="{backing_name}")'
         return Block(

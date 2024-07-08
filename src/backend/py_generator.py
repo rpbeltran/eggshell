@@ -266,7 +266,13 @@ class PythonGenerator(Transformer):
     def return_statement(items: List[PygenIntermediary]) -> PygenIntermediary:
         assert len(items) == 1
         return PygenIntermediary(
-            Block(['_m.pop_scope()', f'return {items[0].finalize()}'])
+            Block(
+                [
+                    f'_m.push_stack_register({items[0].finalize()})',
+                    '_m.pop_scope()',
+                    'return _m.pop_stack_register()',
+                ]
+            )
         )
 
     # Memory

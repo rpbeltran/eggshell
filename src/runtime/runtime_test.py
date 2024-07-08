@@ -261,3 +261,25 @@ def test_function_add() -> None:
     )
     expected_output = '3\n'
     assert execute_src(src) == expected_output
+
+
+def test_count_10s_via_whiles() -> None:
+    src = (
+        'fn count_10s(n) {\n'
+        '  i := 0\n'
+        '  count := 0\n'
+        '  while i < n {\n'
+        '    if i % 10 == 0 {\n'
+        '      count += 1\n'
+        '    }\n'
+        '    i += 1\n'
+        '  }\n'
+        '  return count\n'
+        '}\n'
+        'say count_10s(5)\n'
+        'say count_10s(50)\n'
+        'say count_10s(500)\n'
+        'say count_10s(5000)\n'
+    )
+    expected_output = '1\n5\n50\n500\n'
+    assert execute_src(src) == expected_output

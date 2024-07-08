@@ -460,10 +460,11 @@ def test_define_function_3_args() -> None:
     expected_gen_code = (
         'def ___foo_backing_function(a,b,c):'
         '\n\t_m.push_scope()'
-        '\n\t_m.new(a, name=a)'
-        '\n\t_m.new(b, name=b)'
-        '\n\t_m.new(c, name=c)'
-        "\n\t_m.new(_m.get_object_by_name('a').add(_m.get_object_by_name('b')), name='d')"
+        "\n\t_m.new(a, name='a')"
+        "\n\t_m.new(b, name='b')"
+        "\n\t_m.new(c, name='c')"
+        "\n\t_m.new(_m.get_object_by_name('a')"
+        ".add(_m.get_object_by_name('b')), name='d')"
         "\n\t_e.say(_m.get_object_by_name('d').add(_m.get_object_by_name('c')))"
         '\n\t_m.pop_scope()'
         '\n_m.new(___foo_backing_function, name="___foo_backing_function")'
@@ -475,17 +476,22 @@ def test_define_function_3_args() -> None:
     assert get_gen_code(src) == expected_gen_code
 
 
-def test_function_add() -> None:
+def test_test_function_add() -> None:
     src = 'fn add(a, b) {ret a + b}'
     expected_gen_code = (
         'def ___add_backing_function(a,b):'
         '\n\t_m.push_scope()'
-        '\n\t_m.new(a, name=a)'
-        '\n\t_m.new(b, name=b)'
+        "\n\t_m.new(a, name='a')"
+        "\n\t_m.new(b, name='b')"
+        "\n\t_m.push_stack_register(_m.get_object_by_name('a')"
+        ".add(_m.get_object_by_name('b')))"
         '\n\t_m.pop_scope()'
-        "\n\treturn _m.get_object_by_name('a').add(_m.get_object_by_name('b'))"
+        '\n\treturn _m.pop_stack_register()'
         '\n\t_m.pop_scope()'
         '\n_m.new(___add_backing_function, name="___add_backing_function")'
-        "\n_m.new(_e.make_lambda(_m,['a', 'b'],lambda: _m.get_object_by_name('___add_backing_function')(_m.get_object_by_name('a'),_m.get_object_by_name('b'))), name='add', const=True)"
+        "\n_m.new(_e.make_lambda(_m,['a', 'b'],"
+        "lambda: _m.get_object_by_name('___add_backing_function')"
+        "(_m.get_object_by_name('a'),_m.get_object_by_name('b'))),"
+        " name='add', const=True)"
     )
     assert get_gen_code(src) == expected_gen_code
