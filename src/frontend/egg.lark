@@ -16,7 +16,6 @@
                      | define_function
                      | continue_expr
                      | break_expr
-                     | return_expr
                      | import
                      | assertion
                      | say
@@ -223,13 +222,17 @@ assertion: "ASSERT" expression
 
 # -- Functions --
 
-define_function : "FN" NAME param_list func_type? block
+define_function : "FN" NAME param_list func_type? function_block
+
+function_block: "CURLY_OPEN" "SEMICOLON"* function_line* "CURLY_CLOSE"
+?function_line: top_level_function_expression "SEMICOLON"*
+?top_level_function_expression: top_level_expression | return_statement
+return_statement : "RETURN" expression
 
 param_list : "PAREN_OPEN" _param_list_inner "PAREN_CLOSE"
 _param_list_inner: param ("COMMA" param)* ("COMMA" star_param)? ("COMMA" kw_param)?
               | star_param ("COMMA" kw_param)?
               | kw_param?
-
 
 ?param: NAME (param_type)? (param_default)?
 star_param: "TIMES" NAME (param_type)?
@@ -238,8 +241,6 @@ kw_param: "POWER" NAME (param_type)?
 param_type: "COLON" type
 param_default: "ASSIGN" expression
 ?func_type: "COLON" atomic
-
-return_expr : "RETURN" expression
 
 
 # -- Do Blocks --

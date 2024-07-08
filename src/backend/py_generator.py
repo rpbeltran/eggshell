@@ -82,6 +82,9 @@ class PythonGenerator(Transformer):
             )
         )
 
+    function_block = block
+    start = block
+
     @staticmethod
     def if_statement(
         items: List[PygenIntermediary | Tree],
@@ -119,8 +122,6 @@ class PythonGenerator(Transformer):
         block = items[1].inline
         assert isinstance(block, Block)
         return PygenIntermediary(block.make_while(condition))
-
-    start = block
 
     # Collections
     string_literal = combine_with_function(
