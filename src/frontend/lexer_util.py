@@ -31,7 +31,7 @@ class LexerError(Exception):
 
 
 class LexerState:
-    def __init__(self, data: str, start_node_type: Callable):
+    def __init__(self, data: str, start_node_type: Callable[[], 'DFANode']):
         self.data = data
         self.data_length = len(data)
         self.token_start = 0

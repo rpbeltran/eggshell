@@ -1,5 +1,5 @@
 from collections import deque
-from typing import Callable, Dict, List, Optional, Set
+from typing import Any, Callable, Dict, List, Optional, Set
 
 from ..runtime.types.objects import Object
 
@@ -8,7 +8,10 @@ class Instance:
     __slots__ = ('data', 'deps', 'const')
 
     def __init__(
-        self, data: Object | Callable, deps: Set[int], const: bool = False
+        self,
+        data: Object | Callable[[Any], Any],
+        deps: Set[int],
+        const: bool = False,
     ):
         self.data = data
         self.deps = deps
@@ -40,7 +43,7 @@ class Memory:
 
     def new(
         self,
-        data: Object | Callable,
+        data: Object | Callable[[Any], Any],
         deps: Optional[Set[int]] = None,
         name: Optional[str] = None,
         const: bool = False,
@@ -55,7 +58,7 @@ class Memory:
     def update_var(
         self,
         name: str,
-        new_value: Object | Callable,
+        new_value: Object | Callable[[Any], Any],
         deps: Optional[Set[int]] = None,
     ) -> None:
         old_id = self.get_id(name)
@@ -77,10 +80,10 @@ class Memory:
         if garbage_collect:
             self.garbage_collect()
 
-    def get_object(self, ref_id: int) -> Object | Callable:
+    def get_object(self, ref_id: int) -> Object | Callable[[Any], Any]:
         return self.instances[ref_id].data
 
-    def get_object_by_name(self, name: str) -> Object | Callable:
+    def get_object_by_name(self, name: str) -> Object | Callable[[Any], Any]:
         ref_id = self.get_id(name)
         assert ref_id is not None
         return self.instances[ref_id].data
@@ -117,7 +120,7 @@ class Memory:
         self.__next_ref_id_counter += 1
         return next_ref_id
 
-    def push_stack_register(self, item: Object):
+    def push_stack_register(self, item: Object) -> None:
         self.stack_register.append(item)
 
     def pop_stack_register(self) -> Object:

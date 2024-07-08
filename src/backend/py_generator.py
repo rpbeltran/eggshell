@@ -15,15 +15,19 @@ class FeatureUnimplemented(Exception):
         return f'This feature has not yet been implemented:\n\t{self.feature}'
 
 
-class PythonGenerator(Transformer):
+class PythonGenerator(
+    Transformer[Token | int | float | str, PygenIntermediary | Name | Block]
+):
 
     backend_library = '_e'
     memory_instance = '_m'
 
     @staticmethod
-    def map_to_constant(value: str) -> Callable[[Iterable], PygenIntermediary]:
+    def map_to_constant(
+        value: str,
+    ) -> Callable[[Iterable[Any]], PygenIntermediary]:
         @staticmethod   # type: ignore[misc]
-        def action(_: Iterable) -> PygenIntermediary:
+        def action(_: Iterable[Any]) -> PygenIntermediary:
             return PygenIntermediary(
                 f'{PythonGenerator.backend_library}.{value}'
             )
@@ -35,9 +39,9 @@ class PythonGenerator(Transformer):
         func_name: str,
         map_items: Optional[Callable[[Any], Any]] = None,
         quote_args: bool = False,
-    ) -> Callable[[Iterable], PygenIntermediary]:
+    ) -> Callable[[Iterable[Any]], PygenIntermediary]:
         @staticmethod   # type: ignore[misc]
-        def action(items: Iterable) -> PygenIntermediary:
+        def action(items: Iterable[Any]) -> PygenIntermediary:
             items = [
                 PythonGenerator.__resolve_placeholders(item) for item in items
             ]
@@ -56,9 +60,9 @@ class PythonGenerator(Transformer):
     @staticmethod
     def combine_with_method_left(
         func_name: str, quote_args: bool = False
-    ) -> Callable[[Iterable], PygenIntermediary]:
+    ) -> Callable[[Iterable[Any]], PygenIntermediary]:
         @staticmethod   # type: ignore[misc]
-        def action(items: Iterable) -> PygenIntermediary:
+        def action(items: Iterable[Any]) -> PygenIntermediary:
             items = [
                 PythonGenerator.__resolve_placeholders(item) for item in items
             ]
@@ -87,7 +91,7 @@ class PythonGenerator(Transformer):
 
     @staticmethod
     def if_statement(
-        items: List[PygenIntermediary | Tree],
+        items: List[PygenIntermediary | Tree[Token | int | float | str]],
     ) -> PygenIntermediary:
         assert isinstance(items[0], PygenIntermediary)
         condition = items[0].finalize()
@@ -114,7 +118,7 @@ class PythonGenerator(Transformer):
 
     @staticmethod
     def while_statement(
-        items: List[Tree | PygenIntermediary],
+        items: List[Tree[Token | int | float | str] | PygenIntermediary],
     ) -> PygenIntermediary:
         assert isinstance(items[0], PygenIntermediary)
         condition = items[0].finalize()
@@ -134,7 +138,7 @@ class PythonGenerator(Transformer):
 
     @staticmethod
     def select_slice(
-        items: List[Tree | PygenIntermediary],
+        items: List[Tree[Token | int | float | str] | PygenIntermediary],
     ) -> PygenIntermediary:
         start = None
         end = None
@@ -188,7 +192,9 @@ class PythonGenerator(Transformer):
 
     @staticmethod
     def define_function(
-        items: List[Token | Tree | PygenIntermediary],
+        items: List[
+            Token | Tree[Token | int | float | str] | PygenIntermediary
+        ],
     ) -> PygenIntermediary:
         (name, param_list, block) = items
         assert isinstance(name, Token)
@@ -218,7 +224,9 @@ class PythonGenerator(Transformer):
 
     @staticmethod
     def lambda_func(
-        items: List[Tree | Token | PygenIntermediary],
+        items: List[
+            Tree[Token | int | float | str] | Token | PygenIntermediary
+        ],
     ) -> PygenIntermediary:
         (lhs, rhs) = items
         if isinstance(lhs, Tree):
@@ -250,7 +258,7 @@ class PythonGenerator(Transformer):
 
     @staticmethod
     def function_call(
-        items: List[PygenIntermediary | Tree],
+        items: List[PygenIntermediary | Tree[Token | int | float | str]],
     ) -> PygenIntermediary:
         (func, arg_list) = items
         assert isinstance(func, PygenIntermediary)
@@ -332,7 +340,9 @@ class PythonGenerator(Transformer):
 
     @staticmethod
     def unit_literal(
-        items: List[Tree | PygenIntermediary | int | float],
+        items: List[
+            Tree[Token | int | float | str] | PygenIntermediary | int | float
+        ],
     ) -> PygenIntermediary:
         (unit_type_tree, unit_tree, quantity) = items
         assert isinstance(unit_type_tree, Tree)
@@ -360,12 +370,15 @@ class PythonGenerator(Transformer):
 
     @staticmethod
     def __default__(
-        data: str, children: List[Tree | Token], meta: lark.tree.Meta
-    ) -> Tree:
-        as_tree = Tree(data, children, meta)
-        if data in PythonGenerator.pass_through:
-            return as_tree
-        raise FeatureUnimplemented(data)
+        data: str,
+        children: List[
+            Tree[Token | int | float | str] | Token | int | float | str
+        ],
+        meta: lark.tree.Meta,
+    ) -> Tree[Token | int | float | str]:
+        if data not in PythonGenerator.pass_through:
+            raise FeatureUnimplemented(data)
+        return Tree(data, children, meta)
 
     # Utilities
 

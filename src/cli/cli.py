@@ -99,7 +99,9 @@ class EggCLI:
 
     def get_pygen(self, src: str) -> str:
         ast = self.parser.parse(src)
-        py = transform_pygen_result(self.pygen.transform(ast))
+        py = transform_pygen_result(
+            self.pygen.transform(ast)  # type: ignore[arg-type]
+        )
         lines = [
             transform_pygen_result(func) for func in get_required_functions()
         ]
@@ -115,7 +117,9 @@ class EggCLI:
 
     def execute(self, src: str) -> Optional[str]:
         ast_or_value = self.parser.parse(src)
-        py_code = transform_pygen_result(self.pygen.transform(ast_or_value))
+        py_code = transform_pygen_result(
+            self.pygen.transform(ast_or_value)  # type: ignore[arg-type]
+        )
         for func in get_required_functions():
             exec(transform_pygen_result(func))
         try:

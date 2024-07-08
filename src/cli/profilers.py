@@ -20,8 +20,10 @@ class ProfilerConfig:
         return hex(random.getrandbits(16 * 4))
 
 
-def maybe_profile(profile_naming_function: Callable) -> Callable:
-    def wrapped_decorator(f: Callable) -> Callable:
+def maybe_profile(
+    profile_naming_function: Callable[..., Any]
+) -> Callable[[Callable[..., Any]], Any]:
+    def wrapped_decorator(f: Callable[..., Any]) -> Callable[..., Any]:
         def wrapped_func(self: Any, *args: Any, **kwargs: Any) -> None:
             if self.profiler_config.enabled:
                 profile_name = profile_naming_function(self, *args, **kwargs)

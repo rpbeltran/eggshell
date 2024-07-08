@@ -185,7 +185,7 @@ def test_garbage_collection_circular() -> None:
     assert len(memory.instances) == 0
 
 
-def test_stack_register():
+def test_stack_register() -> None:
     memory = Memory()
     memory.push_stack_register(Integer(1))
     memory.push_stack_register(Integer(2))

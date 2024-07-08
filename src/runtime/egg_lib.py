@@ -39,7 +39,7 @@ def make_unit_value(
     return UnitValue(unit_type, unit, quantity)
 
 
-def make_list(*data: typing.List) -> List:
+def make_list(*data: typing.List[typing.Any]) -> List:
     return List(data)
 
 

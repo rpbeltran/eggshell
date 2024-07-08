@@ -43,10 +43,10 @@ class Collection(Object):
             self.data()[start_unwrapped:end_unwrapped:jump_unwrapped]
         )
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.data())
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return repr(self.data())
 
     @staticmethod
@@ -91,8 +91,10 @@ class String(Collection):
 class List(Collection):
     __slots__ = ('__data',)
 
-    def __init__(self, data: tuple | typing.List[Object]):
-        self.__data: typing.List = list(data)
+    def __init__(
+        self, data: typing.Tuple[typing.Any, ...] | typing.List[Object]
+    ):
+        self.__data: typing.List[typing.Any] = list(data)
 
     def select_element(self, index: Integer) -> 'Object':
         return self.data()[index.val()]

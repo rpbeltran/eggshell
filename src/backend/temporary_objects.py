@@ -96,7 +96,7 @@ class PygenIntermediary:
         return self.inline
 
     @classmethod
-    def add_header(cls, block: Block):
+    def add_header(cls, block: Block) -> None:
         cls.headers.append(block)
 
     @classmethod
