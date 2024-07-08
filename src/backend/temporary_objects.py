@@ -10,11 +10,18 @@ class Block:
     __slots__ = ('lines',)
 
     def __init__(self, lines: List[str]):
-        self.lines: List[str] = lines or ['pass']
+        self.lines: List[str] = self.fix_multilines(lines) or ['pass']
 
-    def join(self, indentation: int = 0) -> str:
-        indent = '\t' * indentation
-        return indent + f'{indent}\n'.join(self.lines)
+    @staticmethod
+    def fix_multilines(lines: List[str]) -> List[str]:
+        fixed = []
+        for line in lines:
+            fixed.extend(line.split('\n'))
+        return fixed
+
+    def join(self, indentation_level: int = 0) -> str:
+        indentation = '\t' * indentation_level
+        return indentation + f'\n{indentation}'.join(self.lines)
 
     def make_if(self, condition: str, extra_indentation: int = 0) -> 'IfBlock':
         extra_indent = '\t' * extra_indentation
@@ -42,10 +49,12 @@ class Block:
         signature = f'{indent}def {backing_name}({",".join(param_list)}):'
         start_scope = f'{indent}\t_m.push_scope()'
         end_scope = f'{indent}\t_m.pop_scope()'
-        pre_body = [f'_m.new({p}, name={p})' for p in param_list]
-        body = [f'{indent}\t{line}' for line in pre_body + self.lines]
+        pre_body = [f'{indent}\t_m.new({p}, name={p})' for p in param_list]
+        body = self.join(1)
         push_backing = f'{indent}_m.new({backing_name}, name="{backing_name}")'
-        return Block([signature, start_scope, *body, end_scope, push_backing])
+        return Block(
+            [signature, start_scope, *pre_body, body, end_scope, push_backing]
+        )
 
 
 class IfBlock(Block):

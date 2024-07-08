@@ -250,3 +250,14 @@ def test_define_function_3_args() -> None:
     src = 'fn foo(a, b, c) {d:= a + b; say(d + c)}\nfoo(1,2,3)'
     expected_output = '6\n'
     assert execute_src(src) == expected_output
+
+
+def test_function_add() -> None:
+    src = (
+        'fn add(a, b) {\n'
+        '    ret a + b\n'
+        '}\n'
+        'say(add(1,2))'
+    )
+    expected_output = '3\n'
+    assert execute_src(src) == expected_output

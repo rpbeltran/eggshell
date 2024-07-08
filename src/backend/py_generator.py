@@ -262,6 +262,13 @@ class PythonGenerator(Transformer):
         arg_list_inner = ','.join(arg_list_finalized)
         return PygenIntermediary(f'{func.finalize()}.call([{arg_list_inner}])')
 
+    @staticmethod
+    def return_statement(items: List[PygenIntermediary]) -> PygenIntermediary:
+        assert len(items) == 1
+        return PygenIntermediary(
+            Block(['_m.pop_scope()', f'return {items[0].finalize()}'])
+        )
+
     # Memory
     @staticmethod
     def declare_untyped_variable(
