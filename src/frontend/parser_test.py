@@ -1,7 +1,5 @@
 from typing import Dict
 
-import lark.exceptions
-
 from .parser import get_parser
 
 """
@@ -271,7 +269,7 @@ def test_function() -> None:
         'define_function'
         '\n  foo'
         '\n  param_list'
-        '\n  function_block'
+        '\n  block'
         '\n    declare_untyped_variable'
         '\n      a'
         '\n      identifier\tb'
@@ -298,7 +296,7 @@ def test_function_params() -> None:
         '\n        identifier\tint'
         '\n      param_default'
         '\n        integer_literal\t4'
-        '\n  function_block'
+        '\n  block'
         '\n    declare_untyped_variable'
         '\n      r'
         '\n      identifier\ta+b+c'
@@ -314,7 +312,7 @@ def test_function_empty() -> None:
         'define_function'
         '\n  foo'
         '\n  param_list'
-        '\n  function_block'
+        '\n  block'
     )
     assert get_ast(src) == expected_ast
 
@@ -657,7 +655,7 @@ def test_class() -> None:
         '\n    define_function'
         '\n      my_method'
         '\n      param_list'
-        '\n      function_block'
+        '\n      block'
     )
     assert get_ast(src) == expected_ast
 
@@ -1003,7 +1001,7 @@ def test_fn_normal_multi_and_kw_param() -> None:
         '\n    b'
         '\n    star_param\tc'
         '\n    kw_param\td'
-        '\n  function_block'
+        '\n  block'
     )
     assert get_ast(src) == expected_ast
 
@@ -1016,7 +1014,7 @@ def test_fn_multi_and_kw_param() -> None:
         '\n  param_list'
         '\n    star_param\ta'
         '\n    kw_param\tb'
-        '\n  function_block'
+        '\n  block'
     )
     assert get_ast(src) == expected_ast
 
@@ -1029,7 +1027,7 @@ def test_fn_multi_param() -> None:
         '\n  param_list'
         '\n    a'
         '\n    star_param\tb'
-        '\n  function_block'
+        '\n  block'
     )
     assert get_ast(src) == expected_ast
 
@@ -1041,7 +1039,7 @@ def test_fn_multi_param_only() -> None:
         '\n  foo'
         '\n  param_list'
         '\n    star_param\tb'
-        '\n  function_block'
+        '\n  block'
     )
     assert get_ast(src) == expected_ast
 
@@ -1054,7 +1052,7 @@ def test_fn_kw_param() -> None:
         '\n  param_list'
         '\n    a'
         '\n    kw_param\tb'
-        '\n  function_block'
+        '\n  block'
     )
     assert get_ast(src) == expected_ast
 
@@ -1066,7 +1064,7 @@ def test_fn_kw_param_only() -> None:
         '\n  foo'
         '\n  param_list'
         '\n    kw_param\tb'
-        '\n  function_block'
+        '\n  block'
     )
     assert get_ast(src) == expected_ast
 
@@ -1554,13 +1552,3 @@ def test_if_elif_else() -> None:
         '\n    block'
     )
     assert get_ast(src) == expected_ast
-
-
-def test_top_level_return_fails() -> None:
-    src = 'return 1'
-    try:
-        get_ast(src)
-    except lark.exceptions.UnexpectedToken:
-        pass
-    else:
-        raise AssertionError

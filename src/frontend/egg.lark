@@ -16,6 +16,7 @@
                      | define_function
                      | continue_expr
                      | break_expr
+                     | return_statement
                      | import
                      | assertion
                      | say
@@ -222,11 +223,7 @@ assertion: "ASSERT" expression
 
 # -- Functions --
 
-define_function : "FN" NAME param_list func_type? function_block
-
-function_block: "CURLY_OPEN" "SEMICOLON"* function_line* "CURLY_CLOSE"
-?function_line: top_level_function_expression "SEMICOLON"*
-?top_level_function_expression: top_level_expression | return_statement
+define_function : "FN" NAME param_list func_type? block
 return_statement : "RETURN" expression
 
 param_list : "PAREN_OPEN" _param_list_inner "PAREN_CLOSE"
