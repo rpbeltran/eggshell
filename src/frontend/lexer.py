@@ -30,7 +30,12 @@ class StartNode(DFANode):
             state.goto_node(NumberNode(), step_back=True)
         elif c.isalpha() or c in './*+-%_':
             state.token_start = state.head
-            state.goto_node(UnquotedLiteral(), step_back=True)
+            state.goto_node(
+                UnquotedLiteral()
+                if not state.in_block()
+                else IdentifierNode(),
+                step_back=True,
+            )
         elif c == '#':
             state.token_start = state.head
             state.goto_node(CommentNode(), step_back=False)
@@ -92,17 +97,28 @@ class IdentifierNode(DFANode):
         if c == '.' and state.next_char() != '.':
             if state.token_start == state.head:
                 raise LexerError('Identifier is empty', state)
-            yield state.get_token('NAME', inclusive=False)
+            yield self.get_token(state)
             state.token_start = state.head
             yield state.get_token('DOT', inclusive=True)
             state.token_start = state.head + 1
-        elif c.isspace() or c in r':=+-/[]{}()<>.,':
+        elif c.isspace() or c in r':=+-*%/[]{}()<>.,;':
             if state.token_start == state.head:
                 raise LexerError('Identifier is empty', state)
-            yield state.get_token('NAME', inclusive=False)
+            yield self.get_token(state)
             state.goto_node(StartNode(), step_back=True)
         elif c in '@':
             raise LexerError('Read unexpected char', state)
+
+    @staticmethod
+    def get_token(state: LexerState) -> Token:
+        src = state.get_token_source(inclusive=False)
+        if src == '_':
+            token_type = 'IMPLICIT_LAMBDA_PARAM'
+        elif src in KEYWORDS:
+            token_type = KEYWORDS[src]
+        else:
+            token_type = 'NAME'
+        return state.get_token(token_type, inclusive=False)
 
 
 class QuotedLiteralNode(DFANode):

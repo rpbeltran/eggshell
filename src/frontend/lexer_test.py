@@ -1499,3 +1499,23 @@ def test_function_call3() -> None:
         ('PAREN_CLOSE', ')'),
     ]
     assert get_tokens(src) == expected_tokens
+
+
+def test_no_space_arithmetic() -> None:
+    src = '(a+c*d * b**a%d)'
+    expected_tokens = [
+        ('PAREN_OPEN', '('),
+        ('NAME', 'a'),
+        ('PLUS', '+'),
+        ('NAME', 'c'),
+        ('TIMES', '*'),
+        ('NAME', 'd'),
+        ('TIMES', '*'),
+        ('NAME', 'b'),
+        ('POWER', '**'),
+        ('NAME', 'a'),
+        ('MOD', '%'),
+        ('NAME', 'd'),
+        ('PAREN_CLOSE', ')'),
+    ]
+    assert get_tokens(src) == expected_tokens

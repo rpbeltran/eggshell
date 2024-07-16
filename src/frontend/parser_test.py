@@ -299,7 +299,11 @@ def test_function_params() -> None:
         '\n  block'
         '\n    declare_untyped_variable'
         '\n      r'
-        '\n      identifier\ta+b+c'
+        '\n      addition'
+        '\n        addition'
+        '\n          identifier\ta'
+        '\n          identifier\tb'
+        '\n        identifier\tc'
         '\n    return_statement'
         '\n      identifier\tr'
     )

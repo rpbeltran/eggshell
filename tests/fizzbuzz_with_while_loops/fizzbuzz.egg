@@ -1,0 +1,21 @@
+fn fizzbuzz_step(i) {
+    if (i % 15 == 0) {
+        ret "fizzbuzz"
+    } elif (i % 5 == 0) {
+        ret "buzz"
+    } elif (i % 3 == 0) {
+        ret "fizz"
+    } else {
+        ret i
+    }
+}
+
+fn fizzbuzz(n) {
+    i := 0;
+    while i < 100 {
+        say fizzbuzz_step(i)
+        i += 1;
+    }
+}
+
+fizzbuzz(100)

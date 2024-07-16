@@ -1,0 +1,4 @@
+#!/usr/bin/env python3
+import os
+
+tests_dir = os.path.dirname(os.path.realpath(__file__))
