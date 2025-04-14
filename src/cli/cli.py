@@ -8,7 +8,7 @@ from typing import Optional
 
 import lark
 
-from ..backend.py_generator import (
+from ..backend_py.py_generator import (
     PythonGenerator,
     get_required_functions,
     transform_pygen_result,
