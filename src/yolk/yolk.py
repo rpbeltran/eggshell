@@ -29,6 +29,10 @@ class YolkGenerator(Transformer[Token | int | float | str, List[str]]):
     # Arithmetic
     @staticmethod
     def integer_literal(items: List[Any]):
+        return [f'PUSH_INT {items[0]}']
+
+    @staticmethod
+    def float_literal(items: List[Any]):
         return [f'PUSH_NUM {items[0]}']
 
     addition = append_instructions(['BINOP add'])

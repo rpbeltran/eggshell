@@ -31,15 +31,15 @@ def get_gen_code(src: str) -> str:
 
 def test_integer() -> None:
     src = '1'
-    expected_gen_code = 'PUSH_NUM 1'
+    expected_gen_code = 'PUSH_INT 1'
     assert get_gen_code(src) == expected_gen_code
 
 
 def test_add2() -> None:
     src = '1 + 2'
     expected_gen_code = (
-        'PUSH_NUM 1'
-        '\nPUSH_NUM 2'
+        'PUSH_INT 1'
+        '\nPUSH_INT 2'
         '\nBINOP add'
     )
     assert get_gen_code(src) == expected_gen_code
@@ -48,10 +48,10 @@ def test_add2() -> None:
 def test_add3() -> None:
     src = '1 + 2 + 3'
     expected_gen_code = (
-        'PUSH_NUM 1'
-        '\nPUSH_NUM 2'
+        'PUSH_INT 1'
+        '\nPUSH_INT 2'
         '\nBINOP add'
-        '\nPUSH_NUM 3'
+        '\nPUSH_INT 3'
         '\nBINOP add'
     )
     assert get_gen_code(src) == expected_gen_code
@@ -60,14 +60,36 @@ def test_add3() -> None:
 def test_add5() -> None:
     src = '1 + 2 + 3+4+5'
     expected_gen_code = (
-        'PUSH_NUM 1'
-        '\nPUSH_NUM 2'
+        'PUSH_INT 1'
+        '\nPUSH_INT 2'
         '\nBINOP add'
-        '\nPUSH_NUM 3'
+        '\nPUSH_INT 3'
         '\nBINOP add'
-        '\nPUSH_NUM 4'
+        '\nPUSH_INT 4'
         '\nBINOP add'
-        '\nPUSH_NUM 5'
+        '\nPUSH_INT 5'
+        '\nBINOP add'
+    )
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_float() -> None:
+    src = '1.5'
+    expected_gen_code = 'PUSH_NUM 1.5'
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_float0() -> None:
+    src = '1.0'
+    expected_gen_code = 'PUSH_NUM 1.0'
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_add_float() -> None:
+    src = '1 + 3.2'
+    expected_gen_code = (
+        'PUSH_INT 1'
+        '\nPUSH_NUM 3.2'
         '\nBINOP add'
     )
     assert get_gen_code(src) == expected_gen_code
