@@ -172,12 +172,12 @@ class LoweringTransformer(
         meta: Meta,
     ) -> Tree[Token | int | float | str]:
         tree: Tree[int | float | str] = Tree(data, children, meta)
-        if LoweringTransformer._allows_poisoning(tree):
-            return LoweringTransformer._propagate_poison(tree)
+        if LoweringTransformer._allows_lambda_poisoning(tree):
+            return LoweringTransformer._propagate_implicit_lambda(tree)
         return tree
 
     @staticmethod
-    def _propagate_poison(
+    def _propagate_implicit_lambda(
         tree: Tree[Token | int | float | str],
     ) -> Tree[Token | int | float | str]:
         # poison[f] + b => poison[f(_) + b]
@@ -204,7 +204,9 @@ class LoweringTransformer(
         return tree.data == 'poisonous_lambda_func'
 
     @staticmethod
-    def _allows_poisoning(tree: Tree[Token | int | float | str]) -> bool:
+    def _allows_lambda_poisoning(
+        tree: Tree[Token | int | float | str],
+    ) -> bool:
         cannot_be_poisoned = {'start', 'pipeline', 'curry'}
         data = tree.data
         if data.startswith('__'):
