@@ -2,7 +2,7 @@ from contextlib import redirect_stdout
 from io import StringIO
 from typing import Dict, Optional
 
-from ..cli import cli
+from ...cli import cli
 
 """
 INSTRUCTIONS: To add new test cases:

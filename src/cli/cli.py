@@ -9,11 +9,11 @@ from typing import Optional
 import lark
 
 from ..backend_py import py_generator
+from ..backend_py.runtime import egg_lib as _e
+from ..backend_py.runtime import external_commands, memory
 from ..frontend.lexer import EggLexer
 from ..frontend.lexer_util import LexerError
 from ..frontend.parser import get_parser
-from ..runtime import egg_lib as _e
-from ..runtime import external_commands, memory
 from .profilers import ProfilerConfig, maybe_profile
 
 assert readline   # silence pyflakes
