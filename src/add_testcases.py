@@ -12,13 +12,15 @@ import src.backend_py.runtime.runtime_test as runtime_test
 import src.frontend.lexer_test as lexer_test
 import src.frontend.lowering_test as lowering_test
 import src.frontend.parser_test as parser_test
+import src.yolk.yolk_test as yolk_test
 
 here = os.path.dirname(__file__)
 lexer_test_path = f'{here}/frontend/lexer_test.py'
 parser_test_path = f'{here}/frontend/parser_test.py'
 lowering_test_path = f'{here}/frontend/lowering_test.py'
-pygen_test_path = f'{here}/backend/py_generator_test.py'
-runtime_test_path = f'{here}/runtime/runtime_test.py'
+pygen_test_path = f'{here}/backend_py/py_generator_test.py'
+runtime_test_path = f'{here}/backend_py/runtime/runtime_test.py'
+yolk_test_path = f'{here}/yolk/yolk_test.py'
 
 
 def make_lexer_test_code(test_name: str, src: str) -> str:
@@ -96,6 +98,11 @@ def main() -> None:
         for name, code in lowering_test.new_test_cases.items():
             ast = lowering_test.get_ast(code)
             test_file.write(make_parser_test_code(name, code, ast))
+
+    with open(yolk_test_path, 'a') as test_file:
+        for name, code in yolk_test.new_test_cases.items():
+            code_gen = yolk_test.get_gen_code(code)
+            test_file.write(make_backend_test_code(name, code, code_gen))
 
     with open(pygen_test_path, 'a') as test_file:
         for name, code in pygen_test.new_test_cases.items():

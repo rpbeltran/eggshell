@@ -4,7 +4,7 @@ import sys
 from contextlib import redirect_stdout
 from enum import Enum
 from io import StringIO
-from typing import Optional
+from typing import Any, Optional
 
 import lark
 
@@ -14,6 +14,7 @@ from ..backend_py.runtime import external_commands, memory
 from ..frontend.lexer import EggLexer
 from ..frontend.lexer_util import LexerError
 from ..frontend.parser import get_parser
+from ..yolk import yolk
 from .profilers import ProfilerConfig, maybe_profile
 
 assert readline   # silence pyflakes
@@ -56,13 +57,13 @@ class EggCLI:
         elif self.mode.mode == ExecutionMode.sema:
             self.parser = get_parser()
         elif self.mode.mode in [ExecutionMode.codegen, ExecutionMode.execute]:
+            self.parser = get_parser()
             if self.mode.backend == BackendMode.python:
-                self.parser = get_parser()
-                self.codegen = py_generator.PythonGenerator()
+                self.codegen: lark.Transformer[
+                    lark.Token | int | float | str, Any
+                ] = py_generator.PythonGenerator()
             else:
-                raise NotImplementedError(
-                    'Only the python backend for egg is currently implemented.'
-                )
+                self.codegen = yolk.YolkGenerator()
 
         if (
             self.mode.mode == ExecutionMode.execute
@@ -119,8 +120,8 @@ class EggCLI:
         print(ast.pretty(), end='')
 
     def get_codegen(self, src: str) -> str:
+        ast = self.parser.parse(src)
         if self.mode.backend == BackendMode.python:
-            ast = self.parser.parse(src)
             codegen = py_generator.transform_pygen_result(
                 self.codegen.transform(ast)  # type: ignore[arg-type]
             )
@@ -131,9 +132,7 @@ class EggCLI:
             lines.append(codegen)
             return '\n'.join(lines)
         else:
-            raise NotImplementedError(
-                'Only the python backend for egg is currently implemented.'
-            )
+            return '\n'.join(self.codegen.transform(ast))  # type: ignore[arg-type]
 
     def show_codegen(self, src: str) -> None:
         print(self.get_codegen(src))
@@ -143,24 +142,29 @@ class EggCLI:
             print(output)
 
     def execute(self, src: str) -> Optional[str]:
-        ast_or_value = self.parser.parse(src)
-        py_code = py_generator.transform_pygen_result(
-            self.codegen.transform(ast_or_value)  # type: ignore[arg-type]
-        )
-        for func in py_generator.get_required_functions():
-            exec(py_generator.transform_pygen_result(func))
-        try:
-            if (output := eval(py_code)) is not None:
-                if isinstance(
-                    output,
-                    external_commands.ExternalCommand
-                    | external_commands.Pipeline,
-                ):
-                    return str(output.evaluate())
-                return repr(output)
-            return None
-        except SyntaxError:
-            string_io = StringIO()
-            with redirect_stdout(string_io):
-                exec(py_code)
-            return string_io.getvalue()
+        if self.mode.backend == BackendMode.python:
+            ast_or_value = self.parser.parse(src)
+            py_code = py_generator.transform_pygen_result(
+                self.codegen.transform(ast_or_value)  # type: ignore[arg-type]
+            )
+            for func in py_generator.get_required_functions():
+                exec(py_generator.transform_pygen_result(func))
+            try:
+                if (output := eval(py_code)) is not None:
+                    if isinstance(
+                        output,
+                        external_commands.ExternalCommand
+                        | external_commands.Pipeline,
+                    ):
+                        return str(output.evaluate())
+                    return repr(output)
+                return None
+            except SyntaxError:
+                string_io = StringIO()
+                with redirect_stdout(string_io):
+                    exec(py_code)
+                return string_io.getvalue()
+        else:
+            raise NotImplementedError(
+                'Only the python backend for egg is currently implemented for execution mode.'
+            )
