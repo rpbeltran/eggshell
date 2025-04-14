@@ -209,13 +209,14 @@ class PythonGenerator(
             block.inline.make_function(name.value, params)
         )
         arg_list = ','.join(
-            f'_m.get_object_by_name({repr(param)})' for param in params
+            f'{PythonGenerator.memory_instance}.get_object_by_name({repr(param)})'
+            for param in params
         )
         backing_func = f'___{name}_backing_function'
         lambda_expr = (
             f'{PythonGenerator.backend_library}'
             f'.make_lambda({PythonGenerator.memory_instance},{repr(params)},'
-            f'lambda: _m.get_object_by_name({repr(backing_func)})({arg_list}))'
+            f'lambda: {PythonGenerator.memory_instance}.get_object_by_name({repr(backing_func)})({arg_list}))'
         )
         return PygenIntermediary(
             f'{PythonGenerator.memory_instance}'
@@ -276,9 +277,9 @@ class PythonGenerator(
         return PygenIntermediary(
             Block(
                 [
-                    f'_m.push_stack_register({items[0].finalize()})',
-                    '_m.pop_scope()',
-                    'return _m.pop_stack_register()',
+                    f'{PythonGenerator.memory_instance}.push_stack_register({items[0].finalize()})',
+                    f'{PythonGenerator.memory_instance}.pop_scope()',
+                    f'return {PythonGenerator.memory_instance}.pop_stack_register()',
                 ]
             )
         )

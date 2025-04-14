@@ -1,6 +1,6 @@
 from typing import Dict
 
-from ..cli.cli import CLIMode, EggCLI
+from ..cli import cli
 
 """
 INSTRUCTIONS: To add new test cases:
@@ -22,11 +22,11 @@ def test_no_new_test_cases() -> None:
     assert len(new_test_cases) == 0
 
 
-egg_cli = EggCLI(CLIMode.pygen, use_profiler=False)
+egg_cli = cli.EggCLI(cli.CLIMode(cli.ExecutionMode.codegen, cli.BackendMode.python), use_profiler=False)
 
 
 def get_gen_code(src: str) -> str:
-    return egg_cli.get_pygen(src)
+    return egg_cli.get_codegen(src)
 
 
 def test_add() -> None:

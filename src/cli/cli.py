@@ -8,11 +8,7 @@ from typing import Optional
 
 import lark
 
-from ..backend_py.py_generator import (
-    PythonGenerator,
-    get_required_functions,
-    transform_pygen_result,
-)
+from ..backend_py import py_generator
 from ..frontend.lexer import EggLexer
 from ..frontend.lexer_util import LexerError
 from ..frontend.parser import get_parser
@@ -22,35 +18,58 @@ from .profilers import ProfilerConfig, maybe_profile
 
 assert readline   # silence pyflakes
 assert _e   # silence pyflakes
-_m = memory.Memory()
+_m = None
 
 
-class CLIMode(Enum):
+class BackendMode(Enum):
+    yolk = 1
+    python = 2
+
+
+class ExecutionMode(Enum):
     lex = 1
     ast = 2
     sema = 3
-    pygen = 4
+    codegen = 4
     execute = 5
+
+
+class CLIMode:
+    def __init__(self, mode: ExecutionMode, backend: BackendMode):
+        self.mode: ExecutionMode = mode
+        self.backend = backend
 
 
 class EggCLI:
     def __init__(self, mode: CLIMode, use_profiler: bool = False):
         self.mode = mode
         self.profiler_config = ProfilerConfig(use_profiler)
-        self.interactive_counter = 0
+        self.interactive_profiler_counter = 0
         self.initialize_transformers()
 
-    @maybe_profile(lambda self: 'initialization')
+    @maybe_profile(lambda _: 'initialization')
     def initialize_transformers(self) -> None:
-        if self.mode == CLIMode.lex:
+        if self.mode.mode == ExecutionMode.lex:
             self.lexer = EggLexer()
-        elif self.mode == CLIMode.ast:
+        elif self.mode.mode == ExecutionMode.ast:
             self.parser = get_parser(lowering=False)
-        elif self.mode == CLIMode.sema:
+        elif self.mode.mode == ExecutionMode.sema:
             self.parser = get_parser()
-        elif self.mode in [CLIMode.pygen, CLIMode.execute]:
-            self.parser = get_parser()
-            self.pygen = PythonGenerator()
+        elif self.mode.mode in [ExecutionMode.codegen, ExecutionMode.execute]:
+            if self.mode.backend == BackendMode.python:
+                self.parser = get_parser()
+                self.codegen = py_generator.PythonGenerator()
+            else:
+                raise NotImplementedError(
+                    'Only the python backend for egg is currently implemented.'
+                )
+
+        if (
+            self.mode.mode == ExecutionMode.execute
+            and self.mode.backend == BackendMode.python
+        ):
+            global _m
+            _m = memory.Memory()
 
     def interactive_mode(self) -> None:
         while True:
@@ -71,21 +90,23 @@ class EggCLI:
         script = pathlib.Path(file_path).read_text('utf-8')
         self.consume_source(script)
 
-    @maybe_profile(lambda self, src: f'interactive_{self.interactive_counter}')
+    @maybe_profile(
+        lambda self, _: f'interactive_{self.interactive_profiler_counter}'
+    )
     def consume_interactive(self, src: str) -> None:
         self.consume_source(src)
-        self.interactive_counter += 1
+        self.interactive_profiler_counter += 1
 
     def consume_source(self, src: str) -> None:
         if not src:
             return
-        if self.mode == CLIMode.lex:
+        if self.mode.mode == ExecutionMode.lex:
             self.show_lex(src)
-        elif self.mode in (CLIMode.ast, CLIMode.sema):
+        elif self.mode.mode in (ExecutionMode.ast, ExecutionMode.sema):
             self.show_ast(src)
-        elif self.mode == CLIMode.pygen:
-            self.show_pygen(src)
-        elif self.mode == CLIMode.execute:
+        elif self.mode.mode == ExecutionMode.codegen:
+            self.show_codegen(src)
+        elif self.mode.mode == ExecutionMode.execute:
             self.show_execute(src)
 
     def show_lex(self, src: str) -> None:
@@ -97,19 +118,25 @@ class EggCLI:
         ast = self.parser.parse(src)
         print(ast.pretty(), end='')
 
-    def get_pygen(self, src: str) -> str:
-        ast = self.parser.parse(src)
-        py = transform_pygen_result(
-            self.pygen.transform(ast)  # type: ignore[arg-type]
-        )
-        lines = [
-            transform_pygen_result(func) for func in get_required_functions()
-        ]
-        lines.append(py)
-        return '\n'.join(lines)
+    def get_codegen(self, src: str) -> str:
+        if self.mode.backend == BackendMode.python:
+            ast = self.parser.parse(src)
+            codegen = py_generator.transform_pygen_result(
+                self.codegen.transform(ast)  # type: ignore[arg-type]
+            )
+            lines = [
+                py_generator.transform_pygen_result(func)
+                for func in py_generator.get_required_functions()
+            ]
+            lines.append(codegen)
+            return '\n'.join(lines)
+        else:
+            raise NotImplementedError(
+                'Only the python backend for egg is currently implemented.'
+            )
 
-    def show_pygen(self, src: str) -> None:
-        print(self.get_pygen(src))
+    def show_codegen(self, src: str) -> None:
+        print(self.get_codegen(src))
 
     def show_execute(self, src: str) -> None:
         if (output := self.execute(src)) is not None:
@@ -117,11 +144,11 @@ class EggCLI:
 
     def execute(self, src: str) -> Optional[str]:
         ast_or_value = self.parser.parse(src)
-        py_code = transform_pygen_result(
-            self.pygen.transform(ast_or_value)  # type: ignore[arg-type]
+        py_code = py_generator.transform_pygen_result(
+            self.codegen.transform(ast_or_value)  # type: ignore[arg-type]
         )
-        for func in get_required_functions():
-            exec(transform_pygen_result(func))
+        for func in py_generator.get_required_functions():
+            exec(py_generator.transform_pygen_result(func))
         try:
             if (output := eval(py_code)) is not None:
                 if isinstance(

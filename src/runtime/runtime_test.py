@@ -2,7 +2,7 @@ from contextlib import redirect_stdout
 from io import StringIO
 from typing import Dict, Optional
 
-from ..cli.cli import CLIMode, EggCLI
+from ..cli import cli
 
 """
 INSTRUCTIONS: To add new test cases:
@@ -24,7 +24,7 @@ def test_no_new_test_cases() -> None:
     assert len(new_test_cases) == 0
 
 
-egg_cli = EggCLI(CLIMode.execute, use_profiler=False)
+egg_cli = cli.EggCLI(cli.CLIMode(cli.ExecutionMode.execute, cli.BackendMode.python), use_profiler=False)
 
 
 def execute_src(src: str) -> Optional[str]:

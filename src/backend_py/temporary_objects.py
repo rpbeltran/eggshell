@@ -8,6 +8,7 @@ class Name(NamedTuple):
 
 class Block:
     __slots__ = ('lines',)
+    memory_instance = '_m'
 
     def __init__(self, lines: List[str]):
         self.lines: List[str] = self.fix_multilines(lines) or ['pass']
@@ -47,13 +48,14 @@ class Block:
         indent = '\t' * extra_indentation
         backing_name = f'___{name}_backing_function'
         signature = f'{indent}def {backing_name}({",".join(param_list)}):'
-        start_scope = f'{indent}\t_m.push_scope()'
-        end_scope = f'{indent}\t_m.pop_scope()'
+        start_scope = f'{indent}\t{Block.memory_instance}.push_scope()'
+        end_scope = f'{indent}\t{Block.memory_instance}.pop_scope()'
         pre_body = [
-            f'{indent}\t_m.new({p}, name={repr(p)})' for p in param_list
+            f'{indent}\t{Block.memory_instance}.new({p}, name={repr(p)})'
+            for p in param_list
         ]
         body = self.join(1)
-        push_backing = f'{indent}_m.new({backing_name}, name="{backing_name}")'
+        push_backing = f'{indent}{Block.memory_instance}.new({backing_name}, name="{backing_name}")'
         return Block(
             [signature, start_scope, *pre_body, body, end_scope, push_backing]
         )

@@ -26,9 +26,15 @@ def get_args() -> argparse.Namespace:
         action='store_true',
     )
     mode_group.add_argument(
-        '--pygen',
+        '--codegen',
+        '-c',
+        help='Get the output from code generation instead of executing it.',
+        action='store_true',
+    )
+    arg_parser.add_argument(
+        '--python',
         '-p',
-        help='Get the output from pygen instead of executing it.',
+        help='Use the python backend instead of yolk.',
         action='store_true',
     )
 
@@ -53,17 +59,24 @@ def main() -> None:
     args = get_args()
 
     if args.lex:
-        mode = cli.CLIMode.lex
+        mode = cli.ExecutionMode.lex
     elif args.ast:
-        mode = cli.CLIMode.ast
+        mode = cli.ExecutionMode.ast
     elif args.sema:
-        mode = cli.CLIMode.sema
-    elif args.pygen:
-        mode = cli.CLIMode.pygen
+        mode = cli.ExecutionMode.sema
+    elif args.codegen:
+        mode = cli.ExecutionMode.codegen
     else:
-        mode = cli.CLIMode.execute
+        mode = cli.ExecutionMode.execute
 
-    egg_cli = cli.EggCLI(mode, use_profiler=args.profiler)
+    if args.python:
+        backend = cli.BackendMode.python
+    else:
+        backend = cli.BackendMode.yolk
+
+    cli_mode = cli.CLIMode(mode, backend)
+
+    egg_cli = cli.EggCLI(cli_mode, use_profiler=args.profiler)
 
     if args.script:
         egg_cli.consume_script(args.script)
