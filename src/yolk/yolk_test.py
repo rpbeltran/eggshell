@@ -93,3 +93,77 @@ def test_add_float() -> None:
         '\nBINOP add'
     )
     assert get_gen_code(src) == expected_gen_code
+
+
+def test_sub2() -> None:
+    src = '1 - 2'
+    expected_gen_code = (
+        'PUSH_INT 1'
+        '\nPUSH_INT 2'
+        '\nBINOP subtract'
+    )
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_mul2() -> None:
+    src = '3 * 7'
+    expected_gen_code = (
+        'PUSH_INT 3'
+        '\nPUSH_INT 7'
+        '\nBINOP multiply'
+    )
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_div2() -> None:
+    src = '14 / 7'
+    expected_gen_code = (
+        'PUSH_INT 14'
+        '\nPUSH_INT 7'
+        '\nBINOP divide'
+    )
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_idiv2() -> None:
+    src = '3//2'
+    expected_gen_code = (
+        'PUSH_INT 3'
+        '\nPUSH_INT 2'
+        '\nBINOP int_divide'
+    )
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_pow2() -> None:
+    src = '7 ** 8'
+    expected_gen_code = (
+        'PUSH_INT 7'
+        '\nPUSH_INT 8'
+        '\nBINOP power'
+    )
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_mod2() -> None:
+    src = '3 % 2'
+    expected_gen_code = (
+        'PUSH_INT 3'
+        '\nPUSH_INT 2'
+        '\nBINOP modulus'
+    )
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_mul_add() -> None:
+    src = '1 + 2 * 3 + 4'
+    expected_gen_code = (
+        'PUSH_INT 1'
+        '\nPUSH_INT 2'
+        '\nPUSH_INT 3'
+        '\nBINOP multiply'
+        '\nBINOP add'
+        '\nPUSH_INT 4'
+        '\nBINOP add'
+    )
+    assert get_gen_code(src) == expected_gen_code

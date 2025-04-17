@@ -26,6 +26,18 @@ class YolkGenerator(Transformer[Token | int | float | str, List[str]]):
 
         return _inner
 
+    @staticmethod
+    def append_instruction(instruction: str):
+        @staticmethod   # type: ignore[misc]
+        def _inner(children: Iterable[Any]):
+            program = [
+                instruction for child in children for instruction in child
+            ]
+            program.append(instruction)
+            return program
+
+        return _inner
+
     # Arithmetic
     @staticmethod
     def integer_literal(items: List[Any]):
@@ -35,7 +47,13 @@ class YolkGenerator(Transformer[Token | int | float | str, List[str]]):
     def float_literal(items: List[Any]):
         return [f'PUSH_NUM {items[0]}']
 
-    addition = append_instructions(['BINOP add'])
+    addition = append_instruction('BINOP add')
+    subtraction = append_instruction('BINOP subtract')
+    multiply = append_instruction('BINOP multiply')
+    divide = append_instruction('BINOP divide')
+    int_divide = append_instruction('BINOP int_divide')
+    modulus = append_instruction('BINOP modulus')
+    raise_power = append_instruction('BINOP power')
 
     @staticmethod
     def __default__(
