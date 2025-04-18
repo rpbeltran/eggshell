@@ -28,7 +28,7 @@ class YolkGenerator(Transformer[Token | int | float | str, List[str]]):
 
         return _inner
 
-    # Arithmetic
+    # Literals
     @staticmethod
     def integer_literal(items: List[Any]) -> List[str]:
         return [f'PUSH_INT {items[0]}']
@@ -37,6 +37,15 @@ class YolkGenerator(Transformer[Token | int | float | str, List[str]]):
     def float_literal(items: List[Any]) -> List[str]:
         return [f'PUSH_NUM {items[0]}']
 
+    @staticmethod
+    def string_literal(items: List[lark.Token]) -> List[str]:
+        return [f'PUSH_STR {repr(items[0].value)}']
+
+    @staticmethod
+    def boolean_literal(items: List[lark.Token]) -> List[str]:
+        return [f'PUSH_BOOL {items[0]}']
+
+    # Binary Operators
     addition = append_instruction('BINOP add')
     subtraction = append_instruction('BINOP subtract')
     multiply = append_instruction('BINOP multiply')
@@ -44,6 +53,9 @@ class YolkGenerator(Transformer[Token | int | float | str, List[str]]):
     int_divide = append_instruction('BINOP int_divide')
     modulus = append_instruction('BINOP modulus')
     raise_power = append_instruction('BINOP power')
+    concatenate = append_instruction('BINOP concat')
+    and_expr = append_instruction('BINOP and')
+    or_expr = append_instruction('BINOP or')
 
     @staticmethod
     def __default__(

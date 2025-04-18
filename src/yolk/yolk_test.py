@@ -167,3 +167,65 @@ def test_mul_add() -> None:
         '\nBINOP add'
     )
     assert get_gen_code(src) == expected_gen_code
+
+
+def test_str() -> None:
+    src = '"hello world"'
+    expected_gen_code = "PUSH_STR 'hello world'"
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_concat2() -> None:
+    src = '"a" ++ "b"'
+    expected_gen_code = (
+        "PUSH_STR 'a'"
+        "\nPUSH_STR 'b'"
+        '\nBINOP concat'
+    )
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_bool_true() -> None:
+    src = 'true'
+    expected_gen_code = 'PUSH_BOOL true'
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_bool_false() -> None:
+    src = 'false'
+    expected_gen_code = 'PUSH_BOOL false'
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_and() -> None:
+    src = 'false and true'
+    expected_gen_code = (
+        'PUSH_BOOL false'
+        '\nPUSH_BOOL true'
+        '\nBINOP and'
+    )
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_or() -> None:
+    src = 'false or true'
+    expected_gen_code = (
+        'PUSH_BOOL false'
+        '\nPUSH_BOOL true'
+        '\nBINOP or'
+    )
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_and_or() -> None:
+    src = 'false or true and true or false'
+    expected_gen_code = (
+        'PUSH_BOOL false'
+        '\nPUSH_BOOL true'
+        '\nPUSH_BOOL true'
+        '\nBINOP and'
+        '\nBINOP or'
+        '\nPUSH_BOOL false'
+        '\nBINOP or'
+    )
+    assert get_gen_code(src) == expected_gen_code
