@@ -45,6 +45,10 @@ class YolkGenerator(Transformer[Token | int | float | str, List[str]]):
     def boolean_literal(items: List[lark.Token]) -> List[str]:
         return [f'PUSH_BOOL {items[0]}']
 
+    # Unary Opertors
+    unary_negate = append_instruction('NEGATE')
+    unary_not = append_instruction('NOT')
+
     # Binary Operators
     addition = append_instruction('BINOP add')
     subtraction = append_instruction('BINOP subtract')

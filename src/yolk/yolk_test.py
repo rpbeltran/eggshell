@@ -229,3 +229,21 @@ def test_and_or() -> None:
         '\nBINOP or'
     )
     assert get_gen_code(src) == expected_gen_code
+
+
+def test_not() -> None:
+    src = '!true'
+    expected_gen_code = (
+        'PUSH_BOOL true'
+        '\nNOT'
+    )
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_negate() -> None:
+    src = '-5'
+    expected_gen_code = (
+        'PUSH_INT 5'
+        '\nNEGATE'
+    )
+    assert get_gen_code(src) == expected_gen_code
