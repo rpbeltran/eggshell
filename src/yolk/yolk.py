@@ -100,6 +100,16 @@ class YolkGenerator(Transformer[Token | int | float | str, List[str]]):
         instructions.append(f'EXEC {len(items)}')
         return instructions
 
+    @staticmethod
+    def pipeline(execs: List[str]) -> List[str]:
+        instructions = ['PIPELINE begin']
+        for i, exec in enumerate(execs):
+            if i != 0:
+                instructions.append('PIPELINE next')
+            instructions.extend(exec)
+        instructions.append('PIPELINE end')
+        return instructions
+
     # Default
     @staticmethod
     def __default__(
