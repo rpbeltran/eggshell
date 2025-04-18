@@ -61,6 +61,29 @@ class YolkGenerator(Transformer[Token | int | float | str, List[str]]):
     and_expr = append_instruction('BINOP and')
     or_expr = append_instruction('BINOP or')
 
+    # Comparisons
+    equal_to = append_instruction('equal')
+    greater_than = append_instruction('greater')
+    greater_than_or_equal_to = append_instruction('gte')
+    less_than = append_instruction('less')
+    less_than_or_equal_to = append_instruction('lte')
+    not_equal_to = append_instruction('unequal')
+
+    @staticmethod
+    def comparison_chain(items: List[Any]) -> List[str]:
+        instrutions = []
+        for i in range(len(items)):
+            if i == 0:
+                instrutions.extend(items[i])
+            elif (i - 1) % 2 == 0:
+                instrutions.extend(items[i + 1])
+            elif (i - 1) % 2 == 1:
+                if i == len(items) - 1:
+                    instrutions.append(f'COMPARE {items[i-1][0]}')
+                else:
+                    instrutions.append(f'COMPARE_CHAIN {items[i-1][0]}')
+        return instrutions
+
     @staticmethod
     def __default__(
         data: str,

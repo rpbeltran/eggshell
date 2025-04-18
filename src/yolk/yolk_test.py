@@ -247,3 +247,75 @@ def test_negate() -> None:
         '\nNEGATE'
     )
     assert get_gen_code(src) == expected_gen_code
+
+
+def test_compare_equal() -> None:
+    src = '1 == 3'
+    expected_gen_code = (
+        'PUSH_INT 1'
+        '\nPUSH_INT 3'
+        '\nCOMPARE equal'
+    )
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_compare_greater() -> None:
+    src = '1 > 3'
+    expected_gen_code = (
+        'PUSH_INT 1'
+        '\nPUSH_INT 3'
+        '\nCOMPARE greater'
+    )
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_compare_gte() -> None:
+    src = '1 >= 3'
+    expected_gen_code = (
+        'PUSH_INT 1'
+        '\nPUSH_INT 3'
+        '\nCOMPARE gte'
+    )
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_compare_less() -> None:
+    src = '1 < 3'
+    expected_gen_code = (
+        'PUSH_INT 1'
+        '\nPUSH_INT 3'
+        '\nCOMPARE less'
+    )
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_compare_lte() -> None:
+    src = '1 <= 3'
+    expected_gen_code = (
+        'PUSH_INT 1'
+        '\nPUSH_INT 3'
+        '\nCOMPARE lte'
+    )
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_compare_unequal() -> None:
+    src = '1 != 3'
+    expected_gen_code = (
+        'PUSH_INT 1'
+        '\nPUSH_INT 3'
+        '\nCOMPARE unequal'
+    )
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_compare_chain_lt_gt() -> None:
+    src = '1 < 3 > 2'
+    expected_gen_code = (
+        'PUSH_INT 1'
+        '\nPUSH_INT 3'
+        '\nCOMPARE_CHAIN less'
+        '\nPUSH_INT 2'
+        '\nCOMPARE greater'
+    )
+    assert get_gen_code(src) == expected_gen_code
