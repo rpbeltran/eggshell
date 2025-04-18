@@ -317,5 +317,6 @@ def test_compare_chain_lt_gt() -> None:
         '\nCOMPARE_CHAIN less'
         '\nPUSH_INT 2'
         '\nCOMPARE greater'
+        '\nBINOP and'
     )
     assert get_gen_code(src) == expected_gen_code

@@ -82,6 +82,9 @@ class YolkGenerator(Transformer[Token | int | float | str, List[str]]):
                     instrutions.append(f'COMPARE {items[i-1][0]}')
                 else:
                     instrutions.append(f'COMPARE_CHAIN {items[i-1][0]}')
+        if len(items) > 3:
+            for i in range((len(items) - 3) // 2):
+                instrutions.append('BINOP and')
         return instrutions
 
     @staticmethod
