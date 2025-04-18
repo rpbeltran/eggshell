@@ -61,6 +61,10 @@ class YolkGenerator(Transformer[Token | int | float | str, List[str]]):
     and_expr = append_instruction('BINOP and')
     or_expr = append_instruction('BINOP or')
 
+    # Builtins
+    say = append_instruction('PRINT')
+    assertion = append_instruction('ASSERT')
+
     # Comparisons
     equal_to = append_instruction('equal')
     greater_than = append_instruction('greater')
@@ -68,10 +72,6 @@ class YolkGenerator(Transformer[Token | int | float | str, List[str]]):
     less_than = append_instruction('less')
     less_than_or_equal_to = append_instruction('lte')
     not_equal_to = append_instruction('unequal')
-
-    # Builtins
-    say = append_instruction('PRINT')
-    assertion = append_instruction('ASSERT')
 
     @staticmethod
     def comparison_chain(items: List[Any]) -> List[str]:
@@ -91,6 +91,16 @@ class YolkGenerator(Transformer[Token | int | float | str, List[str]]):
                 instrutions.append('BINOP and')
         return instrutions
 
+    # Pipelines and Executions
+    @staticmethod
+    def exec(items: List[Any]) -> List[str]:
+        instructions = []
+        for item in items:
+            instructions.append(f'PUSH_STR {repr(item)}')
+        instructions.append(f'EXEC {len(items)}')
+        return instructions
+
+    # Default
     @staticmethod
     def __default__(
         data: str,

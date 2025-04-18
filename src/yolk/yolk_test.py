@@ -354,3 +354,22 @@ def test_assert() -> None:
         '\nASSERT'
     )
     assert get_gen_code(src) == expected_gen_code
+
+
+def test_exec1() -> None:
+    src = 'ls'
+    expected_gen_code = (
+        "PUSH_STR 'ls'"
+        '\nEXEC 1'
+    )
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_exec2() -> None:
+    src = 'ls foo'
+    expected_gen_code = (
+        "PUSH_STR 'ls'"
+        "\nPUSH_STR 'foo'"
+        '\nEXEC 2'
+    )
+    assert get_gen_code(src) == expected_gen_code
