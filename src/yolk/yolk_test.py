@@ -320,3 +320,37 @@ def test_compare_chain_lt_gt() -> None:
         '\nBINOP and'
     )
     assert get_gen_code(src) == expected_gen_code
+
+
+def test_compare_chain_lt_gt_eq() -> None:
+    src = '1 < 3 > 2 == 2'
+    expected_gen_code = (
+        'PUSH_INT 1'
+        '\nPUSH_INT 3'
+        '\nCOMPARE_CHAIN less'
+        '\nPUSH_INT 2'
+        '\nCOMPARE_CHAIN greater'
+        '\nPUSH_INT 2'
+        '\nCOMPARE equal'
+        '\nBINOP and'
+        '\nBINOP and'
+    )
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_say() -> None:
+    src = 'say "hello world"'
+    expected_gen_code = (
+        "PUSH_STR 'hello world'"
+        '\nPRINT'
+    )
+    assert get_gen_code(src) == expected_gen_code
+
+
+def test_assert() -> None:
+    src = 'assert true'
+    expected_gen_code = (
+        'PUSH_BOOL true'
+        '\nASSERT'
+    )
+    assert get_gen_code(src) == expected_gen_code

@@ -69,6 +69,10 @@ class YolkGenerator(Transformer[Token | int | float | str, List[str]]):
     less_than_or_equal_to = append_instruction('lte')
     not_equal_to = append_instruction('unequal')
 
+    # Builtins
+    say = append_instruction('PRINT')
+    assertion = append_instruction('ASSERT')
+
     @staticmethod
     def comparison_chain(items: List[Any]) -> List[str]:
         instrutions = []
