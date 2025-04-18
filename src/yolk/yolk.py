@@ -1,4 +1,4 @@
-from typing import Any, Iterable, List
+from typing import Any, Callable, Iterable, List
 
 import lark.tree
 from lark import Transformer, Tree
@@ -15,21 +15,11 @@ class FeatureUnimplemented(Exception):
 
 class YolkGenerator(Transformer[Token | int | float | str, List[str]]):
     @staticmethod
-    def append_instructions(instructions: List[str]):
+    def append_instruction(
+        instruction: str,
+    ) -> Callable[[Iterable[Any]], List[str]]:
         @staticmethod   # type: ignore[misc]
-        def _inner(children: Iterable[Any]):
-            program = [
-                instruction for child in children for instruction in child
-            ]
-            program.extend(instructions)
-            return program
-
-        return _inner
-
-    @staticmethod
-    def append_instruction(instruction: str):
-        @staticmethod   # type: ignore[misc]
-        def _inner(children: Iterable[Any]):
+        def _inner(children: Iterable[Iterable[str]]) -> List[str]:
             program = [
                 instruction for child in children for instruction in child
             ]
@@ -40,11 +30,11 @@ class YolkGenerator(Transformer[Token | int | float | str, List[str]]):
 
     # Arithmetic
     @staticmethod
-    def integer_literal(items: List[Any]):
+    def integer_literal(items: List[Any]) -> List[str]:
         return [f'PUSH_INT {items[0]}']
 
     @staticmethod
-    def float_literal(items: List[Any]):
+    def float_literal(items: List[Any]) -> List[str]:
         return [f'PUSH_NUM {items[0]}']
 
     addition = append_instruction('BINOP add')
