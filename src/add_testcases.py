@@ -7,8 +7,6 @@ from typing import Optional
 src_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 sys.path.append(src_dir)
 
-import src.backend_py.py_generator_test as pygen_test
-import src.backend_py.runtime.runtime_test as runtime_test
 import src.frontend.lexer_test as lexer_test
 import src.frontend.lowering_test as lowering_test
 import src.frontend.parser_test as parser_test
@@ -103,17 +101,6 @@ def main() -> None:
         for name, code in yolk_test.new_test_cases.items():
             code_gen = yolk_test.get_gen_code(code)
             test_file.write(make_backend_test_code(name, code, code_gen))
-
-    with open(pygen_test_path, 'a') as test_file:
-        for name, code in pygen_test.new_test_cases.items():
-            code_gen = pygen_test.get_gen_code(code)
-            test_file.write(make_backend_test_code(name, code, code_gen))
-
-    with open(runtime_test_path, 'a') as test_file:
-        for name, code in runtime_test.new_test_cases.items():
-            output = runtime_test.execute_src(code)
-            test_file.write(make_runtime_test_code(name, code, output))
-
 
 if __name__ == '__main__':
     main()

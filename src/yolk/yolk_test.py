@@ -22,7 +22,7 @@ def test_no_new_test_cases() -> None:
     assert len(new_test_cases) == 0
 
 
-egg_cli = cli.EggCLI(cli.CLIMode(cli.ExecutionMode.codegen, cli.BackendMode.yolk), use_profiler=False)
+egg_cli = cli.EggCLI(cli.CLIMode(cli.ExecutionMode.codegen), use_profiler=False)
 
 
 def get_gen_code(src: str) -> str:

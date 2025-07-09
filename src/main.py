@@ -31,12 +31,6 @@ def get_args() -> argparse.Namespace:
         help='Get the output from code generation instead of executing it.',
         action='store_true',
     )
-    arg_parser.add_argument(
-        '--python',
-        '-p',
-        help='Use the python backend instead of yolk.',
-        action='store_true',
-    )
 
     arg_parser.add_argument(
         '--profiler',
@@ -69,12 +63,7 @@ def main() -> None:
     else:
         mode = cli.ExecutionMode.execute
 
-    if args.python:
-        backend = cli.BackendMode.python
-    else:
-        backend = cli.BackendMode.yolk
-
-    cli_mode = cli.CLIMode(mode, backend)
+    cli_mode = cli.CLIMode(mode)
 
     egg_cli = cli.EggCLI(cli_mode, use_profiler=args.profiler)
 
