@@ -4,6 +4,8 @@ import lark.tree
 from lark import Transformer, Tree
 from lark.lexer import Token
 
+from .string_utilities import repr_double_quoted
+
 
 class FeatureUnimplemented(Exception):
     def __init__(self, feature: str):
@@ -39,7 +41,7 @@ class YolkGenerator(Transformer[Token | int | float | str, List[str]]):
 
     @staticmethod
     def string_literal(items: List[lark.Token]) -> List[str]:
-        return [f'PUSH_STR {repr(items[0].value)}']
+        return [f'PUSH_STR {repr_double_quoted(items[0].value)}']
 
     @staticmethod
     def boolean_literal(items: List[lark.Token]) -> List[str]:
@@ -96,7 +98,7 @@ class YolkGenerator(Transformer[Token | int | float | str, List[str]]):
     def exec(items: List[Any]) -> List[str]:
         instructions = []
         for item in items:
-            instructions.append(f'PUSH_STR {repr(item)}')
+            instructions.append(f'PUSH_STR {repr_double_quoted(item)}')
         instructions.append(f'EXEC {len(items)}')
         return instructions
 

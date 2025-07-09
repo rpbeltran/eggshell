@@ -4,6 +4,7 @@ import sys
 from contextlib import redirect_stdout
 from enum import Enum
 from io import StringIO
+from subprocess import PIPE, Popen
 from typing import Any, Optional
 
 import lark
@@ -73,11 +74,16 @@ class EggCLI:
             _m = memory.Memory()
 
     def interactive_mode(self) -> None:
+        if self.mode.backend == BackendMode.yolk:
+            self.yolk_process = Popen(
+                ['../yolk/yolk', '-interactive'], stdin=PIPE, stdout=PIPE
+            )
         while True:
             expression = input('egg> ').strip()
             if not expression:
                 continue
             if expression == 'exit':
+                self.yolk_process.stdin.close()   # type: ignore
                 break
             try:
                 self.consume_interactive(expression)
@@ -139,7 +145,7 @@ class EggCLI:
 
     def show_execute(self, src: str) -> None:
         if (output := self.execute(src)) is not None:
-            print(output)
+            print(output, end='')
 
     def execute(self, src: str) -> Optional[str]:
         if self.mode.backend == BackendMode.python:
@@ -165,6 +171,9 @@ class EggCLI:
                     exec(py_code)
                 return string_io.getvalue()
         else:
-            raise NotImplementedError(
-                'Only the python backend for egg is currently implemented for execution mode.'
-            )
+            output = self.get_codegen(src)
+            yolk_input = bytes(f'{output}\nPRINT\n', encoding='utf-8')
+            self.yolk_process.stdin.write(yolk_input)   # type: ignore
+            self.yolk_process.stdin.flush()   # type: ignore
+            output = self.yolk_process.stdout.readline()   # type: ignore
+            return output.decode('utf-8')   # type: ignore

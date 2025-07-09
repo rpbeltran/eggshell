@@ -171,15 +171,15 @@ def test_mul_add() -> None:
 
 def test_str() -> None:
     src = '"hello world"'
-    expected_gen_code = "PUSH_STR 'hello world'"
+    expected_gen_code = 'PUSH_STR "hello world"'
     assert get_gen_code(src) == expected_gen_code
 
 
 def test_concat2() -> None:
     src = '"a" ++ "b"'
     expected_gen_code = (
-        "PUSH_STR 'a'"
-        "\nPUSH_STR 'b'"
+        'PUSH_STR "a"'
+        '\nPUSH_STR "b"'
         '\nBINOP concat'
     )
     assert get_gen_code(src) == expected_gen_code
@@ -341,7 +341,7 @@ def test_compare_chain_lt_gt_eq() -> None:
 def test_say() -> None:
     src = 'say "hello world"'
     expected_gen_code = (
-        "PUSH_STR 'hello world'"
+        'PUSH_STR "hello world"'
         '\nPRINT'
     )
     assert get_gen_code(src) == expected_gen_code
@@ -359,7 +359,7 @@ def test_assert() -> None:
 def test_exec1() -> None:
     src = 'ls'
     expected_gen_code = (
-        "PUSH_STR 'ls'"
+        'PUSH_STR "ls"'
         '\nEXEC 1'
     )
     assert get_gen_code(src) == expected_gen_code
@@ -368,8 +368,8 @@ def test_exec1() -> None:
 def test_exec2() -> None:
     src = 'ls foo'
     expected_gen_code = (
-        "PUSH_STR 'ls'"
-        "\nPUSH_STR 'foo'"
+        'PUSH_STR "ls"'
+        '\nPUSH_STR "foo"'
         '\nEXEC 2'
     )
     assert get_gen_code(src) == expected_gen_code
@@ -379,10 +379,10 @@ def test_pipe2() -> None:
     src = 'a | b'
     expected_gen_code = (
         'PIPELINE begin'
-        "\nPUSH_STR 'a'"
+        '\nPUSH_STR "a"'
         '\nEXEC 1'
         '\nPIPELINE next'
-        "\nPUSH_STR 'b'"
+        '\nPUSH_STR "b"'
         '\nEXEC 1'
         '\nPIPELINE end'
     )
@@ -393,14 +393,14 @@ def test_pipe3() -> None:
     src = 'a | b c | d'
     expected_gen_code = (
         'PIPELINE begin'
-        "\nPUSH_STR 'a'"
+        '\nPUSH_STR "a"'
         '\nEXEC 1'
         '\nPIPELINE next'
-        "\nPUSH_STR 'b'"
-        "\nPUSH_STR 'c'"
+        '\nPUSH_STR "b"'
+        '\nPUSH_STR "c"'
         '\nEXEC 2'
         '\nPIPELINE next'
-        "\nPUSH_STR 'd'"
+        '\nPUSH_STR "d"'
         '\nEXEC 1'
         '\nPIPELINE end'
     )
@@ -411,18 +411,18 @@ def test_pipe_nested() -> None:
     src = 'a | (`b | c`) | d'
     expected_gen_code = (
         'PIPELINE begin'
-        "\nPUSH_STR 'a'"
+        '\nPUSH_STR "a"'
         '\nEXEC 1'
         '\nPIPELINE next'
         '\nPIPELINE begin'
-        "\nPUSH_STR 'b'"
+        '\nPUSH_STR "b"'
         '\nEXEC 1'
         '\nPIPELINE next'
-        "\nPUSH_STR 'c'"
+        '\nPUSH_STR "c"'
         '\nEXEC 1'
         '\nPIPELINE end'
         '\nPIPELINE next'
-        "\nPUSH_STR 'd'"
+        '\nPUSH_STR "d"'
         '\nEXEC 1'
         '\nPIPELINE end'
     )
