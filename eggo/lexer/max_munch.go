@@ -1,16 +1,5 @@
 package lexer
 
-type TokenType int
-
-const (
-	Unspecified TokenType = iota
-	A
-	B
-	C
-	D
-	E
-)
-
 type MaxMunchResult struct {
 	token  TokenType
 	length int
