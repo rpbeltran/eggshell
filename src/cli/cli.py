@@ -15,6 +15,7 @@ from .profilers import ProfilerConfig, maybe_profile
 
 assert readline   # silence pyflakes
 
+
 class ExecutionMode(Enum):
     lex = 1
     ast = 2
@@ -48,7 +49,7 @@ class EggCLI:
             self.codegen = yolk.YolkGenerator()
 
     def interactive_mode(self) -> None:
-        self.yolk_process = Popen(
+        self.yolk_proc = Popen(
             ['../yolk/yolk', '-interactive'], stdin=PIPE, stdout=PIPE
         )
         while True:
@@ -56,7 +57,8 @@ class EggCLI:
             if not expression:
                 continue
             if expression == 'exit':
-                self.yolk_process.stdin.close()
+                assert self.yolk_proc.stdin is not None
+                self.yolk_proc.stdin.close()
                 break
             try:
                 self.consume_interactive(expression)
@@ -100,19 +102,35 @@ class EggCLI:
 
     def get_codegen(self, src: str) -> str:
         ast = self.parser.parse(src)
-        return '\n'.join(self.codegen.transform(ast))
+        return '\n'.join(self.codegen.transform(ast))   # type: ignore
 
     def show_codegen(self, src: str) -> None:
         print(self.get_codegen(src))
 
     def show_execute(self, src: str) -> None:
-        if (output := self.execute(src)) is not None:
-            print(output, end='')
+        out, err = self.execute(src)
+        if out:
+            print(out, end='')
+        if err:
+            print(err, end='', file=sys.stderr)
 
     def execute(self, src: str) -> Tuple[str, str]:
         output = self.get_codegen(src)
         yolk_input = bytes(f'{output}\nPRINT\n', encoding='utf-8')
-        self.yolk_process.stdin.write(yolk_input)
-        self.yolk_process.stdin.flush()
-        out = self.yolk_process.stdout.readlines()
-        return out.decode('utf-8')
+
+        assert self.yolk_proc.stdin is not None
+        self.yolk_proc.stdin.write(yolk_input)
+        self.yolk_proc.stdin.flush()
+
+        out = (
+            self.yolk_proc.stdout.readline()
+            if self.yolk_proc.stdout is not None
+            else b''
+        )
+        err = (
+            self.yolk_proc.stderr.readline()
+            if self.yolk_proc.stderr is not None
+            else b''
+        )
+
+        return out.decode('utf-8'), err.decode('utf-8')
