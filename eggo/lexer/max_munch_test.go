@@ -41,13 +41,13 @@ func TestMMTrie(t *testing.T) {
 		if found != tc.found {
 
 			if tc.found {
-				t.Fatalf("LargestPrefix(%q, %d) gave no result; expected %v", tc.input, tc.start_from, tc.expected)
+				t.Fatalf("LargestPrefix(%q, %d) gave no result; expected %v", tc.input, tc.start_from, tc.expected.token.DebugName())
 			} else {
-				t.Fatalf("LargestPrefix(%q, %d) gave %v; expected no result", tc.input, tc.start_from, actual)
+				t.Fatalf("LargestPrefix(%q, %d) gave %v; expected no result", tc.input, tc.start_from, actual.token.DebugName())
 			}
 		}
 		if actual != tc.expected {
-			t.Fatalf("LargestPrefix(%q, %d) gave %v; expected %v", tc.input, tc.start_from, actual, tc.expected)
+			t.Fatalf("LargestPrefix(%q, %d) gave %v; expected %v", tc.input, tc.start_from, actual.token.DebugName(), tc.expected.token.DebugName())
 		}
 	}
 }
