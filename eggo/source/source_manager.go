@@ -25,12 +25,12 @@ func (manager *SourceManager) UpsertSource(filepath string, contents string) {
 }
 
 func (manager *SourceManager) GetCodeSliceForLocation(location SourceLocation) (string, error) {
-	if source_id, has_source := manager.file_paths[location.file_path]; has_source {
+	if source_id, has_source := manager.file_paths[location.FilePath]; has_source {
 		source := manager.sources[source_id]
-		if location.offset < 0 || location.offset+location.length > source.length {
-			return "", fmt.Errorf("offset %d is out of range; source has length %d", location.offset, source.length)
+		if location.Offset < 0 || location.Offset+location.Length > source.length {
+			return "", fmt.Errorf("offset %d is out of range; source has length %d", location.Offset, source.length)
 		}
-		return source.data[location.offset : location.offset+location.length], nil
+		return source.data[location.Offset : location.Offset+location.Length], nil
 	}
-	return "", fmt.Errorf("no source found for file %s", location.file_path)
+	return "", fmt.Errorf("no source found for file %s", location.FilePath)
 }

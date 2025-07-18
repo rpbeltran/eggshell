@@ -1,12 +1,15 @@
 package lexer
 
-import "fmt"
+import (
+	"eggo/source"
+	"fmt"
+)
 
 type TokenType int
 
 type Token struct {
-	Type   TokenType
-	Source string
+	Type TokenType
+	Loc  source.SourceLocation
 }
 
 const (

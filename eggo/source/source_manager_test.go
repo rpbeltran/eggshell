@@ -51,9 +51,9 @@ func TestGetCodeSliceForLocation(t *testing.T) {
 	for _, tc := range test_cases {
 
 		SourceLocation := SourceLocation{
-			file_path: "",
-			offset:    tc.offest,
-			length:    tc.length,
+			FilePath: "",
+			Offset:   tc.offest,
+			Length:   tc.length,
 		}
 
 		slice, err := manager.GetCodeSliceForLocation(SourceLocation)

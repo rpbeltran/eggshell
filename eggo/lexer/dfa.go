@@ -2,12 +2,10 @@ package lexer
 
 type DFANode interface {
 	DebugString() string
-	consume(c byte, lexer *Lexer)
+	consume(c byte, lexer *Lexer, state *DFAState)
 }
 
-type Lexer struct {
-	source          string
-	source_length   int
+type DFAState struct {
 	token_start     int
 	head            int
 	curly_depth     int16
@@ -17,16 +15,11 @@ type Lexer struct {
 	state_node      DFANode
 }
 
-func NewLexer(source string) Lexer {
-	return Lexer{
-		source:          source,
-		source_length:   len(source),
-		token_start:     0,
-		head:            0,
-		curly_depth:     0,
-		paren_depth:     0,
-		square_depth:    0,
-		prev_token_type: Unspecified,
-		state_node:      StartNode{},
-	}
+func (state *DFAState) Transition(node DFANode) {
+	state.state_node = node
+	state.token_start = state.head + 1
+}
+
+func (state *DFAState) StepBack() {
+	state.head--
 }
