@@ -13,6 +13,18 @@ type Source struct {
 	length      int
 }
 
+func (source Source) FilePath() string {
+	return source.file_path
+}
+
+func (source Source) Data() string {
+	return source.data
+}
+
+func (source Source) Length() int {
+	return source.length
+}
+
 // Create a new source object from a string
 // Use the empty string as a file_path to denote stdin
 func NewSource(file_path string, data string) Source {

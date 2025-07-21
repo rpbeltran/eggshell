@@ -24,9 +24,6 @@ func NewLexer(src *source.Source) Lexer {
 	}
 }
 
-func (lexer Lexer) LastTokenType() TokenType {
-	if len(lexer.Tokens) == 0 {
-		return Unspecified
-	}
-	return lexer.Tokens[len(lexer.Tokens)-1].Type
+func (lexer *Lexer) GetSource() *source.Source {
+	return lexer.source
 }
