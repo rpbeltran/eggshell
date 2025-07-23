@@ -4,11 +4,11 @@ import "testing"
 
 func TestUpsertSource(t *testing.T) {
 	manager := NewSourceManager()
-	manager.UpsertSource("a", "ardvark")
-	manager.UpsertSource("b", "banana")
+	manager.UpsertSource("a", "ardvark", false)
+	manager.UpsertSource("b", "banana", false)
 	b_id := manager.file_paths["b"]
-	manager.UpsertSource("c", "chair")
-	manager.UpsertSource("b", "bread")
+	manager.UpsertSource("c", "chair", false)
+	manager.UpsertSource("b", "bread", false)
 
 	if len(manager.sources) != 3 {
 		t.Fatalf("Expected 3 sources but there were %d", len(manager.sources))
@@ -36,7 +36,7 @@ type GetCodeSliceForLocationTestCase struct {
 
 func TestGetCodeSliceForLocation(t *testing.T) {
 	manager := NewSourceManager()
-	manager.UpsertSource("", "01234567890123456789")
+	manager.UpsertSource("", "01234567890123456789", false)
 
 	test_cases := []GetCodeSliceForLocationTestCase{
 		{0, 10, false, "0123456789"},

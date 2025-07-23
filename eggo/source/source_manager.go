@@ -14,8 +14,8 @@ func NewSourceManager() SourceManager {
 	}
 }
 
-func (manager *SourceManager) UpsertSource(filepath string, contents string) {
-	source := NewSource(filepath, contents)
+func (manager *SourceManager) UpsertSource(filepath string, contents string, append_newline bool) {
+	source := NewSource(filepath, contents, append_newline)
 	if source_id, has_source := manager.file_paths[filepath]; !has_source {
 		manager.file_paths[filepath] = len(manager.sources)
 		manager.sources = append(manager.sources, source)

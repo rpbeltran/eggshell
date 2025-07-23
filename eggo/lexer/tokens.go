@@ -12,6 +12,10 @@ type Token struct {
 	Loc  source.SourceLocation
 }
 
+func (token Token) DebugString() string {
+	return fmt.Sprintf("<%s %d-%d>", token.Type.DebugName(), token.Loc.Offset, token.Loc.Offset+token.Loc.Length)
+}
+
 const (
 	Unspecified TokenType = iota
 	_TEST_A
@@ -173,6 +177,8 @@ func (t TokenType) DebugName() string {
 		return "DIVIDE_ASSIGN"
 	case DO:
 		return "DO"
+	case DOT:
+		return "DOT"
 	case ELIF:
 		return "ELIF"
 	case ELLIPSIS:
@@ -181,8 +187,12 @@ func (t TokenType) DebugName() string {
 		return "ELSE"
 	case EQUALS:
 		return "EQUALS"
+	case EXEC_ARG:
+		return "EXEC_ARG"
 	case FALSE:
 		return "FALSE"
+	case FLOAT:
+		return "FLOAT"
 	case FN:
 		return "FN"
 	case FOR:
@@ -191,10 +201,16 @@ func (t TokenType) DebugName() string {
 		return "GTE"
 	case IF:
 		return "IF"
+	case IMPLICIT_LAMBDA:
+		return "IMPLICIT_LAMBDA"
+	case IMPLICIT_LAMBDA_PARAM:
+		return "IMPLICIT_LAMBDA_PARAM"
 	case IMPORT:
 		return "IMPORT"
 	case IN:
 		return "IN"
+	case INT:
+		return "INT"
 	case INT_DIV:
 		return "INT_DIV"
 	case INT_DIV_ASSIGN:
@@ -211,6 +227,8 @@ func (t TokenType) DebugName() string {
 		return "MOD"
 	case MOD_ASSIGN:
 		return "MOD_ASSIGN"
+	case NAME:
+		return "NAME"
 	case NAMESPACE:
 		return "NAMESPACE"
 	case NOT:
@@ -235,6 +253,8 @@ func (t TokenType) DebugName() string {
 		return "POWER"
 	case POWER_ASSIGN:
 		return "POWER_ASSIGN"
+	case QUOTED_STRING:
+		return "QUOTED_STRING"
 	case RANGE:
 		return "RANGE"
 	case RETURN:
@@ -267,6 +287,8 @@ func (t TokenType) DebugName() string {
 		return "TRUE"
 	case TRY:
 		return "TRY"
+	case USE:
+		return "USE"
 	case VAR:
 		return "VAR"
 	case WHILE:

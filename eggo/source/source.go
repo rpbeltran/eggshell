@@ -27,7 +27,11 @@ func (source Source) Length() int {
 
 // Create a new source object from a string
 // Use the empty string as a file_path to denote stdin
-func NewSource(file_path string, data string) Source {
+func NewSource(file_path string, data string, append_newline bool) Source {
+	length := len(data)
+	if append_newline {
+		data += " #"
+	}
 	line_starts := make([]int, 0)
 	for i, c := range data {
 		if c == '\n' {
@@ -38,7 +42,7 @@ func NewSource(file_path string, data string) Source {
 		file_path:   filepath.Clean(file_path),
 		data:        data,
 		line_starts: line_starts,
-		length:      len(data),
+		length:      length,
 	}
 }
 
@@ -64,4 +68,11 @@ func (source Source) GetLineAndCol(offset int) (int, int, error) {
 		line_start = source.line_starts[lo-1]
 	}
 	return line_num, offset - line_start + 1, nil
+}
+
+func (source Source) GetCodeSlice(offset int, length int) (string, error) {
+	if offset < 0 || offset+length > len(source.data) {
+		return "", fmt.Errorf("code slice out of bounds")
+	}
+	return source.data[offset : offset+length], nil
 }

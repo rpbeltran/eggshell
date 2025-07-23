@@ -16,7 +16,7 @@ func TestGetLineAndCol(t *testing.T) {
 		"89012\n" +
 		"45678\n"
 
-	source := NewSource("", test_src)
+	source := NewSource("", test_src, false)
 	test_cases := []LineAndColTestCase{
 		{0, false, 1, 1},
 		{1, false, 1, 2},

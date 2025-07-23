@@ -51,3 +51,21 @@ func TestMMTrie(t *testing.T) {
 		}
 	}
 }
+
+func TestFirstByte(t *testing.T) {
+	patterns := map[string]TokenType{
+		"apple":       _TEST_A,
+		"banana":      _TEST_B,
+		"cherry":      _TEST_C,
+		"dragonfruit": _TEST_D,
+	}
+	trie := NewMMTrie(patterns)
+	if len(trie.FirstByte) != 4 {
+		t.Fatalf("Expected 4 first bytes but there were %d", len(trie.FirstByte))
+	}
+	for _, c := range "abcd" {
+		if _, has_byte := trie.FirstByte[byte(c)]; !has_byte {
+			t.Fatalf("Expected %q to be a first byte", string(c))
+		}
+	}
+}
