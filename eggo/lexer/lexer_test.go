@@ -98,6 +98,27 @@ func TestFunctionBasic(t *testing.T) {
 	validateTestCase(t, test_case)
 }
 
+func TestFunctionReturn(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "fn foo(): int {\n  ret 2\n}",
+		tokens: []TestCaseToken{
+			{FN, "fn"},
+			{NAME, "foo"},
+			{PAREN_OPEN, "("},
+			{PAREN_CLOSE, ")"},
+			{COLON, ":"},
+			{NAME, "int"},
+			{CURLY_OPEN, "{"},
+			{SEMICOLON, ""},
+			{RETURN, "ret"},
+			{INT, "2"},
+			{SEMICOLON, ""},
+			{CURLY_CLOSE, "}"},
+		}}
+
+	validateTestCase(t, test_case)
+}
+
 func validateTestCase(t *testing.T, tc LexerTestCase) {
 	source := source.NewSource("", tc.input, true)
 	lexer := NewLexer(&source)

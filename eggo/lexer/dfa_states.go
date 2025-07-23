@@ -190,6 +190,7 @@ func (node NumberNode) consume(c byte, lexer *Lexer, state *DFAState) error {
 			}
 		}
 		state.Yield(lexer, token_type, false)
+		state.StepBack()
 		state.Transition(StartNode{})
 	}
 	node.firstChar = false
