@@ -19,6 +19,7 @@ func matchOperator(lexer *Lexer, state *DFAState) (Token, bool) {
 		trie = state.all_operators
 	}
 	if match, found := trie.LargestPrefix(lexer.GetSource().Data(), state.head); found {
+		state.token_start = state.head
 		return Token{
 			Type: match.token,
 			Loc: source.SourceLocation{
@@ -34,7 +35,7 @@ func matchOperator(lexer *Lexer, state *DFAState) (Token, bool) {
 func (node StartNode) consumeOperator(tok Token, lexer *Lexer, state *DFAState) {
 	lexer.Tokens = append(lexer.Tokens, tok)
 	state.prev_token_type = tok.Type
-	state.head += tok.Loc.Length
+	state.head += tok.Loc.Length - 1
 	switch tok.Type {
 	case PAREN_OPEN:
 		state.paren_depth++
@@ -221,7 +222,7 @@ func (node UnquotedLiteralNode) consume(c byte, lexer *Lexer, state *DFAState) e
 			state.Yield(lexer, kw, false)
 		} else {
 			name_parts := strings.Split(text, ".")
-			head := state.head
+			head := state.token_start
 			for i, part := range name_parts {
 				if len(part) != 0 {
 					part_type := NAME
