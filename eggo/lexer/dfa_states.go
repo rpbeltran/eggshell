@@ -239,12 +239,13 @@ func (node UnquotedLiteralNode) consume(c byte, lexer *Lexer, state *DFAState) e
 						},
 					})
 					head += len(part)
-				} else if i < len(name_parts)-1 {
+				}
+				if i < len(name_parts)-1 {
 					lexer.Tokens = append(lexer.Tokens, Token{
 						Type: DOT,
 						Loc: source.SourceLocation{
 							FilePath: lexer.source.FilePath(),
-							Offset:   head + 1,
+							Offset:   head,
 							Length:   1,
 						},
 					})
@@ -367,7 +368,7 @@ func (node *QuotedLiteralNode) consume(c byte, lexer *Lexer, state *DFAState) er
 		if lexer.dfaState.prev_token_type == EXEC_ARG {
 			token_type = EXEC_ARG
 		}
-		state.Yield(lexer, token_type, true)
+		state.Yield(lexer, token_type, false)
 		state.Transition(StartNode{})
 	}
 	return nil

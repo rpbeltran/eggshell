@@ -69,9 +69,6 @@ func (state *DFAState) GetLocation(inclusive bool) source.SourceLocation {
 }
 
 func (state *DFAState) Peek(Lexer *Lexer) byte {
-	if state.head >= Lexer.GetSource().Length()-1 {
-		return 0
-	}
 	return Lexer.GetSource().Data()[state.head+1]
 }
 
