@@ -218,6 +218,7 @@ func (node UnquotedLiteralNode) consume(c byte, lexer *Lexer, state *DFAState) e
 		}
 		state.token_start = state.head
 		state.Yield(lexer, DOT, true)
+		state.Transition(StartNode{})
 	} else if c == '(' || c == ':' || c == '=' {
 		if kw, has_kw := state.keywords[text]; has_kw {
 			state.Yield(lexer, kw, false)

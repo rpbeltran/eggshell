@@ -872,6 +872,657 @@ func TestWithAs2(t *testing.T) {
 	validateTestCase(t, test_case)
 }
 
+func TestExplicitPipeline(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "`a | b | c`",
+		tokens: []TestCaseToken{
+			{EXEC_ARG, "a"},
+			{PIPE, "|"},
+			{EXEC_ARG, "b"},
+			{PIPE, "|"},
+			{EXEC_ARG, "c"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestExplicitPipelineMinified(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "`a|b|c`",
+		tokens: []TestCaseToken{
+			{EXEC_ARG, "a"},
+			{PIPE, "|"},
+			{EXEC_ARG, "b"},
+			{PIPE, "|"},
+			{EXEC_ARG, "c"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestQuotedExplicitParam(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "`a \"b ' c\" d`",
+		tokens: []TestCaseToken{
+			{EXEC_ARG, "a"},
+			{EXEC_ARG, "b ' c"},
+			{EXEC_ARG, "d"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestQuotedExplicitParam2(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "`\"a b c\" d e `",
+		tokens: []TestCaseToken{
+			{EXEC_ARG, "a b c"},
+			{EXEC_ARG, "d"},
+			{EXEC_ARG, "e"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestListComprehension(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "[10**x for x in (0..10)]",
+		tokens: []TestCaseToken{
+			{SQUARE_OPEN, "["},
+			{INT, "10"},
+			{POWER, "**"},
+			{NAME, "x"},
+			{FOR, "for"},
+			{NAME, "x"},
+			{IN, "in"},
+			{PAREN_OPEN, "("},
+			{INT, "0"},
+			{RANGE, ".."},
+			{INT, "10"},
+			{PAREN_CLOSE, ")"},
+			{SQUARE_CLOSE, "]"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestMapComprehension(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "{-x: 100**-x for x in (0..10)]",
+		tokens: []TestCaseToken{
+			{CURLY_OPEN, "{"},
+			{MINUS, "-"},
+			{NAME, "x"},
+			{COLON, ":"},
+			{INT, "100"},
+			{POWER, "**"},
+			{MINUS, "-"},
+			{NAME, "x"},
+			{FOR, "for"},
+			{NAME, "x"},
+			{IN, "in"},
+			{PAREN_OPEN, "("},
+			{INT, "0"},
+			{RANGE, ".."},
+			{INT, "10"},
+			{PAREN_CLOSE, ")"},
+			{SQUARE_CLOSE, "]"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestFnNormalMultiAndKwParam(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "fn foo (a, b, *c, **d){}",
+		tokens: []TestCaseToken{
+			{FN, "fn"},
+			{NAME, "foo"},
+			{PAREN_OPEN, "("},
+			{NAME, "a"},
+			{COMMA, ","},
+			{NAME, "b"},
+			{COMMA, ","},
+			{TIMES, "*"},
+			{NAME, "c"},
+			{COMMA, ","},
+			{POWER, "**"},
+			{NAME, "d"},
+			{PAREN_CLOSE, ")"},
+			{CURLY_OPEN, "{"},
+			{CURLY_CLOSE, "}"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestFnMultiAndKwParam(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "fn foo (*a, **b){}",
+		tokens: []TestCaseToken{
+			{FN, "fn"},
+			{NAME, "foo"},
+			{PAREN_OPEN, "("},
+			{TIMES, "*"},
+			{NAME, "a"},
+			{COMMA, ","},
+			{POWER, "**"},
+			{NAME, "b"},
+			{PAREN_CLOSE, ")"},
+			{CURLY_OPEN, "{"},
+			{CURLY_CLOSE, "}"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestFnMultiParam(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "fn foo (a, *b){}",
+		tokens: []TestCaseToken{
+			{FN, "fn"},
+			{NAME, "foo"},
+			{PAREN_OPEN, "("},
+			{NAME, "a"},
+			{COMMA, ","},
+			{TIMES, "*"},
+			{NAME, "b"},
+			{PAREN_CLOSE, ")"},
+			{CURLY_OPEN, "{"},
+			{CURLY_CLOSE, "}"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestFnMultiParamOnly(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "fn foo (*b){}",
+		tokens: []TestCaseToken{
+			{FN, "fn"},
+			{NAME, "foo"},
+			{PAREN_OPEN, "("},
+			{TIMES, "*"},
+			{NAME, "b"},
+			{PAREN_CLOSE, ")"},
+			{CURLY_OPEN, "{"},
+			{CURLY_CLOSE, "}"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestFnKwParam(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "fn foo (a, **b){}",
+		tokens: []TestCaseToken{
+			{FN, "fn"},
+			{NAME, "foo"},
+			{PAREN_OPEN, "("},
+			{NAME, "a"},
+			{COMMA, ","},
+			{POWER, "**"},
+			{NAME, "b"},
+			{PAREN_CLOSE, ")"},
+			{CURLY_OPEN, "{"},
+			{CURLY_CLOSE, "}"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestFnKwParamOnly(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "fn foo (**b){}",
+		tokens: []TestCaseToken{
+			{FN, "fn"},
+			{NAME, "foo"},
+			{PAREN_OPEN, "("},
+			{POWER, "**"},
+			{NAME, "b"},
+			{PAREN_CLOSE, ")"},
+			{CURLY_OPEN, "{"},
+			{CURLY_CLOSE, "}"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestLambdaNormalMultiAndKwParam(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "\\(a, b, *c, **d){}",
+		tokens: []TestCaseToken{
+			{LAMBDA, "\\"},
+			{PAREN_OPEN, "("},
+			{NAME, "a"},
+			{COMMA, ","},
+			{NAME, "b"},
+			{COMMA, ","},
+			{TIMES, "*"},
+			{NAME, "c"},
+			{COMMA, ","},
+			{POWER, "**"},
+			{NAME, "d"},
+			{PAREN_CLOSE, ")"},
+			{CURLY_OPEN, "{"},
+			{CURLY_CLOSE, "}"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestLambdaMultiAndKwParam(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "\\(*a, **b){}",
+		tokens: []TestCaseToken{
+			{LAMBDA, "\\"},
+			{PAREN_OPEN, "("},
+			{TIMES, "*"},
+			{NAME, "a"},
+			{COMMA, ","},
+			{POWER, "**"},
+			{NAME, "b"},
+			{PAREN_CLOSE, ")"},
+			{CURLY_OPEN, "{"},
+			{CURLY_CLOSE, "}"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestLambdaMultiParam(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "\\(a, *b){}",
+		tokens: []TestCaseToken{
+			{LAMBDA, "\\"},
+			{PAREN_OPEN, "("},
+			{NAME, "a"},
+			{COMMA, ","},
+			{TIMES, "*"},
+			{NAME, "b"},
+			{PAREN_CLOSE, ")"},
+			{CURLY_OPEN, "{"},
+			{CURLY_CLOSE, "}"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestLambdaMultiParamOnly(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "\\(*b){}",
+		tokens: []TestCaseToken{
+			{LAMBDA, "\\"},
+			{PAREN_OPEN, "("},
+			{TIMES, "*"},
+			{NAME, "b"},
+			{PAREN_CLOSE, ")"},
+			{CURLY_OPEN, "{"},
+			{CURLY_CLOSE, "}"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestLambdaMultiParamOnlyNoParen(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "\\*b{}",
+		tokens: []TestCaseToken{
+			{LAMBDA, "\\"},
+			{TIMES, "*"},
+			{NAME, "b"},
+			{CURLY_OPEN, "{"},
+			{CURLY_CLOSE, "}"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestLambdaKwParam(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "\\(a, **b){}",
+		tokens: []TestCaseToken{
+			{LAMBDA, "\\"},
+			{PAREN_OPEN, "("},
+			{NAME, "a"},
+			{COMMA, ","},
+			{POWER, "**"},
+			{NAME, "b"},
+			{PAREN_CLOSE, ")"},
+			{CURLY_OPEN, "{"},
+			{CURLY_CLOSE, "}"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestLambdaKwParamOnly(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "\\(**b){}",
+		tokens: []TestCaseToken{
+			{LAMBDA, "\\"},
+			{PAREN_OPEN, "("},
+			{POWER, "**"},
+			{NAME, "b"},
+			{PAREN_CLOSE, ")"},
+			{CURLY_OPEN, "{"},
+			{CURLY_CLOSE, "}"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestLambdaKwParamOnlyNoParen(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "\\**b{}",
+		tokens: []TestCaseToken{
+			{LAMBDA, "\\"},
+			{POWER, "**"},
+			{NAME, "b"},
+			{CURLY_OPEN, "{"},
+			{CURLY_CLOSE, "}"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestKwArgs(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "foo(a, b=c, d=e)",
+		tokens: []TestCaseToken{
+			{NAME, "foo"},
+			{PAREN_OPEN, "("},
+			{NAME, "a"},
+			{COMMA, ","},
+			{NAME, "b"},
+			{ASSIGN, "="},
+			{NAME, "c"},
+			{COMMA, ","},
+			{NAME, "d"},
+			{ASSIGN, "="},
+			{NAME, "e"},
+			{PAREN_CLOSE, ")"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestDeclareGenericTyped(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "a : t[g] = [1]",
+		tokens: []TestCaseToken{
+			{NAME, "a"},
+			{COLON, ":"},
+			{NAME, "t"},
+			{SQUARE_OPEN, "["},
+			{NAME, "g"},
+			{SQUARE_CLOSE, "]"},
+			{ASSIGN, "="},
+			{SQUARE_OPEN, "["},
+			{INT, "1"},
+			{SQUARE_CLOSE, "]"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestImplicitLambda(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "_",
+		tokens: []TestCaseToken{
+			{IMPLICIT_LAMBDA_PARAM, "_"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestImplicitLambdaMethod(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "_.hello() + _.world()",
+		tokens: []TestCaseToken{
+			{IMPLICIT_LAMBDA_PARAM, "_"},
+			{DOT, "."},
+			{NAME, "hello"},
+			{PAREN_OPEN, "("},
+			{PAREN_CLOSE, ")"},
+			{PLUS, "+"},
+			{IMPLICIT_LAMBDA_PARAM, "_"},
+			{DOT, "."},
+			{NAME, "world"},
+			{PAREN_OPEN, "("},
+			{PAREN_CLOSE, ")"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestImplicitLambdaPiped(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "a | _.sort | b",
+		tokens: []TestCaseToken{
+			{EXEC_ARG, "a"},
+			{PIPE, "|"},
+			{IMPLICIT_LAMBDA_PARAM, "_"},
+			{DOT, "."},
+			{NAME, "sort"},
+			{PIPE, "|"},
+			{EXEC_ARG, "b"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestSelectionLambdaShorthand(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "utils::list_files | ...date",
+		tokens: []TestCaseToken{
+			{NAME, "utils"},
+			{NAMESPACE, "::"},
+			{NAME, "list_files"},
+			{PIPE, "|"},
+			{ELLIPSIS, "..."},
+			{NAME, "date"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestPlusAssignment(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "@a += @b",
+		tokens: []TestCaseToken{
+			{NAME, "a"},
+			{PLUS_ASSIGN, "+="},
+			{NAME, "b"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestMinusAssignment(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "@a -= @b",
+		tokens: []TestCaseToken{
+			{NAME, "a"},
+			{MINUS_ASSIGN, "-="},
+			{NAME, "b"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestTimesAssignment(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "@a *= @b",
+		tokens: []TestCaseToken{
+			{NAME, "a"},
+			{TIMES_ASSIGN, "*="},
+			{NAME, "b"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestDivideAssignment(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "@a /= @b",
+		tokens: []TestCaseToken{
+			{NAME, "a"},
+			{DIVIDE_ASSIGN, "/="},
+			{NAME, "b"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestModAssignment(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "@a %= @b",
+		tokens: []TestCaseToken{
+			{NAME, "a"},
+			{MOD_ASSIGN, "%="},
+			{NAME, "b"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestPowerAssignment(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "@a **= @b",
+		tokens: []TestCaseToken{
+			{NAME, "a"},
+			{POWER_ASSIGN, "**="},
+			{NAME, "b"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestIntDivAssignment(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "@a //= @b",
+		tokens: []TestCaseToken{
+			{NAME, "a"},
+			{INT_DIV_ASSIGN, "//="},
+			{NAME, "b"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestConcatAssignment(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "@a ++= @b",
+		tokens: []TestCaseToken{
+			{NAME, "a"},
+			{CONCAT_ASSIGN, "++="},
+			{NAME, "b"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestSeqAndAssignment(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "@a &&= @b",
+		tokens: []TestCaseToken{
+			{NAME, "a"},
+			{SEQ_AND_ASSIGN, "&&="},
+			{NAME, "b"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestSeqOrAssignment(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "@a ||= @b",
+		tokens: []TestCaseToken{
+			{NAME, "a"},
+			{SEQ_OR_ASSIGN, "||="},
+			{NAME, "b"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestPipeAssignment(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "@a |= @b",
+		tokens: []TestCaseToken{
+			{NAME, "a"},
+			{PIPE_ASSIGN, "|="},
+			{NAME, "b"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestAssertion(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "assert 1 == one()",
+		tokens: []TestCaseToken{
+			{ASSERT, "assert"},
+			{INT, "1"},
+			{EQUALS, "=="},
+			{NAME, "one"},
+			{PAREN_OPEN, "("},
+			{PAREN_CLOSE, ")"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestConstDeclare(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "const a := 1",
+		tokens: []TestCaseToken{
+			{CONST, "const"},
+			{NAME, "a"},
+			{DECLARE, ":="},
+			{INT, "1"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestSay(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "say a b c",
+		tokens: []TestCaseToken{
+			{SAY, "say"},
+			{EXEC_ARG, "a"},
+			{EXEC_ARG, "b"},
+			{EXEC_ARG, "c"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestIfElifElse(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "if true {} elif false {} else if true {} else {}",
+		tokens: []TestCaseToken{
+			{IF, "if"},
+			{TRUE, "true"},
+			{CURLY_OPEN, "{"},
+			{CURLY_CLOSE, "}"},
+			{ELIF, "elif"},
+			{FALSE, "false"},
+			{CURLY_OPEN, "{"},
+			{CURLY_CLOSE, "}"},
+			{ELSE, "else"},
+			{IF, "if"},
+			{TRUE, "true"},
+			{CURLY_OPEN, "{"},
+			{CURLY_CLOSE, "}"},
+			{ELSE, "else"},
+			{CURLY_OPEN, "{"},
+			{CURLY_CLOSE, "}"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestFunctionCall3(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "foo(1, @a, @x + 1)",
+		tokens: []TestCaseToken{
+			{NAME, "foo"},
+			{PAREN_OPEN, "("},
+			{INT, "1"},
+			{COMMA, ","},
+			{NAME, "a"},
+			{COMMA, ","},
+			{NAME, "x"},
+			{PLUS, "+"},
+			{INT, "1"},
+			{PAREN_CLOSE, ")"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestNoSpaceArithmetic(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "(a+c*d * b**a%d)",
+		tokens: []TestCaseToken{
+			{PAREN_OPEN, "("},
+			{NAME, "a"},
+			{PLUS, "+"},
+			{NAME, "c"},
+			{TIMES, "*"},
+			{NAME, "d"},
+			{TIMES, "*"},
+			{NAME, "b"},
+			{POWER, "**"},
+			{NAME, "a"},
+			{MOD, "%"},
+			{NAME, "d"},
+			{PAREN_CLOSE, ")"},
+		}}
+	validateTestCase(t, test_case)
+}
+
 func validateTestCase(t *testing.T, tc LexerTestCase) {
 	source := source.NewSource("", tc.input, true)
 	lexer := NewLexer(&source)
