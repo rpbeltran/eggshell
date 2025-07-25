@@ -315,6 +315,7 @@ func (node IdentifierNode) consume(c byte, lexer *Lexer, state *DFAState) error 
 		state.token_start = state.head
 		state.Yield(lexer, DOT, true)
 		state.token_start += 1
+		return nil
 	}
 	switch c {
 	case ' ', '\t', '\n',

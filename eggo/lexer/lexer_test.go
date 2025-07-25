@@ -119,6 +119,270 @@ func TestFunctionReturn(t *testing.T) {
 	validateTestCase(t, test_case)
 }
 
+func TestFunctionParam(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "fn foo(a, b := 1, c: int = 2) {}",
+		tokens: []TestCaseToken{
+			{FN, "fn"},
+			{NAME, "foo"},
+			{PAREN_OPEN, "("},
+			{NAME, "a"},
+			{COMMA, ","},
+			{NAME, "b"},
+			{DECLARE, ":="},
+			{INT, "1"},
+			{COMMA, ","},
+			{NAME, "c"},
+			{COLON, ":"},
+			{NAME, "int"},
+			{ASSIGN, "="},
+			{INT, "2"},
+			{PAREN_CLOSE, ")"},
+			{CURLY_OPEN, "{"},
+			{CURLY_CLOSE, "}"},
+		}}
+
+	validateTestCase(t, test_case)
+}
+
+func TestLambda(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "\\a -> b",
+		tokens: []TestCaseToken{
+			{LAMBDA, "\\"},
+			{NAME, "a"},
+			{ARROW, "->"},
+			{EXEC_ARG, "b"},
+		}}
+
+	validateTestCase(t, test_case)
+}
+
+func TestLambda2(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "\\(a,b) -> c",
+		tokens: []TestCaseToken{
+			{LAMBDA, "\\"},
+			{PAREN_OPEN, "("},
+			{NAME, "a"},
+			{COMMA, ","},
+			{NAME, "b"},
+			{PAREN_CLOSE, ")"},
+			{ARROW, "->"},
+			{EXEC_ARG, "c"},
+		}}
+
+	validateTestCase(t, test_case)
+}
+
+func TestLambda3(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "\\(a,b,c) -> d",
+		tokens: []TestCaseToken{
+			{LAMBDA, "\\"},
+			{PAREN_OPEN, "("},
+			{NAME, "a"},
+			{COMMA, ","},
+			{NAME, "b"},
+			{COMMA, ","},
+			{NAME, "c"},
+			{PAREN_CLOSE, ")"},
+			{ARROW, "->"},
+			{EXEC_ARG, "d"},
+		}}
+
+	validateTestCase(t, test_case)
+}
+
+func TestMulti(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "\\a {ret 1}",
+		tokens: []TestCaseToken{
+			{LAMBDA, "\\"},
+			{NAME, "a"},
+			{CURLY_OPEN, "{"},
+			{RETURN, "ret"},
+			{INT, "1"},
+			{CURLY_CLOSE, "}"},
+		}}
+
+	validateTestCase(t, test_case)
+}
+
+func TestIdentifiers(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "@a b @c",
+		tokens: []TestCaseToken{
+			{NAME, "a"},
+			{EXEC_ARG, "b"},
+			{NAME, "c"},
+		}}
+
+	validateTestCase(t, test_case)
+}
+
+func TestDeclaration(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "a := 1",
+		tokens: []TestCaseToken{
+			{NAME, "a"},
+			{DECLARE, ":="},
+			{INT, "1"},
+		}}
+
+	validateTestCase(t, test_case)
+}
+
+func TestTypedDeclaration(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "a : int = 1",
+		tokens: []TestCaseToken{
+			{NAME, "a"},
+			{COLON, ":"},
+			{NAME, "int"},
+			{ASSIGN, "="},
+			{INT, "1"},
+		}}
+
+	validateTestCase(t, test_case)
+}
+
+func TestQuotedExecution(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "`a` {`b`}",
+		tokens: []TestCaseToken{
+			{EXEC_ARG, "a"},
+			{CURLY_OPEN, "{"},
+			{EXEC_ARG, "b"},
+			{CURLY_CLOSE, "}"},
+		}}
+
+	validateTestCase(t, test_case)
+}
+
+func TestList(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "a := [1,2,3]",
+		tokens: []TestCaseToken{
+			{NAME, "a"},
+			{DECLARE, ":="},
+			{SQUARE_OPEN, "["},
+			{INT, "1"},
+			{COMMA, ","},
+			{INT, "2"},
+			{COMMA, ","},
+			{INT, "3"},
+			{SQUARE_CLOSE, "]"},
+		}}
+
+	validateTestCase(t, test_case)
+}
+
+func TestListTypes(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "a : [int] = ",
+		tokens: []TestCaseToken{
+			{NAME, "a"},
+			{COLON, ":"},
+			{SQUARE_OPEN, "["},
+			{NAME, "int"},
+			{SQUARE_CLOSE, "]"},
+			{ASSIGN, "="},
+		}}
+
+	validateTestCase(t, test_case)
+}
+
+func TestListAccess(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "a[1]",
+		tokens: []TestCaseToken{
+			{EXEC_ARG, "a"},
+			{SQUARE_OPEN, "["},
+			{INT, "1"},
+			{SQUARE_CLOSE, "]"},
+		}}
+
+	validateTestCase(t, test_case)
+}
+
+func TestListAccess2(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "a[1:2]",
+		tokens: []TestCaseToken{
+			{EXEC_ARG, "a"},
+			{SQUARE_OPEN, "["},
+			{INT, "1"},
+			{COLON, ":"},
+			{INT, "2"},
+			{SQUARE_CLOSE, "]"},
+		}}
+
+	validateTestCase(t, test_case)
+}
+
+func TestListAccess3(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "a[1:2:3]",
+		tokens: []TestCaseToken{
+			{EXEC_ARG, "a"},
+			{SQUARE_OPEN, "["},
+			{INT, "1"},
+			{COLON, ":"},
+			{INT, "2"},
+			{COLON, ":"},
+			{INT, "3"},
+			{SQUARE_CLOSE, "]"},
+		}}
+
+	validateTestCase(t, test_case)
+}
+
+func TestListAccessVars(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "a[b:c:d]",
+		tokens: []TestCaseToken{
+			{EXEC_ARG, "a"},
+			{SQUARE_OPEN, "["},
+			{NAME, "b"},
+			{COLON, ":"},
+			{NAME, "c"},
+			{COLON, ":"},
+			{NAME, "d"},
+			{SQUARE_CLOSE, "]"},
+		}}
+
+	validateTestCase(t, test_case)
+}
+
+func TestCurrying(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "a $ b $ c",
+		tokens: []TestCaseToken{
+			{EXEC_ARG, "a"},
+			{CURRY, "$"},
+			{EXEC_ARG, "b"},
+			{CURRY, "$"},
+			{EXEC_ARG, "c"},
+		}}
+
+	validateTestCase(t, test_case)
+}
+
+func TestFieldAccess(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "@a.b.c",
+		tokens: []TestCaseToken{
+			{NAME, "a"},
+			{DOT, "."},
+			{NAME, "b"},
+			{DOT, "."},
+			{NAME, "c"},
+		}}
+
+	validateTestCase(t, test_case)
+}
+
 func validateTestCase(t *testing.T, tc LexerTestCase) {
 	source := source.NewSource("", tc.input, true)
 	lexer := NewLexer(&source)
