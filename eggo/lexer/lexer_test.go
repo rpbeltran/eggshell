@@ -82,6 +82,49 @@ func TestSemicolons(t *testing.T) {
 	validateTestCase(t, test_case)
 }
 
+func TestNumbers(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "1234 12.34",
+		tokens: []TestCaseToken{
+			{INT, "1234"},
+			{FLOAT, "12.34"},
+		}}
+
+	validateTestCase(t, test_case)
+}
+
+func TestQuotedArg(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "hello 'world and' friends",
+		tokens: []TestCaseToken{
+			{EXEC_ARG, "hello"},
+			{EXEC_ARG, "world and"},
+			{EXEC_ARG, "friends"},
+		}}
+
+	validateTestCase(t, test_case)
+}
+
+func TestQuoteEscape(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "'hello\\'world'",
+		tokens: []TestCaseToken{
+			{QUOTED_STRING, "hello\\'world"},
+		}}
+
+	validateTestCase(t, test_case)
+}
+
+func TestDoubleQuoteEscape(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "\"hello\\\"world\"",
+		tokens: []TestCaseToken{
+			{QUOTED_STRING, "hello\\\"world"},
+		}}
+
+	validateTestCase(t, test_case)
+}
+
 func TestFunctionBasic(t *testing.T) {
 	test_case := LexerTestCase{
 		input: "fn foo(){`b`}",
@@ -469,6 +512,30 @@ func TestTryCatchParam(t *testing.T) {
 
 func TestRange(t *testing.T) {
 	test_case := LexerTestCase{
+		input: "(11..22)",
+		tokens: []TestCaseToken{
+			{PAREN_OPEN, "("},
+			{INT, "11"},
+			{RANGE, ".."},
+			{INT, "22"},
+			{PAREN_CLOSE, ")"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestNumberArgs(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "foo 32 1.23",
+		tokens: []TestCaseToken{
+			{EXEC_ARG, "foo"},
+			{EXEC_ARG, "32"},
+			{EXEC_ARG, "1.23"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestRange2(t *testing.T) {
+	test_case := LexerTestCase{
 		input: "(a..b)",
 		tokens: []TestCaseToken{
 			{PAREN_OPEN, "("},
@@ -497,6 +564,20 @@ func TestWhile(t *testing.T) {
 		tokens: []TestCaseToken{
 			{WHILE, "while"},
 			{TRUE, "true"},
+			{CURLY_OPEN, "{"},
+			{CURLY_CLOSE, "}"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestWhileParen(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "while(true){ }",
+		tokens: []TestCaseToken{
+			{WHILE, "while"},
+			{PAREN_OPEN, "("},
+			{TRUE, "true"},
+			{PAREN_CLOSE, ")"},
 			{CURLY_OPEN, "{"},
 			{CURLY_CLOSE, "}"},
 		}}
@@ -879,6 +960,19 @@ func TestExplicitPipeline(t *testing.T) {
 			{EXEC_ARG, "a"},
 			{PIPE, "|"},
 			{EXEC_ARG, "b"},
+			{PIPE, "|"},
+			{EXEC_ARG, "c"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestExplicitPipelineEscapes(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "`a | b\\` | c`",
+		tokens: []TestCaseToken{
+			{EXEC_ARG, "a"},
+			{PIPE, "|"},
+			{EXEC_ARG, "b\\`"},
 			{PIPE, "|"},
 			{EXEC_ARG, "c"},
 		}}
@@ -1518,6 +1612,42 @@ func TestNoSpaceArithmetic(t *testing.T) {
 			{NAME, "a"},
 			{MOD, "%"},
 			{NAME, "d"},
+			{PAREN_CLOSE, ")"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestImplicitLambdaParen(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "_(",
+		tokens: []TestCaseToken{
+			{IMPLICIT_LAMBDA_PARAM, "_"},
+			{PAREN_OPEN, "("},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestMultipleExecsOnePerLine(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "a b\nc d\ne",
+		tokens: []TestCaseToken{
+			{EXEC_ARG, "a"},
+			{EXEC_ARG, "b"},
+			{SEMICOLON, "\n"},
+			{EXEC_ARG, "c"},
+			{EXEC_ARG, "d"},
+			{SEMICOLON, "\n"},
+			{EXEC_ARG, "e"},
+		}}
+	validateTestCase(t, test_case)
+}
+
+func TestImplicitLambdaInParen(t *testing.T) {
+	test_case := LexerTestCase{
+		input: "(_)",
+		tokens: []TestCaseToken{
+			{PAREN_OPEN, "("},
+			{IMPLICIT_LAMBDA_PARAM, "_"},
 			{PAREN_CLOSE, ")"},
 		}}
 	validateTestCase(t, test_case)

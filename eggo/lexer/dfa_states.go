@@ -144,23 +144,23 @@ type NumberNode struct {
 	firstChar  bool
 }
 
-func newNumberNode() NumberNode {
-	return NumberNode{
+func newNumberNode() *NumberNode {
+	return &NumberNode{
 		hasDecimal: false,
 		firstChar:  true,
 	}
 }
 
-func (node NumberNode) DebugString() string {
+func (node *NumberNode) DebugString() string {
 	return "<NumberNode>"
 }
 
-func (node NumberNode) getUnits(c byte, state DFAState) (TokenType, bool) {
+func (node *NumberNode) getUnits(c byte, state DFAState) (TokenType, bool) {
 	// TODO
 	return Unspecified, false
 }
 
-func (node NumberNode) getTokenType(state DFAState) TokenType {
+func (node *NumberNode) getTokenType(state DFAState) TokenType {
 	if state.prev_token_type == EXEC_ARG {
 		return EXEC_ARG
 	}
@@ -170,7 +170,7 @@ func (node NumberNode) getTokenType(state DFAState) TokenType {
 	return INT
 }
 
-func (node NumberNode) consume(c byte, lexer *Lexer, state *DFAState) error {
+func (node *NumberNode) consume(c byte, lexer *Lexer, state *DFAState) error {
 	if c == '.' {
 		if state.Peek(lexer) == '.' {
 			token_type := node.getTokenType(*state)
@@ -254,8 +254,8 @@ func (node UnquotedLiteralNode) consume(c byte, lexer *Lexer, state *DFAState) e
 				head += 1
 			}
 		}
-		state.Transition(StartNode{})
 		state.StepBack()
+		state.Transition(StartNode{})
 	} else if space || strings.Contains("<>{}[])|;,\n", string(c)) || (c == '.' && state.Peek(lexer) == '.') {
 		state.Yield(lexer, tok, false)
 		if c == '\n' && state.paren_depth == 0 {
@@ -267,9 +267,10 @@ func (node UnquotedLiteralNode) consume(c byte, lexer *Lexer, state *DFAState) e
 					Length:   1,
 				},
 			})
+		} else {
+			state.StepBack()
 		}
 		state.Transition(StartNode{})
-		state.StepBack()
 	} else if c == '@' {
 		return fmt.Errorf("unexpected symbol @ in unquoted expression")
 	}
@@ -337,7 +338,7 @@ func (node IdentifierNode) consume(c byte, lexer *Lexer, state *DFAState) error 
 func (node IdentifierNode) getTokenType(state DFAState, lexer Lexer) TokenType {
 	text := lexer.GetSource().Data()[state.token_start:state.head]
 	if text == "_" {
-		return IMPLICIT_LAMBDA
+		return IMPLICIT_LAMBDA_PARAM
 	}
 	if kw, has_kw := state.keywords[text]; has_kw {
 		return kw
