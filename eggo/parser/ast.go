@@ -1,6 +1,6 @@
 package parser
 
 type SyntaxTree struct {
-	expr     ExpressionType
-	children []SyntaxTree
+	Expr     Expression
+	Children []SyntaxTree
 }
