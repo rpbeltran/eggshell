@@ -20,7 +20,7 @@ func NewParser(lex *lexer.Lexer, top_level_expression Expression) Parser {
 }
 
 func (p *Parser) Accept(e Expression) (SyntaxTree, bool) {
-	tree, err := e.Require(p)
+	tree, err := e.Parse(p)
 	return tree, err == nil
 }
 
@@ -34,6 +34,10 @@ func (p *Parser) AcceptToken(token_type lexer.TokenType) (lexer.Token, bool) {
 	}
 	p.tokens_parsed++
 	return next_token, true
+}
+
+func (p *Parser) Require(e Expression) (SyntaxTree, error) {
+	return e.Parse(p)
 }
 
 func (p *Parser) RequireToken(token_type lexer.TokenType) (lexer.Token, error) {
@@ -52,5 +56,5 @@ func (p *Parser) Parse() (SyntaxTree, error) {
 	if err := p.lex.Lex(); err != nil {
 		return SyntaxTree{}, fmt.Errorf("error lexing: %w", err)
 	}
-	return p.top_level_expression.Require(p)
+	return p.top_level_expression.Parse(p)
 }
