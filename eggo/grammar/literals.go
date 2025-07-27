@@ -1,0 +1,63 @@
+package grammar
+
+import (
+	"eggo/lexer"
+	"eggo/parser"
+)
+
+// Literal String Expressions
+
+type StringLiteralExpr struct{}
+
+func (s StringLiteralExpr) DebugName() string {
+	return "StringLiteral"
+}
+
+func (s StringLiteralExpr) Require(p *parser.Parser) (parser.SyntaxTree, error) {
+	token, err := p.RequireToken(lexer.QUOTED_STRING)
+	if err != nil {
+		return parser.SyntaxTree{}, err
+	}
+	return parser.SyntaxTree{
+		Expr: s,
+		Data: []lexer.Token{token},
+	}, nil
+}
+
+// Literal Int Expressions
+
+type IntLiteralExpr struct{}
+
+func (s IntLiteralExpr) DebugName() string {
+	return "IntLiteral"
+}
+
+func (s IntLiteralExpr) Require(p *parser.Parser) (parser.SyntaxTree, error) {
+	token, err := p.RequireToken(lexer.INT)
+	if err != nil {
+		return parser.SyntaxTree{}, err
+	}
+	return parser.SyntaxTree{
+		Expr: s,
+		Data: []lexer.Token{token},
+	}, nil
+}
+
+// Literal Float Expressions
+
+type FloatLiteralExpr struct{}
+
+func (s FloatLiteralExpr) DebugName() string {
+	return "FloatLiteral"
+}
+
+func (s FloatLiteralExpr) Require(p *parser.Parser) (parser.SyntaxTree, error) {
+	token, err := p.RequireToken(lexer.FLOAT)
+	if err != nil {
+		return parser.SyntaxTree{}, err
+	}
+	return parser.SyntaxTree{
+		Expr: s,
+		Data: []lexer.Token{token},
+	}, nil
+}

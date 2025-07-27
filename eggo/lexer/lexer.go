@@ -32,3 +32,12 @@ func (lexer *Lexer) Lex() error {
 	}
 	return nil
 }
+
+func MockLexer(tokens []Token) Lexer {
+	empty_source := source.NewSource("", "", false)
+	return Lexer{
+		Tokens:   tokens,
+		source:   &empty_source,
+		dfaState: NewDfaState(),
+	}
+}

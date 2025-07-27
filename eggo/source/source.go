@@ -13,15 +13,15 @@ type Source struct {
 	length      int
 }
 
-func (source Source) FilePath() string {
+func (source *Source) FilePath() string {
 	return source.file_path
 }
 
-func (source Source) Data() string {
+func (source *Source) Data() string {
 	return source.data
 }
 
-func (source Source) Length() int {
+func (source *Source) Length() int {
 	return source.length
 }
 
@@ -47,7 +47,7 @@ func NewSource(file_path string, data string, append_newline bool) Source {
 }
 
 // Get 1-indexed line and column numbers for a byte offset
-func (source Source) GetLineAndCol(offset int) (int, int, error) {
+func (source *Source) GetLineAndCol(offset int) (int, int, error) {
 	if offset < 0 || offset > source.length-1 {
 		return 0, 0, fmt.Errorf("offset %d is out of range; source has length %d", offset, source.length)
 	}
@@ -70,7 +70,7 @@ func (source Source) GetLineAndCol(offset int) (int, int, error) {
 	return line_num, offset - line_start + 1, nil
 }
 
-func (source Source) GetCodeSlice(offset int, length int) (string, error) {
+func (source *Source) GetCodeSlice(offset int, length int) (string, error) {
 	if offset < 0 || offset+length > len(source.data) {
 		return "", fmt.Errorf("code slice out of bounds")
 	}
