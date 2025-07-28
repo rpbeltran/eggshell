@@ -6,6 +6,37 @@ import (
 	"fmt"
 )
 
+/* GRAMMAR
+	literal: StringLiteral
+       | IntegerLiteral
+       | FloatLiteral
+       | BooleanLiteral
+	StringLiteral: QUOTED_STRING
+	IntegerLiteral: INTEGER
+	FloatLiteral: FLOAT
+	BooleanLiteral: TRUE | FALSE
+
+	TODO: support literals with units
+*/
+
+type LiteralExpr struct{}
+
+func (expr LiteralExpr) DebugName() string {
+	return "Literal"
+}
+
+func (expr LiteralExpr) Parse(p *parser.Parser) (parser.SyntaxTree, error) {
+	child, ok := p.AcceptAnyOf(
+		StringLiteralExpr{}, IntLiteralExpr{}, FloatLiteralExpr{}, BoolLiteralExpr{})
+	if !ok {
+		return parser.SyntaxTree{}, fmt.Errorf("expected literal")
+	}
+	return parser.SyntaxTree{
+		Expr:     expr,
+		Children: []parser.SyntaxTree{child},
+	}, nil
+}
+
 // Literal String Expressions
 
 type StringLiteralExpr struct{}

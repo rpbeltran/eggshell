@@ -9,6 +9,80 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
+func TestLiteralExpr_QuotedString_ParsingSucceeds(t *testing.T) {
+	tokens := []lexer.Token{
+		{Type: lexer.QUOTED_STRING, Loc: exampleSourceLocation()},
+	}
+	expected_tree := parser.SyntaxTree{
+		Expr: LiteralExpr{},
+		Children: []parser.SyntaxTree{
+			{
+				Expr: StringLiteralExpr{},
+				Data: tokens,
+			},
+		},
+	}
+
+	assertParse(t, tokens, expected_tree)
+}
+
+func TestLiteralExpr_Int_ParsingSucceeds(t *testing.T) {
+	tokens := []lexer.Token{
+		{Type: lexer.INT, Loc: exampleSourceLocation()},
+	}
+	expected_tree := parser.SyntaxTree{
+		Expr: LiteralExpr{},
+		Children: []parser.SyntaxTree{
+			{
+				Expr: IntLiteralExpr{},
+				Data: tokens,
+			},
+		},
+	}
+
+	assertParse(t, tokens, expected_tree)
+}
+
+func TestLiteralExpr_Float_ParsingSucceeds(t *testing.T) {
+	tokens := []lexer.Token{
+		{Type: lexer.FLOAT, Loc: exampleSourceLocation()},
+	}
+	expected_tree := parser.SyntaxTree{
+		Expr: LiteralExpr{},
+		Children: []parser.SyntaxTree{
+			{
+				Expr: FloatLiteralExpr{},
+				Data: tokens,
+			},
+		},
+	}
+
+	assertParse(t, tokens, expected_tree)
+}
+
+func TestLiteralExpr_Bool_ParsingSucceeds(t *testing.T) {
+	tokens := []lexer.Token{
+		{Type: lexer.FALSE, Loc: exampleSourceLocation()},
+	}
+	expected_tree := parser.SyntaxTree{
+		Expr: LiteralExpr{},
+		Children: []parser.SyntaxTree{
+			{
+				Expr: BoolLiteralExpr{},
+				Data: tokens,
+			},
+		},
+	}
+
+	assertParse(t, tokens, expected_tree)
+}
+
+func TestLiteralExpr_Other_ParsingFails(t *testing.T) {
+	assertParseFails(t, []lexer.Token{
+		{Type: lexer.TEST_A, Loc: exampleSourceLocation()},
+	}, LiteralExpr{})
+}
+
 func TestStringLiteralExpr_QuotedString_ParsingSucceeds(t *testing.T) {
 	tokens := []lexer.Token{
 		{Type: lexer.QUOTED_STRING, Loc: exampleSourceLocation()},
