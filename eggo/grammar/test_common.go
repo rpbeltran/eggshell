@@ -9,14 +9,14 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func assertParse(t *testing.T, tokens []lexer.Token, expected_tree parser.SyntaxTree) {
+func assertParse(t *testing.T, tokens []lexer.Token, expected parser.SyntaxTree, expr parser.Expression) {
 	lex := lexer.MockLexer(tokens)
-	parser := parser.NewParser(&lex, expected_tree.Expr)
+	parser := parser.NewParser(&lex, expr)
 	tree, err := parser.Parse()
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}
-	if diff := cmp.Diff(tree, expected_tree); diff != "" {
+	if diff := cmp.Diff(tree, expected); diff != "" {
 		t.Fatalf("Parse() mismatch (-want +got):\n%s", diff)
 	}
 }

@@ -11,26 +11,11 @@ func TestAtomicExpr_Int_ParsingSucceeds(t *testing.T) {
 		{Type: lexer.INT, Loc: exampleSourceLocation()},
 	}
 	expected_tree := parser.SyntaxTree{
-		Expr: AtomicExpr{},
-		Children: []parser.SyntaxTree{
-			{
-				Expr: SelectableAtomicExpr{},
-				Children: []parser.SyntaxTree{
-					{
-						Expr: LiteralExpr{},
-						Children: []parser.SyntaxTree{
-							{
-								Expr: IntLiteralExpr{},
-								Data: tokens,
-							},
-						},
-					},
-				},
-			},
-		},
+		Expr: IntLiteralExpr{},
+		Data: tokens,
 	}
 
-	assertParse(t, tokens, expected_tree)
+	assertParse(t, tokens, expected_tree, AtomicExpr{})
 }
 
 func TestAtomicExpr_Other_ParsingFails(t *testing.T) {
@@ -44,21 +29,11 @@ func TestSelectableAtomicExpr_Int_ParsingSucceeds(t *testing.T) {
 		{Type: lexer.INT, Loc: exampleSourceLocation()},
 	}
 	expected_tree := parser.SyntaxTree{
-		Expr: SelectableAtomicExpr{},
-		Children: []parser.SyntaxTree{
-			{
-				Expr: LiteralExpr{},
-				Children: []parser.SyntaxTree{
-					{
-						Expr: IntLiteralExpr{},
-						Data: tokens,
-					},
-				},
-			},
-		},
+		Expr: IntLiteralExpr{},
+		Data: tokens,
 	}
 
-	assertParse(t, tokens, expected_tree)
+	assertParse(t, tokens, expected_tree, SelectableAtomicExpr{})
 }
 
 func TestSelectableAtomicExpr_Other_ParsingFails(t *testing.T) {

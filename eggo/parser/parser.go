@@ -22,12 +22,17 @@ func NewParser(lex *lexer.Lexer, top_level_expression Expression) Parser {
 
 func (p *Parser) Accept(expr Expression) (SyntaxTree, bool) {
 	tree, err := expr.Parse(p)
-	return tree, err == nil
+	if err != nil {
+		return SyntaxTree{}, false
+	}
+	tree.Unwrap()
+	return tree, true
 }
 
 func (p *Parser) AcceptAnyOf(exprs ...Expression) (SyntaxTree, bool) {
 	for _, expr := range exprs {
 		if tree, ok := p.Accept(expr); ok {
+			tree.Unwrap()
 			return tree, true
 		}
 	}
@@ -78,5 +83,9 @@ func (p *Parser) Parse() (SyntaxTree, error) {
 	if err := p.lex.Lex(); err != nil {
 		return SyntaxTree{}, fmt.Errorf("error lexing: %w", err)
 	}
-	return p.top_level_expression.Parse(p)
+	tree, err := p.top_level_expression.Parse(p)
+	if err == nil {
+		tree.Unwrap()
+	}
+	return tree, err
 }

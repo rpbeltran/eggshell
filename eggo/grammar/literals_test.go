@@ -11,16 +11,11 @@ func TestLiteralExpr_QuotedString_ParsingSucceeds(t *testing.T) {
 		{Type: lexer.QUOTED_STRING, Loc: exampleSourceLocation()},
 	}
 	expected_tree := parser.SyntaxTree{
-		Expr: LiteralExpr{},
-		Children: []parser.SyntaxTree{
-			{
-				Expr: StringLiteralExpr{},
-				Data: tokens,
-			},
-		},
+		Expr: StringLiteralExpr{},
+		Data: tokens,
 	}
 
-	assertParse(t, tokens, expected_tree)
+	assertParse(t, tokens, expected_tree, LiteralExpr{})
 }
 
 func TestLiteralExpr_Int_ParsingSucceeds(t *testing.T) {
@@ -28,16 +23,11 @@ func TestLiteralExpr_Int_ParsingSucceeds(t *testing.T) {
 		{Type: lexer.INT, Loc: exampleSourceLocation()},
 	}
 	expected_tree := parser.SyntaxTree{
-		Expr: LiteralExpr{},
-		Children: []parser.SyntaxTree{
-			{
-				Expr: IntLiteralExpr{},
-				Data: tokens,
-			},
-		},
+		Expr: IntLiteralExpr{},
+		Data: tokens,
 	}
 
-	assertParse(t, tokens, expected_tree)
+	assertParse(t, tokens, expected_tree, LiteralExpr{})
 }
 
 func TestLiteralExpr_Float_ParsingSucceeds(t *testing.T) {
@@ -45,16 +35,11 @@ func TestLiteralExpr_Float_ParsingSucceeds(t *testing.T) {
 		{Type: lexer.FLOAT, Loc: exampleSourceLocation()},
 	}
 	expected_tree := parser.SyntaxTree{
-		Expr: LiteralExpr{},
-		Children: []parser.SyntaxTree{
-			{
-				Expr: FloatLiteralExpr{},
-				Data: tokens,
-			},
-		},
+		Expr: FloatLiteralExpr{},
+		Data: tokens,
 	}
 
-	assertParse(t, tokens, expected_tree)
+	assertParse(t, tokens, expected_tree, LiteralExpr{})
 }
 
 func TestLiteralExpr_Bool_ParsingSucceeds(t *testing.T) {
@@ -62,16 +47,11 @@ func TestLiteralExpr_Bool_ParsingSucceeds(t *testing.T) {
 		{Type: lexer.FALSE, Loc: exampleSourceLocation()},
 	}
 	expected_tree := parser.SyntaxTree{
-		Expr: LiteralExpr{},
-		Children: []parser.SyntaxTree{
-			{
-				Expr: BoolLiteralExpr{},
-				Data: tokens,
-			},
-		},
+		Expr: BoolLiteralExpr{},
+		Data: tokens,
 	}
 
-	assertParse(t, tokens, expected_tree)
+	assertParse(t, tokens, expected_tree, LiteralExpr{})
 }
 
 func TestLiteralExpr_Other_ParsingFails(t *testing.T) {
@@ -89,7 +69,7 @@ func TestStringLiteralExpr_QuotedString_ParsingSucceeds(t *testing.T) {
 		Data: tokens,
 	}
 
-	assertParse(t, tokens, expected_tree)
+	assertParse(t, tokens, expected_tree, StringLiteralExpr{})
 }
 
 func TestStringLiteralExpr_Other_ParsingFails(t *testing.T) {
@@ -107,7 +87,7 @@ func TestIntLiteralExpr_Int_ParsingSucceeds(t *testing.T) {
 		Data: tokens,
 	}
 
-	assertParse(t, tokens, expected_tree)
+	assertParse(t, tokens, expected_tree, LiteralExpr{})
 }
 
 func TestIntLiteralExpr_Other_ParsingFails(t *testing.T) {
@@ -125,7 +105,7 @@ func TestFloatLiteralExpr_Float_ParsingSucceeds(t *testing.T) {
 		Data: tokens,
 	}
 
-	assertParse(t, tokens, expected_tree)
+	assertParse(t, tokens, expected_tree, FloatLiteralExpr{})
 }
 
 func TestFloatLiteralExpr_Other_ParsingFails(t *testing.T) {
@@ -142,7 +122,7 @@ func TestBoolLiteralExpr_True_ParsingSucceeds(t *testing.T) {
 		Expr: BoolLiteralExpr{},
 		Data: tokens,
 	}
-	assertParse(t, tokens, expected_tree)
+	assertParse(t, tokens, expected_tree, BoolLiteralExpr{})
 }
 
 func TestBoolLiteralExpr_False_ParsingSucceeds(t *testing.T) {
@@ -153,7 +133,7 @@ func TestBoolLiteralExpr_False_ParsingSucceeds(t *testing.T) {
 		Expr: BoolLiteralExpr{},
 		Data: tokens,
 	}
-	assertParse(t, tokens, expected_tree)
+	assertParse(t, tokens, expected_tree, BoolLiteralExpr{})
 }
 
 func TestBoolLiteralExpr_Other_ParsingFails(t *testing.T) {
