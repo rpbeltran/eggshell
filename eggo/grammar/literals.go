@@ -3,6 +3,7 @@ package grammar
 import (
 	"eggo/lexer"
 	"eggo/parser"
+	"fmt"
 )
 
 // Literal String Expressions
@@ -55,6 +56,25 @@ func (expr FloatLiteralExpr) Parse(p *parser.Parser) (parser.SyntaxTree, error) 
 	token, err := p.RequireToken(lexer.FLOAT)
 	if err != nil {
 		return parser.SyntaxTree{}, err
+	}
+	return parser.SyntaxTree{
+		Expr: expr,
+		Data: []lexer.Token{token},
+	}, nil
+}
+
+// Literal Boolean Expressions
+
+type BoolLiteralExpr struct{}
+
+func (expr BoolLiteralExpr) DebugName() string {
+	return "BoolLiteral"
+}
+
+func (expr BoolLiteralExpr) Parse(p *parser.Parser) (parser.SyntaxTree, error) {
+	token, ok := p.AcceptAnyOfToken(lexer.TRUE, lexer.FALSE)
+	if !ok {
+		return parser.SyntaxTree{}, fmt.Errorf("expected bool literal")
 	}
 	return parser.SyntaxTree{
 		Expr: expr,

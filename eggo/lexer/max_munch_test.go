@@ -11,28 +11,28 @@ type TestCase struct {
 
 func TestMMTrie(t *testing.T) {
 	patterns := map[string]TokenType{
-		"a":   _TEST_A,
-		"aab": _TEST_B,
-		"aba": _TEST_C,
-		"b":   _TEST_D,
+		"a":   TEST_A,
+		"aab": TEST_B,
+		"aba": TEST_C,
+		"b":   TEST_D,
 	}
 	test_cases := []TestCase{
 		{"", 0, MaxMunchResult{}, false},
 		{"cd", 0, MaxMunchResult{}, false},
-		{"a", 0, MaxMunchResult{_TEST_A, 1}, true},
-		{"ac", 0, MaxMunchResult{_TEST_A, 1}, true},
-		{"aab", 0, MaxMunchResult{_TEST_B, 3}, true},
-		{"aabrah", 0, MaxMunchResult{_TEST_B, 3}, true},
-		{"ababrah", 0, MaxMunchResult{_TEST_C, 3}, true},
-		{"baabrah", 0, MaxMunchResult{_TEST_D, 1}, true},
+		{"a", 0, MaxMunchResult{TEST_A, 1}, true},
+		{"ac", 0, MaxMunchResult{TEST_A, 1}, true},
+		{"aab", 0, MaxMunchResult{TEST_B, 3}, true},
+		{"aabrah", 0, MaxMunchResult{TEST_B, 3}, true},
+		{"ababrah", 0, MaxMunchResult{TEST_C, 3}, true},
+		{"baabrah", 0, MaxMunchResult{TEST_D, 1}, true},
 		{"xxx", 3, MaxMunchResult{}, false},
 		{"xxxcd", 3, MaxMunchResult{}, false},
-		{"xxxa", 3, MaxMunchResult{_TEST_A, 1}, true},
-		{"xxxac", 3, MaxMunchResult{_TEST_A, 1}, true},
-		{"xxxaab", 3, MaxMunchResult{_TEST_B, 3}, true},
-		{"xxxaabrah", 3, MaxMunchResult{_TEST_B, 3}, true},
-		{"xxxababrah", 3, MaxMunchResult{_TEST_C, 3}, true},
-		{"xxxbaabrah", 3, MaxMunchResult{_TEST_D, 1}, true},
+		{"xxxa", 3, MaxMunchResult{TEST_A, 1}, true},
+		{"xxxac", 3, MaxMunchResult{TEST_A, 1}, true},
+		{"xxxaab", 3, MaxMunchResult{TEST_B, 3}, true},
+		{"xxxaabrah", 3, MaxMunchResult{TEST_B, 3}, true},
+		{"xxxababrah", 3, MaxMunchResult{TEST_C, 3}, true},
+		{"xxxbaabrah", 3, MaxMunchResult{TEST_D, 1}, true},
 	}
 
 	trie := NewMMTrie(patterns)
@@ -54,10 +54,10 @@ func TestMMTrie(t *testing.T) {
 
 func TestFirstByte(t *testing.T) {
 	patterns := map[string]TokenType{
-		"apple":       _TEST_A,
-		"banana":      _TEST_B,
-		"cherry":      _TEST_C,
-		"dragonfruit": _TEST_D,
+		"apple":       TEST_A,
+		"banana":      TEST_B,
+		"cherry":      TEST_C,
+		"dragonfruit": TEST_D,
 	}
 	trie := NewMMTrie(patterns)
 	if len(trie.FirstByte) != 4 {

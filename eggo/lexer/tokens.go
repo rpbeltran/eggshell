@@ -18,10 +18,10 @@ func (token Token) DebugString() string {
 
 const (
 	Unspecified TokenType = iota
-	_TEST_A
-	_TEST_B
-	_TEST_C
-	_TEST_D
+	TEST_A
+	TEST_B
+	TEST_C
+	TEST_D
 	ALWAYS_LOOP
 	AND
 	ANGLE_CLOSE
@@ -115,14 +115,14 @@ func (t TokenType) DebugName() string {
 	switch t {
 	case Unspecified:
 		return "Unspecified"
-	case _TEST_A:
-		return "_TEST_A"
-	case _TEST_B:
-		return "_TEST_B"
-	case _TEST_C:
-		return "_TEST_C"
-	case _TEST_D:
-		return "_TEST_D"
+	case TEST_A:
+		return "TEST_A"
+	case TEST_B:
+		return "TEST_B"
+	case TEST_C:
+		return "TEST_C"
+	case TEST_D:
+		return "TEST_D"
 	case ALWAYS_LOOP:
 		return "ALWAYS_LOOP"
 	case AND:

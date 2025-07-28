@@ -3,6 +3,7 @@ package parser
 import (
 	"eggo/lexer"
 	"fmt"
+	"slices"
 )
 
 type Parser struct {
@@ -19,9 +20,30 @@ func NewParser(lex *lexer.Lexer, top_level_expression Expression) Parser {
 	}
 }
 
-func (p *Parser) Accept(e Expression) (SyntaxTree, bool) {
-	tree, err := e.Parse(p)
+func (p *Parser) Accept(expr Expression) (SyntaxTree, bool) {
+	tree, err := expr.Parse(p)
 	return tree, err == nil
+}
+
+func (p *Parser) AcceptAnyOf(exprs ...Expression) (SyntaxTree, bool) {
+	for _, expr := range exprs {
+		if tree, ok := p.Accept(expr); ok {
+			return tree, true
+		}
+	}
+	return SyntaxTree{}, false
+}
+
+func (p *Parser) AcceptAnyOfToken(token_types ...lexer.TokenType) (lexer.Token, bool) {
+	if p.tokens_parsed >= len(p.lex.Tokens) {
+		return lexer.Token{}, false
+	}
+	next_token := p.lex.Tokens[p.tokens_parsed]
+	if slices.Contains(token_types, next_token.Type) {
+		p.tokens_parsed++
+		return next_token, true
+	}
+	return lexer.Token{}, false
 }
 
 func (p *Parser) AcceptToken(token_type lexer.TokenType) (lexer.Token, bool) {
