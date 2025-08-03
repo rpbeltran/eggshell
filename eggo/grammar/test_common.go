@@ -16,7 +16,7 @@ func assertParse(t *testing.T, tokens []lexer.Token, expected parser.SyntaxTree,
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}
-	if diff := cmp.Diff(tree, expected); diff != "" {
+	if diff := cmp.Diff(expected, tree); diff != "" {
 		t.Fatalf("Parse() mismatch (-want +got):\n%s", diff)
 	}
 }
@@ -34,5 +34,12 @@ func exampleSourceLocation() source.SourceLocation {
 		FilePath: "foo",
 		Offset:   0,
 		Length:   5,
+	}
+}
+func getTestLoc(index int) source.SourceLocation {
+	return source.SourceLocation{
+		FilePath: "",
+		Offset:   10 * index,
+		Length:   10,
 	}
 }

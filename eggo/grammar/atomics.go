@@ -26,9 +26,9 @@ func (expr AtomicExpr) AllowsUnwrap() bool {
 }
 
 func (expr AtomicExpr) Parse(p *parser.Parser) (parser.SyntaxTree, error) {
-	child, ok := p.AcceptAnyOf(SelectableAtomicExpr{})
-	if !ok {
-		return parser.SyntaxTree{}, fmt.Errorf("expected literal")
+	child, err := p.Require(SelectableAtomicExpr{})
+	if err != nil {
+		return parser.SyntaxTree{}, fmt.Errorf("expected literal: %w", err)
 	}
 	return parser.SyntaxTree{
 		Expr:     expr,
@@ -49,9 +49,9 @@ func (expr SelectableAtomicExpr) AllowsUnwrap() bool {
 }
 
 func (expr SelectableAtomicExpr) Parse(p *parser.Parser) (parser.SyntaxTree, error) {
-	child, ok := p.AcceptAnyOf(LiteralExpr{})
-	if !ok {
-		return parser.SyntaxTree{}, fmt.Errorf("expected literal")
+	child, err := p.Require(LiteralExpr{})
+	if err != nil {
+		return parser.SyntaxTree{}, fmt.Errorf("expected literal: %w", err)
 	}
 	return parser.SyntaxTree{
 		Expr:     expr,

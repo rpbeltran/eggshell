@@ -64,7 +64,12 @@ func (p *Parser) AcceptToken(token_type lexer.TokenType) (lexer.Token, bool) {
 }
 
 func (p *Parser) Require(e Expression) (SyntaxTree, error) {
-	return e.Parse(p)
+	tree, err := e.Parse(p)
+	if err != nil {
+		return SyntaxTree{}, fmt.Errorf("error parsing: %w", err)
+	}
+	tree.Unwrap()
+	return tree, nil
 }
 
 func (p *Parser) RequireToken(token_type lexer.TokenType) (lexer.Token, error) {
