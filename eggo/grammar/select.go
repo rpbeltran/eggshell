@@ -21,10 +21,6 @@ func (expr SelectElementExpr) DebugName() string {
 	return "SelectElement"
 }
 
-func (expr SelectElementExpr) AllowsUnwrap() bool {
-	return false
-}
-
 func (expr SelectElementExpr) Parse(p *parser.Parser) (parser.SyntaxTree, error) {
 	lhs, err := p.Require(SelectableAtomicExpr{})
 	if err != nil {
@@ -59,10 +55,6 @@ type SelectSliceExpr struct{}
 
 func (expr SelectSliceExpr) DebugName() string {
 	return "SelectSlice"
-}
-
-func (expr SelectSliceExpr) AllowsUnwrap() bool {
-	return false
 }
 
 func (expr SelectSliceExpr) Parse(p *parser.Parser) (parser.SyntaxTree, error) {
@@ -129,10 +121,6 @@ func (expr _sliceStartExpr) DebugName() string {
 	return "_sliceStartExpr"
 }
 
-func (expr _sliceStartExpr) AllowsUnwrap() bool {
-	return false
-}
-
 func (expr _sliceStartExpr) Parse(p *parser.Parser) (parser.SyntaxTree, error) {
 	child, err := p.Require(SelectableAtomicExpr{})
 	if err != nil {
@@ -150,10 +138,6 @@ func (expr _sliceEndExpr) DebugName() string {
 	return "_sliceEndExpr"
 }
 
-func (expr _sliceEndExpr) AllowsUnwrap() bool {
-	return false
-}
-
 func (expr _sliceEndExpr) Parse(p *parser.Parser) (parser.SyntaxTree, error) {
 	child, err := p.Require(SelectableAtomicExpr{})
 	if err != nil {
@@ -169,10 +153,6 @@ type _sliceJumpExpr struct{}
 
 func (expr _sliceJumpExpr) DebugName() string {
 	return "_sliceJumpExpr"
-}
-
-func (expr _sliceJumpExpr) AllowsUnwrap() bool {
-	return false
 }
 
 func (expr _sliceJumpExpr) Parse(p *parser.Parser) (parser.SyntaxTree, error) {

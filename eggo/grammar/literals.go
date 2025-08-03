@@ -25,20 +25,13 @@ func (expr LiteralExpr) DebugName() string {
 	return "Literal"
 }
 
-func (expr LiteralExpr) AllowsUnwrap() bool {
-	return true
-}
-
 func (expr LiteralExpr) Parse(p *parser.Parser) (parser.SyntaxTree, error) {
 	child, ok := p.AcceptAnyOf(
 		StringLiteralExpr{}, IntLiteralExpr{}, FloatLiteralExpr{}, BoolLiteralExpr{})
 	if !ok {
 		return parser.SyntaxTree{}, fmt.Errorf("expected literal")
 	}
-	return parser.SyntaxTree{
-		Expr:     expr,
-		Children: []parser.SyntaxTree{child},
-	}, nil
+	return child, nil
 }
 
 // Literal String Expressions
@@ -47,10 +40,6 @@ type StringLiteralExpr struct{}
 
 func (expr StringLiteralExpr) DebugName() string {
 	return "StringLiteral"
-}
-
-func (expr StringLiteralExpr) AllowsUnwrap() bool {
-	return false
 }
 
 func (expr StringLiteralExpr) Parse(p *parser.Parser) (parser.SyntaxTree, error) {
@@ -72,10 +61,6 @@ func (expr IntLiteralExpr) DebugName() string {
 	return "IntLiteral"
 }
 
-func (expr IntLiteralExpr) AllowsUnwrap() bool {
-	return false
-}
-
 func (expr IntLiteralExpr) Parse(p *parser.Parser) (parser.SyntaxTree, error) {
 	token, err := p.RequireToken(lexer.INT)
 	if err != nil {
@@ -95,10 +80,6 @@ func (expr FloatLiteralExpr) DebugName() string {
 	return "FloatLiteral"
 }
 
-func (expr FloatLiteralExpr) AllowsUnwrap() bool {
-	return false
-}
-
 func (expr FloatLiteralExpr) Parse(p *parser.Parser) (parser.SyntaxTree, error) {
 	token, err := p.RequireToken(lexer.FLOAT)
 	if err != nil {
@@ -116,10 +97,6 @@ type BoolLiteralExpr struct{}
 
 func (expr BoolLiteralExpr) DebugName() string {
 	return "BoolLiteral"
-}
-
-func (expr BoolLiteralExpr) AllowsUnwrap() bool {
-	return false
 }
 
 func (expr BoolLiteralExpr) Parse(p *parser.Parser) (parser.SyntaxTree, error) {
