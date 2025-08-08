@@ -3,7 +3,6 @@ package grammar
 import (
 	"eggo/lexer"
 	"eggo/parser"
-	"fmt"
 )
 
 /*
@@ -23,11 +22,10 @@ func (expr ArithLevelUnaryExpr) DebugName() string {
 	return "UnaryNegate"
 }
 
-func (expr ArithLevelUnaryExpr) Parse(p *parser.Parser) (parser.SyntaxTree, error) {
-	if child, has_match := p.AcceptAnyOf(UnaryNegateExpr{}, UnaryNotExpr{}, AtomicExpr{}); has_match {
-		return child, nil
-	}
-	return parser.SyntaxTree{}, fmt.Errorf("expected an atomic or a unary expression")
+func (expr ArithLevelUnaryExpr) Parse(p parser.Parser, head int) (parser.SyntaxTree, int, error) {
+	return parser.ParseSingleAnyOfChildUnwrapped(expr, []parser.Expression{
+		UnaryNegateExpr{}, UnaryNotExpr{}, AtomicExpr{},
+	}, p, head)
 }
 
 // Unary Negate
@@ -38,22 +36,22 @@ func (expr UnaryNegateExpr) DebugName() string {
 	return "UnaryNegate"
 }
 
-func (expr UnaryNegateExpr) Parse(p *parser.Parser) (parser.SyntaxTree, error) {
-	neg_token, err := p.RequireToken(lexer.MINUS)
+func (expr UnaryNegateExpr) Parse(p parser.Parser, head int) (parser.SyntaxTree, int, error) {
+	neg_token, new_head, err := p.RequireToken(head, lexer.MINUS)
 	if err != nil {
-		return parser.SyntaxTree{}, err
+		return parser.SyntaxTree{}, head, err
 	}
 
-	atomic, err := p.Require(AtomicExpr{})
+	atomic, new_head, err := p.Require(new_head, AtomicExpr{})
 	if err != nil {
-		return parser.SyntaxTree{}, err
+		return parser.SyntaxTree{}, head, err
 	}
 
 	return parser.SyntaxTree{
 		Expr:     expr,
 		Children: []parser.SyntaxTree{atomic},
 		Data:     []lexer.Token{neg_token},
-	}, nil
+	}, new_head, nil
 }
 
 // Unary Not
@@ -64,20 +62,20 @@ func (expr UnaryNotExpr) DebugName() string {
 	return "UnaryNot"
 }
 
-func (expr UnaryNotExpr) Parse(p *parser.Parser) (parser.SyntaxTree, error) {
-	not_token, err := p.RequireToken(lexer.NOT)
+func (expr UnaryNotExpr) Parse(p parser.Parser, head int) (parser.SyntaxTree, int, error) {
+	not_token, new_head, err := p.RequireToken(head, lexer.NOT)
 	if err != nil {
-		return parser.SyntaxTree{}, err
+		return parser.SyntaxTree{}, head, err
 	}
 
-	atomic, err := p.Require(AtomicExpr{})
+	atomic, new_head, err := p.Require(new_head, AtomicExpr{})
 	if err != nil {
-		return parser.SyntaxTree{}, err
+		return parser.SyntaxTree{}, head, err
 	}
 
 	return parser.SyntaxTree{
 		Expr:     expr,
 		Children: []parser.SyntaxTree{atomic},
 		Data:     []lexer.Token{not_token},
-	}, nil
+	}, new_head, nil
 }

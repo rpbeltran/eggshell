@@ -2,7 +2,6 @@ package grammar
 
 import (
 	"eggo/parser"
-	"fmt"
 )
 
 /*
@@ -21,12 +20,10 @@ func (expr AtomicExpr) DebugName() string {
 	return "Atomic"
 }
 
-func (expr AtomicExpr) Parse(p *parser.Parser) (parser.SyntaxTree, error) {
-	child, err := p.Require(SelectableAtomicExpr{})
-	if err != nil {
-		return parser.SyntaxTree{}, fmt.Errorf("expected literal: %w", err)
-	}
-	return child, nil
+func (expr AtomicExpr) Parse(p parser.Parser, head int) (parser.SyntaxTree, int, error) {
+	return parser.ParseSingleAnyOfChildUnwrapped(expr, []parser.Expression{
+		SelectableAtomicExpr{},
+	}, p, head)
 }
 
 // Selectable atomics
@@ -37,10 +34,6 @@ func (expr SelectableAtomicExpr) DebugName() string {
 	return "SelectableAtomic"
 }
 
-func (expr SelectableAtomicExpr) Parse(p *parser.Parser) (parser.SyntaxTree, error) {
-	child, err := p.Require(LiteralExpr{})
-	if err != nil {
-		return parser.SyntaxTree{}, fmt.Errorf("expected literal: %w", err)
-	}
-	return child, nil
+func (expr SelectableAtomicExpr) Parse(p parser.Parser, head int) (parser.SyntaxTree, int, error) {
+	return parser.ParseSingleChildUnwrapped(expr, LiteralExpr{}, p, head)
 }

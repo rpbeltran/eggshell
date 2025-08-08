@@ -12,7 +12,7 @@ import (
 func assertParse(t *testing.T, tokens []lexer.Token, expected parser.SyntaxTree, expr parser.Expression) {
 	lex := lexer.MockLexer(tokens)
 	parser := parser.NewParser(&lex, expr)
-	tree, err := parser.Parse()
+	tree, _, err := parser.Parse(0)
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}
@@ -24,7 +24,7 @@ func assertParse(t *testing.T, tokens []lexer.Token, expected parser.SyntaxTree,
 func assertParseFails(t *testing.T, tokens []lexer.Token, expr parser.Expression) {
 	lex := lexer.MockLexer(tokens)
 	parser := parser.NewParser(&lex, expr)
-	if tree, err := parser.Parse(); err == nil {
+	if tree, _, err := parser.Parse(0); err == nil {
 		t.Fatalf("Expected error but got: %v", tree.Expr.DebugName())
 	}
 }

@@ -3,7 +3,6 @@ package grammar
 import (
 	"eggo/lexer"
 	"eggo/parser"
-	"fmt"
 )
 
 /*
@@ -21,32 +20,33 @@ func (expr SelectElementExpr) DebugName() string {
 	return "SelectElement"
 }
 
-func (expr SelectElementExpr) Parse(p *parser.Parser) (parser.SyntaxTree, error) {
-	lhs, err := p.Require(SelectableAtomicExpr{})
+func (expr SelectElementExpr) Parse(p parser.Parser, head int) (parser.SyntaxTree, int, error) {
+	new_head := head
+	lhs, new_head, err := p.Require(new_head, SelectableAtomicExpr{})
 	if err != nil {
-		return parser.SyntaxTree{}, err
+		return parser.SyntaxTree{}, head, err
 	}
 
-	open, err := p.RequireToken(lexer.SQUARE_OPEN)
+	open, new_head, err := p.RequireToken(new_head, lexer.SQUARE_OPEN)
 	if err != nil {
-		return parser.SyntaxTree{}, err
+		return parser.SyntaxTree{}, head, err
 	}
 
-	rhs, err := p.Require(ExpressionExpr{})
+	rhs, new_head, err := p.Require(new_head, ExpressionExpr{})
 	if err != nil {
-		return parser.SyntaxTree{}, err
+		return parser.SyntaxTree{}, head, err
 	}
 
-	close, err := p.RequireToken(lexer.SQUARE_CLOSE)
+	close, new_head, err := p.RequireToken(new_head, lexer.SQUARE_CLOSE)
 	if err != nil {
-		return parser.SyntaxTree{}, err
+		return parser.SyntaxTree{}, head, err
 	}
 
 	return parser.SyntaxTree{
 		Expr:     expr,
 		Children: []parser.SyntaxTree{lhs, rhs},
 		Data:     []lexer.Token{open, close},
-	}, nil
+	}, new_head, nil
 }
 
 // Select Slice
@@ -57,25 +57,25 @@ func (expr SelectSliceExpr) DebugName() string {
 	return "SelectSlice"
 }
 
-func (expr SelectSliceExpr) Parse(p *parser.Parser) (parser.SyntaxTree, error) {
-	lhs, err := p.Require(SelectableAtomicExpr{})
+func (expr SelectSliceExpr) Parse(p parser.Parser, head int) (parser.SyntaxTree, int, error) {
+	lhs, new_head, err := p.Require(head, SelectableAtomicExpr{})
 	if err != nil {
-		return parser.SyntaxTree{}, err
+		return parser.SyntaxTree{}, head, err
 	}
 
-	open, err := p.RequireToken(lexer.SQUARE_OPEN)
+	open, new_head, err := p.RequireToken(new_head, lexer.SQUARE_OPEN)
 	if err != nil {
-		return parser.SyntaxTree{}, err
+		return parser.SyntaxTree{}, head, err
 	}
 
-	start, has_start := p.Accept(_sliceStartExpr{})
+	start, new_head, has_start := p.Accept(new_head, _sliceStartExpr{})
 
-	colon, err := p.RequireToken(lexer.COLON)
+	colon, new_head, err := p.RequireToken(new_head, lexer.COLON)
 	if err != nil {
-		return parser.SyntaxTree{}, err
+		return parser.SyntaxTree{}, head, err
 	}
 
-	end, has_end := p.Accept(_sliceEndExpr{})
+	end, new_head, has_end := p.Accept(new_head, _sliceEndExpr{})
 
 	children := []parser.SyntaxTree{lhs}
 	if has_start {
@@ -85,18 +85,19 @@ func (expr SelectSliceExpr) Parse(p *parser.Parser) (parser.SyntaxTree, error) {
 		children = append(children, end)
 	}
 
-	by, has_by := p.AcceptToken(lexer.BY)
+	by, new_head, has_by := p.AcceptToken(new_head, lexer.BY)
 	if has_by {
-		jump, err := p.Require(_sliceJumpExpr{})
+		jump, head_j, err := p.Require(new_head, _sliceJumpExpr{})
 		if err != nil {
-			return parser.SyntaxTree{}, err
+			return parser.SyntaxTree{}, head, err
 		}
 		children = append(children, jump)
+		new_head = head_j
 	}
 
-	close, err := p.RequireToken(lexer.SQUARE_CLOSE)
+	close, new_head, err := p.RequireToken(new_head, lexer.SQUARE_CLOSE)
 	if err != nil {
-		return parser.SyntaxTree{}, err
+		return parser.SyntaxTree{}, head, err
 	}
 
 	var data []lexer.Token
@@ -110,7 +111,7 @@ func (expr SelectSliceExpr) Parse(p *parser.Parser) (parser.SyntaxTree, error) {
 		Expr:     expr,
 		Children: children,
 		Data:     data,
-	}, nil
+	}, new_head, nil
 }
 
 // -- inner
@@ -121,15 +122,8 @@ func (expr _sliceStartExpr) DebugName() string {
 	return "_sliceStartExpr"
 }
 
-func (expr _sliceStartExpr) Parse(p *parser.Parser) (parser.SyntaxTree, error) {
-	child, err := p.Require(SelectableAtomicExpr{})
-	if err != nil {
-		return parser.SyntaxTree{}, err
-	}
-	return parser.SyntaxTree{
-		Expr:     expr,
-		Children: []parser.SyntaxTree{child},
-	}, nil
+func (expr _sliceStartExpr) Parse(p parser.Parser, head int) (parser.SyntaxTree, int, error) {
+	return parser.ParseSingleChild(expr, SelectableAtomicExpr{}, p, head)
 }
 
 type _sliceEndExpr struct{}
@@ -138,15 +132,8 @@ func (expr _sliceEndExpr) DebugName() string {
 	return "_sliceEndExpr"
 }
 
-func (expr _sliceEndExpr) Parse(p *parser.Parser) (parser.SyntaxTree, error) {
-	child, err := p.Require(SelectableAtomicExpr{})
-	if err != nil {
-		return parser.SyntaxTree{}, err
-	}
-	return parser.SyntaxTree{
-		Expr:     expr,
-		Children: []parser.SyntaxTree{child},
-	}, nil
+func (expr _sliceEndExpr) Parse(p parser.Parser, head int) (parser.SyntaxTree, int, error) {
+	return parser.ParseSingleChild(expr, SelectableAtomicExpr{}, p, head)
 }
 
 type _sliceJumpExpr struct{}
@@ -155,13 +142,6 @@ func (expr _sliceJumpExpr) DebugName() string {
 	return "_sliceJumpExpr"
 }
 
-func (expr _sliceJumpExpr) Parse(p *parser.Parser) (parser.SyntaxTree, error) {
-	child, err := p.Require(SelectableAtomicExpr{})
-	if err != nil {
-		return parser.SyntaxTree{}, fmt.Errorf("slices with BY require an expression after BY: %w", err)
-	}
-	return parser.SyntaxTree{
-		Expr:     expr,
-		Children: []parser.SyntaxTree{child},
-	}, nil
+func (expr _sliceJumpExpr) Parse(p parser.Parser, head int) (parser.SyntaxTree, int, error) {
+	return parser.ParseSingleChildCustomError(expr, SelectableAtomicExpr{}, p, head, "slices with BY require an expression after BY")
 }

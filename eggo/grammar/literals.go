@@ -3,7 +3,6 @@ package grammar
 import (
 	"eggo/lexer"
 	"eggo/parser"
-	"fmt"
 )
 
 /* GRAMMAR
@@ -25,13 +24,10 @@ func (expr LiteralExpr) DebugName() string {
 	return "Literal"
 }
 
-func (expr LiteralExpr) Parse(p *parser.Parser) (parser.SyntaxTree, error) {
-	child, ok := p.AcceptAnyOf(
-		StringLiteralExpr{}, IntLiteralExpr{}, FloatLiteralExpr{}, BoolLiteralExpr{})
-	if !ok {
-		return parser.SyntaxTree{}, fmt.Errorf("expected literal")
-	}
-	return child, nil
+func (expr LiteralExpr) Parse(p parser.Parser, head int) (parser.SyntaxTree, int, error) {
+	return parser.ParseSingleAnyOfChildUnwrapped(expr, []parser.Expression{
+		StringLiteralExpr{}, IntLiteralExpr{}, FloatLiteralExpr{}, BoolLiteralExpr{},
+	}, p, head)
 }
 
 // Literal String Expressions
@@ -42,15 +38,8 @@ func (expr StringLiteralExpr) DebugName() string {
 	return "StringLiteral"
 }
 
-func (expr StringLiteralExpr) Parse(p *parser.Parser) (parser.SyntaxTree, error) {
-	token, err := p.RequireToken(lexer.QUOTED_STRING)
-	if err != nil {
-		return parser.SyntaxTree{}, err
-	}
-	return parser.SyntaxTree{
-		Expr: expr,
-		Data: []lexer.Token{token},
-	}, nil
+func (expr StringLiteralExpr) Parse(p parser.Parser, head int) (parser.SyntaxTree, int, error) {
+	return parser.ParseSingleToken(expr, lexer.QUOTED_STRING, p, head)
 }
 
 // Literal Int Expressions
@@ -61,15 +50,8 @@ func (expr IntLiteralExpr) DebugName() string {
 	return "IntLiteral"
 }
 
-func (expr IntLiteralExpr) Parse(p *parser.Parser) (parser.SyntaxTree, error) {
-	token, err := p.RequireToken(lexer.INT)
-	if err != nil {
-		return parser.SyntaxTree{}, err
-	}
-	return parser.SyntaxTree{
-		Expr: expr,
-		Data: []lexer.Token{token},
-	}, nil
+func (expr IntLiteralExpr) Parse(p parser.Parser, head int) (parser.SyntaxTree, int, error) {
+	return parser.ParseSingleToken(expr, lexer.INT, p, head)
 }
 
 // Literal Float Expressions
@@ -80,15 +62,8 @@ func (expr FloatLiteralExpr) DebugName() string {
 	return "FloatLiteral"
 }
 
-func (expr FloatLiteralExpr) Parse(p *parser.Parser) (parser.SyntaxTree, error) {
-	token, err := p.RequireToken(lexer.FLOAT)
-	if err != nil {
-		return parser.SyntaxTree{}, err
-	}
-	return parser.SyntaxTree{
-		Expr: expr,
-		Data: []lexer.Token{token},
-	}, nil
+func (expr FloatLiteralExpr) Parse(p parser.Parser, head int) (parser.SyntaxTree, int, error) {
+	return parser.ParseSingleToken(expr, lexer.FLOAT, p, head)
 }
 
 // Literal Boolean Expressions
@@ -99,13 +74,6 @@ func (expr BoolLiteralExpr) DebugName() string {
 	return "BoolLiteral"
 }
 
-func (expr BoolLiteralExpr) Parse(p *parser.Parser) (parser.SyntaxTree, error) {
-	token, ok := p.AcceptAnyOfToken(lexer.TRUE, lexer.FALSE)
-	if !ok {
-		return parser.SyntaxTree{}, fmt.Errorf("expected bool literal")
-	}
-	return parser.SyntaxTree{
-		Expr: expr,
-		Data: []lexer.Token{token},
-	}, nil
+func (expr BoolLiteralExpr) Parse(p parser.Parser, head int) (parser.SyntaxTree, int, error) {
+	return parser.ParseSingleAnyOfToken(expr, []lexer.TokenType{lexer.TRUE, lexer.FALSE}, p, head)
 }
